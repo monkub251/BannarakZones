@@ -31,6 +31,21 @@ upgrades:
     base-price: 20000
     multiplier: 2.0
 
+economy:
+  # ชื่อสกุลเงินและสัญลักษณ์หน้าตัวเลข
+  currency-name: "เหรียญ"
+  currency-symbol: "₡"
+  # เงินที่คนใหม่ได้ตอนเข้าเซิร์ฟครั้งแรก
+  starting-balance: 1000
+  # โอนขั้นต่ำต่อครั้ง
+  pay-minimum: 1
+  # ยกเงินของเราให้ปลั๊กอินอื่นใช้ผ่าน Vault
+  register-with-vault: true
+
+notify:
+  # เปิด/ปิดเสียงประกอบการแจ้งเตือนทั้งหมด
+  sound: true
+
 protection:
   block-break: true
   block-place: true

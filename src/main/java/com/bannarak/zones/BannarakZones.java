@@ -20,6 +20,7 @@ public class BannarakZones extends JavaPlugin {
 
     private ZoneStore store;
     private Economy economy;
+    private EconomyManager money;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -37,24 +38,52 @@ public class BannarakZones extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        Notify.init(this);
         store = new ZoneStore(this);
+        money = new EconomyManager(this);
         readConfig();
         store.load();
+        money.load();
         gui = new ZoneGui(this);
 
+        registerEconomy();
         hookEconomy();
+
+        MoneyCommands moneyCommands = new MoneyCommands(this);
+        for (String name : new String[]{"money", "pay", "baltop", "eco"}) {
+            var cmd = getCommand(name);
+            if (cmd != null) { cmd.setExecutor(moneyCommands); cmd.setTabCompleter(moneyCommands); }
+        }
 
         getServer().getPluginManager().registerEvents(new ProtectionListener(this), this);
         getServer().getPluginManager().registerEvents(new MoveListener(this), this);
         getServer().getPluginManager().registerEvents(gui, this);
+        getServer().getPluginManager().registerEvents(moneyCommands, this);
 
-        getServer().getScheduler().runTaskTimer(this, () -> store.save(), 6000L, 6000L);
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
     @Override
     public void onDisable() {
         if (store != null) store.save();
+        if (money != null) money.save(true);
+    }
+
+    /** Offers our own money to Vault so other plugins see one balance, not two. */
+    private void registerEconomy() {
+        if (!getConfig().getBoolean("economy.register-with-vault", true)) return;
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            getLogger().info("Vault not installed - our economy stays internal.");
+            return;
+        }
+        try {
+            getServer().getServicesManager().register(Economy.class, new VaultBridge(this, money),
+                    this, org.bukkit.plugin.ServicePriority.Highest);
+            getLogger().info("Registered our economy with Vault.");
+        } catch (Throwable t) {
+            getLogger().warning("Could not register our economy with Vault: " + t.getMessage());
+        }
     }
 
     // ---------------- config ----------------
@@ -95,6 +124,7 @@ public class BannarakZones extends JavaPlugin {
     }
 
     public ZoneStore store() { return store; }
+    public EconomyManager money() { return money; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

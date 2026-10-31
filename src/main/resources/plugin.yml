@@ -10,6 +10,21 @@ commands:
     description: Zone commands
     aliases: [z, protect, zn]
     usage: /zone
+  money:
+    description: Show a balance
+    aliases: [bal, balance, เงิน]
+    usage: /money [player]
+  pay:
+    description: Send money to another player
+    usage: /pay <player> <amount>
+  baltop:
+    description: Richest players
+    aliases: [moneytop, top]
+    usage: /baltop
+  eco:
+    description: Admin money control
+    aliases: [economy]
+    usage: /eco <give|take|set> <player> <amount>
 permissions:
   zones.use:
     default: true

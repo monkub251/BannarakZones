@@ -281,9 +281,8 @@ public class ZoneGui implements Listener {
     private void buyRadius(Player p, Zone z) {
         int next = plugin.nextRadius(z.radius);
         if (next < 0) { plugin.msg(p, "max-radius"); return; }
-        if (plugin.economy() == null) { plugin.msg(p, "no-economy"); return; }
         double price = plugin.radiusPrice(next);
-        if (!plugin.economy().has(p, price)) {
+        if (!plugin.money().has(p.getUniqueId(), price)) {
             plugin.msg(p, "no-money", BannarakZones.p("price", BannarakZones.money(price)));
             return;
         }
@@ -291,7 +290,7 @@ public class ZoneGui implements Listener {
             plugin.msg(p, "overlap");
             return;
         }
-        plugin.economy().withdrawPlayer(p, price);
+        plugin.money().take(p.getUniqueId(), price);
         z.radius = next;
         plugin.store().reindex(z);
         plugin.store().save();
@@ -302,14 +301,13 @@ public class ZoneGui implements Listener {
     }
 
     private void buySlot(Player p, Zone z) {
-        if (plugin.economy() == null) { plugin.msg(p, "no-economy"); return; }
         int slots = plugin.store().slotsOf(p.getUniqueId());
         double price = plugin.slotPrice(slots);
-        if (!plugin.economy().has(p, price)) {
+        if (!plugin.money().has(p.getUniqueId(), price)) {
             plugin.msg(p, "no-money", BannarakZones.p("price", BannarakZones.money(price)));
             return;
         }
-        plugin.economy().withdrawPlayer(p, price);
+        plugin.money().take(p.getUniqueId(), price);
         plugin.store().setSlots(p.getUniqueId(), slots + 1);
         plugin.store().save();
         plugin.msg(p, "slot-bought", BannarakZones.p("slots", String.valueOf(slots + 1)));
