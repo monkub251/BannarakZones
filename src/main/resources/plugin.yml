@@ -29,6 +29,27 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  ban:
+    description: Ban a player
+    usage: /ban <player> [time] [reason]
+  unban:
+    description: Lift a ban
+    usage: /unban <player>
+  mute:
+    description: Stop a player chatting
+    usage: /mute <player> [time] [reason]
+  unmute:
+    description: Lift a mute
+    usage: /unmute <player>
+  kick:
+    description: Kick a player
+    usage: /kick <player> [reason]
+  warn:
+    description: Warn a player
+    usage: /warn <player> <reason>
+  history:
+    description: Punishment history for a player
+    usage: /history <player>
   backup:
     description: Back up the worlds and plugin data now
     aliases: [สำรอง]

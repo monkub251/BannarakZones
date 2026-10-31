@@ -71,6 +71,12 @@ teleport:
   # คำขอวาร์ปหมดอายุในกี่วินาที
   request-seconds: 60
 
+punish:
+  # ประกาศทั้งเซิร์ฟเมื่อมีคนโดนแบน/ปิดปาก/เตะ
+  broadcast: true
+  # ข้อความท้ายหน้าจอแบน
+  appeal: "ติดต่อทีมงานใน Discord"
+
 backup:
   # ปิดได้ แต่ไม่แนะนำ
   enabled: true

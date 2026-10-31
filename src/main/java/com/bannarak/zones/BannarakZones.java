@@ -33,6 +33,7 @@ public class BannarakZones extends JavaPlugin {
     private CustomItems customItems;
     private AdminHud adminHud;
     private BackupManager backups;
+    private Punishments punishments;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -157,6 +158,14 @@ public class BannarakZones extends JavaPlugin {
         if (backupCmd != null) backupCmd.setExecutor(backups);
         backups.schedule();
 
+        punishments = new Punishments(this);
+        punishments.load();
+        for (String name : new String[]{"ban", "unban", "mute", "unmute", "kick", "warn", "history"}) {
+            var c4 = getCommand(name);
+            if (c4 != null) { c4.setExecutor(punishments); c4.setTabCompleter(punishments); }
+        }
+        getServer().getPluginManager().registerEvents(punishments, this);
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -170,6 +179,7 @@ public class BannarakZones extends JavaPlugin {
         if (ranks != null) ranks.save(true);
         if (daily != null) daily.save(true);
         if (market != null) market.save(true);
+        if (punishments != null) punishments.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -238,6 +248,7 @@ public class BannarakZones extends JavaPlugin {
     public MarketManager market() { return market; }
     public CustomItems customItems() { return customItems; }
     public BackupManager backups() { return backups; }
+    public Punishments punishments() { return punishments; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
