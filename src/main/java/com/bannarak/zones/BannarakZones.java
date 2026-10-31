@@ -22,6 +22,7 @@ public class BannarakZones extends JavaPlugin {
     private Economy economy;
     private EconomyManager money;
     private MissionManager missions;
+    private LocStore locations;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -48,6 +49,8 @@ public class BannarakZones extends JavaPlugin {
         missions = new MissionManager(this);
         missions.loadDefinitions();
         missions.load();
+        locations = new LocStore(this);
+        locations.load();
         gui = new ZoneGui(this);
 
         registerEconomy();
@@ -70,7 +73,15 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(missionGui, this);
         missions.startTracking();
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); }, 6000L, 6000L);
+        TravelCommands travel = new TravelCommands(this);
+        for (String name : new String[]{"spawn", "setspawn", "home", "sethome", "delhome",
+                "warp", "setwarp", "delwarp", "tpa", "tpaccept", "tpdeny"}) {
+            var c2 = getCommand(name);
+            if (c2 != null) { c2.setExecutor(travel); c2.setTabCompleter(travel); }
+        }
+        getServer().getPluginManager().registerEvents(travel, this);
+
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
@@ -79,6 +90,7 @@ public class BannarakZones extends JavaPlugin {
         if (store != null) store.save();
         if (money != null) money.save(true);
         if (missions != null) missions.save(true);
+        if (locations != null) locations.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -137,6 +149,7 @@ public class BannarakZones extends JavaPlugin {
     public ZoneStore store() { return store; }
     public EconomyManager money() { return money; }
     public MissionManager missions() { return missions; }
+    public LocStore locations() { return locations; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

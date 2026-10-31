@@ -42,6 +42,31 @@ economy:
   # ยกเงินของเราให้ปลั๊กอินอื่นใช้ผ่าน Vault
   register-with-vault: true
 
+spawn:
+  # จุดเกิดของเซิร์ฟ (ใช้เมื่อยังไม่เคย /setspawn)
+  world: lobby
+  x: 0.5
+  y: 100
+  z: 0.5
+  yaw: 0
+  pitch: 0
+  # พาคนเข้าเซิร์ฟครั้งแรกมาที่จุดเกิด
+  teleport-on-first-join: true
+  # ตายแล้วเกิดที่จุดเกิดเสมอ (ถ้าไม่ได้นอนเตียงไว้)
+  respawn-at-spawn: false
+
+homes:
+  # จำนวนบ้านพื้นฐานของทุกคน
+  default-limit: 1
+  # เพิ่มให้ยศสูงด้วยสิทธิ์ zones.homes.<เลข> เช่น zones.homes.5
+  permission-ceiling: 20
+
+teleport:
+  # นับถอยหลังก่อนวาร์ป ขยับตัวแล้วยกเลิก (0 = วาร์ปทันที)
+  warmup-seconds: 3
+  # คำขอวาร์ปหมดอายุในกี่วินาที
+  request-seconds: 60
+
 missions:
   # เด้งตัวหนังสือกลางจอตอนผ่านขั้น (false = ใช้แถบเหนือช่องไอเทมแทน)
   popup: true

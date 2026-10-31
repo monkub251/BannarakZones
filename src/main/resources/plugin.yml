@@ -25,6 +25,39 @@ commands:
     description: Open the mission menu
     aliases: [missions, quest, quests, ภารกิจ]
     usage: /mission
+  spawn:
+    description: Go to the server spawn
+  setspawn:
+    description: Set the server spawn
+  home:
+    description: Go to one of your homes
+    aliases: [h, บ้าน]
+    usage: /home [name]
+  sethome:
+    description: Save your current spot as a home
+    usage: /sethome [name]
+  delhome:
+    description: Remove a home
+    usage: /delhome <name>
+  warp:
+    description: Travel to a warp
+    aliases: [warps]
+    usage: /warp [name]
+  setwarp:
+    description: Create a warp
+    usage: /setwarp <name> [ICON]
+  delwarp:
+    description: Remove a warp
+    usage: /delwarp <name>
+  tpa:
+    description: Ask to teleport to a player
+    usage: /tpa [player]
+  tpaccept:
+    description: Accept a teleport request
+    aliases: [tpyes]
+  tpdeny:
+    description: Refuse a teleport request
+    aliases: [tpno]
   eco:
     description: Admin money control
     aliases: [economy]
