@@ -21,6 +21,10 @@ commands:
     description: Richest players
     aliases: [moneytop, top]
     usage: /baltop
+  mission:
+    description: Open the mission menu
+    aliases: [missions, quest, quests, ภารกิจ]
+    usage: /mission
   eco:
     description: Admin money control
     aliases: [economy]

@@ -42,6 +42,14 @@ economy:
   # ยกเงินของเราให้ปลั๊กอินอื่นใช้ผ่าน Vault
   register-with-vault: true
 
+missions:
+  # เด้งตัวหนังสือกลางจอตอนผ่านขั้น (false = ใช้แถบเหนือช่องไอเทมแทน)
+  popup: true
+  # ประกาศทั้งเซิร์ฟเมื่อมีคนทำภารกิจครบทุกขั้น
+  broadcast-final: true
+  # ตรวจความคืบหน้าทุกกี่ tick (100 = 5 วินาที)
+  check-interval-ticks: 100
+
 notify:
   # เปิด/ปิดเสียงประกอบการแจ้งเตือนทั้งหมด
   sound: true

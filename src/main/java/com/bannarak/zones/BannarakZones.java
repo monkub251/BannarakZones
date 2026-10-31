@@ -21,6 +21,7 @@ public class BannarakZones extends JavaPlugin {
     private ZoneStore store;
     private Economy economy;
     private EconomyManager money;
+    private MissionManager missions;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -44,6 +45,9 @@ public class BannarakZones extends JavaPlugin {
         readConfig();
         store.load();
         money.load();
+        missions = new MissionManager(this);
+        missions.loadDefinitions();
+        missions.load();
         gui = new ZoneGui(this);
 
         registerEconomy();
@@ -60,7 +64,13 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(gui, this);
         getServer().getPluginManager().registerEvents(moneyCommands, this);
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); }, 6000L, 6000L);
+        MissionGui missionGui = new MissionGui(this);
+        var missionCmd = getCommand("mission");
+        if (missionCmd != null) missionCmd.setExecutor(missionGui);
+        getServer().getPluginManager().registerEvents(missionGui, this);
+        missions.startTracking();
+
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
@@ -68,6 +78,7 @@ public class BannarakZones extends JavaPlugin {
     public void onDisable() {
         if (store != null) store.save();
         if (money != null) money.save(true);
+        if (missions != null) missions.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -125,6 +136,7 @@ public class BannarakZones extends JavaPlugin {
 
     public ZoneStore store() { return store; }
     public EconomyManager money() { return money; }
+    public MissionManager missions() { return missions; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
@@ -253,6 +265,7 @@ public class BannarakZones extends JavaPlugin {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("zones.admin")) { msg(sender, "not-owner"); return true; }
             readConfig();
+            if (missions != null) missions.loadDefinitions();
             msg(sender, "reloaded");
             return true;
         }

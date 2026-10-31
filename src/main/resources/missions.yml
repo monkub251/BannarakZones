@@ -1,0 +1,184 @@
+# ===== ภารกิจ =====
+# แก้ไฟล์นี้แล้วพิมพ์ /zone reload ในเกม
+#
+# statistic : ชื่อสถิติของ Minecraft (ดูรายชื่อเต็มได้ในเอกสาร Bukkit Statistic)
+# material / entity : ใส่เมื่อสถิติต้องระบุชนิดบล็อกหรือชนิดมอบ
+# scale : ตัวหารให้เป็นหน่วยที่คนเล่นเข้าใจ (ระยะทางเก็บเป็นเซนติเมตร 100 = 1 บล็อก)
+# tiers : <จำนวน>: reward: <เงิน>  — ใส่กี่ขั้นก็ได้ เรียงจากน้อยไปมาก
+#         ใส่ commands: ["give <player> diamond 1"] เพิ่มของแถมได้
+
+missions:
+
+  walk:
+    display: "นักเดินทาง"
+    icon: LEATHER_BOOTS
+    statistic: WALK_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      1000: { reward: 10000 }
+      3000: { reward: 20000 }
+      10000: { reward: 50000 }
+      50000: { reward: 150000 }
+
+  sprint:
+    display: "นักวิ่ง"
+    icon: FEATHER
+    statistic: SPRINT_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      1000: { reward: 12000 }
+      5000: { reward: 35000 }
+      20000: { reward: 100000 }
+
+  jump:
+    display: "นักกระโดด"
+    icon: SLIME_BALL
+    statistic: JUMP
+    unit: "ครั้ง"
+    tiers:
+      500: { reward: 8000 }
+      2000: { reward: 25000 }
+      10000: { reward: 90000 }
+
+  boat:
+    display: "นักพายเรือ"
+    icon: OAK_BOAT
+    statistic: BOAT_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      500: { reward: 10000 }
+      2500: { reward: 30000 }
+      10000: { reward: 80000 }
+
+  swim:
+    display: "นักว่ายน้ำ"
+    icon: HEART_OF_THE_SEA
+    statistic: SWIM_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      300: { reward: 9000 }
+      1500: { reward: 28000 }
+      6000: { reward: 75000 }
+
+  horse:
+    display: "นักขี่ม้า"
+    icon: SADDLE
+    statistic: HORSE_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      1000: { reward: 12000 }
+      5000: { reward: 40000 }
+      20000: { reward: 110000 }
+
+  elytra:
+    display: "นักบิน"
+    icon: ELYTRA
+    statistic: AVIATE_ONE_CM
+    scale: 100
+    unit: "บล็อก"
+    tiers:
+      1000: { reward: 20000 }
+      10000: { reward: 70000 }
+      50000: { reward: 200000 }
+
+  woodcutter:
+    display: "คนตัดไม้"
+    icon: IRON_AXE
+    statistic: MINE_BLOCK
+    material: OAK_LOG
+    unit: "ท่อน"
+    tiers:
+      100: { reward: 8000 }
+      500: { reward: 25000 }
+      2000: { reward: 70000 }
+
+  miner:
+    display: "นักขุดหิน"
+    icon: IRON_PICKAXE
+    statistic: MINE_BLOCK
+    material: STONE
+    unit: "ก้อน"
+    tiers:
+      500: { reward: 10000 }
+      2500: { reward: 30000 }
+      10000: { reward: 100000 }
+
+  diamond:
+    display: "นักล่าเพชร"
+    icon: DIAMOND
+    statistic: MINE_BLOCK
+    material: DIAMOND_ORE
+    unit: "ก้อน"
+    tiers:
+      10: { reward: 15000 }
+      50: { reward: 50000 }
+      200: { reward: 180000 }
+
+  zombie:
+    display: "นักล่าซอมบี้"
+    icon: ROTTEN_FLESH
+    statistic: KILL_ENTITY
+    entity: ZOMBIE
+    unit: "ตัว"
+    tiers:
+      50: { reward: 9000 }
+      250: { reward: 30000 }
+      1000: { reward: 90000 }
+
+  creeper:
+    display: "นักล่าครีเปอร์"
+    icon: GUNPOWDER
+    statistic: KILL_ENTITY
+    entity: CREEPER
+    unit: "ตัว"
+    tiers:
+      25: { reward: 12000 }
+      100: { reward: 40000 }
+      500: { reward: 130000 }
+
+  fishing:
+    display: "นักตกปลา"
+    icon: FISHING_ROD
+    statistic: FISH_CAUGHT
+    unit: "ตัว"
+    tiers:
+      25: { reward: 10000 }
+      100: { reward: 32000 }
+      500: { reward: 95000 }
+
+  breeding:
+    display: "นักเลี้ยงสัตว์"
+    icon: WHEAT
+    statistic: ANIMALS_BRED
+    unit: "คู่"
+    tiers:
+      20: { reward: 9000 }
+      100: { reward: 30000 }
+      400: { reward: 85000 }
+
+  trading:
+    display: "พ่อค้า"
+    icon: EMERALD
+    statistic: TRADED_WITH_VILLAGER
+    unit: "ครั้ง"
+    tiers:
+      20: { reward: 10000 }
+      100: { reward: 35000 }
+      400: { reward: 100000 }
+
+  playtime:
+    display: "ขาประจำ"
+    icon: CLOCK
+    statistic: PLAY_ONE_MINUTE
+    scale: 72000
+    unit: "ชั่วโมง"
+    tiers:
+      1: { reward: 15000 }
+      5: { reward: 45000 }
+      24: { reward: 150000 }
+      100: { reward: 500000 }
