@@ -155,12 +155,12 @@ menus:
           - "open:help"
       44:
         icon: COMMAND_BLOCK
-        name: "<red>เมนูแอดมิน"
+        name: "<red>แผงแอดมิน"
         permission: zones.admin
         lore:
-          - "<gray>เฉพาะทีมงาน"
+          - "<gray>แดชบอร์ด ผู้เล่น โลก เศรษฐกิจ ระบบ ลงโทษ"
         actions:
-          - "open:admin"
+          - "admin"
 
   homes:
     title: "<dark_gray>บ้านของฉัน"

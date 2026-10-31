@@ -29,6 +29,9 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  admin:
+    description: Open the staff panel
+    aliases: [ap, แอดมิน]
   ban:
     description: Ban a player
     usage: /ban <player> [time] [reason]

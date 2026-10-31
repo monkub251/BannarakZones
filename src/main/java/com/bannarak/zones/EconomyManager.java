@@ -100,6 +100,14 @@ public class EconomyManager {
         }
     }
 
+    public double totalMoney() {
+        double sum = 0;
+        for (double v : balances.values()) sum += v;
+        return sum;
+    }
+
+    public int accountCount() { return balances.size(); }
+
     public List<Map.Entry<UUID, Double>> top(int limit) {
         List<Map.Entry<UUID, Double>> list = new ArrayList<>(balances.entrySet());
         list.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));

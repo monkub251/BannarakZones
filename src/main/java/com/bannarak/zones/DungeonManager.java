@@ -66,6 +66,10 @@ public class DungeonManager implements Listener {
         return h > 0 ? h + " ชม. " + m + " นาที" : m + " นาที";
     }
 
+    public void clearCooldown(UUID uuid) { cooldowns.remove(uuid); }
+
+    public int activeRuns() { return runs.size(); }
+
     public Dungeon runOf(Player p) {
         UUID runId = playerRun.get(p.getUniqueId());
         return runId == null ? null : runs.get(runId);
