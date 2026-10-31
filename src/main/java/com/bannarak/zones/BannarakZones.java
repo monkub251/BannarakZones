@@ -27,6 +27,8 @@ public class BannarakZones extends JavaPlugin {
     private ShopManager shop;
     private RankManager ranks;
     private DungeonManager dungeons;
+    private CrateManager crates;
+    private DailyRewards daily;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -113,6 +115,18 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(dungeons, this);
         getServer().getPluginManager().registerEvents(dungeonGui, this);
 
+        crates = new CrateManager(this);
+        crates.load();
+        var crateCmd = getCommand("crate");
+        if (crateCmd != null) crateCmd.setExecutor(crates);
+        getServer().getPluginManager().registerEvents(crates, this);
+
+        daily = new DailyRewards(this);
+        daily.load();
+        var dailyCmd = getCommand("daily");
+        if (dailyCmd != null) dailyCmd.setExecutor(daily);
+        getServer().getPluginManager().registerEvents(daily, this);
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -124,6 +138,7 @@ public class BannarakZones extends JavaPlugin {
         if (missions != null) missions.save(true);
         if (locations != null) locations.save(true);
         if (ranks != null) ranks.save(true);
+        if (daily != null) daily.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -187,6 +202,8 @@ public class BannarakZones extends JavaPlugin {
     public ShopManager shop() { return shop; }
     public RankManager ranks() { return ranks; }
     public DungeonManager dungeons() { return dungeons; }
+    public CrateManager crates() { return crates; }
+    public DailyRewards daily() { return daily; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
@@ -319,6 +336,7 @@ public class BannarakZones extends JavaPlugin {
             if (menus != null) menus.load();
             if (shop != null) shop.load();
             if (ranks != null) ranks.load();
+            if (crates != null) crates.load();
             msg(sender, "reloaded");
             return true;
         }

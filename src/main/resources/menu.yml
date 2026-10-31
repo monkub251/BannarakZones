@@ -116,6 +116,24 @@ menus:
           - "<green>คลิกเพื่อเปิด"
         actions:
           - "dungeon"
+      38:
+        icon: CHEST
+        name: "<yellow>กล่องสุ่ม"
+        lore:
+          - "<gray>ดูของในกล่องและโอกาสออก"
+          - ""
+          - "<green>คลิกเพื่อดูรายการ"
+        actions:
+          - "crate list"
+      42:
+        icon: CLOCK
+        name: "<green>รางวัลรายวัน"
+        lore:
+          - "<gray>เข้ามาทุกวันได้เงินเพิ่มขึ้นเรื่อย ๆ"
+          - ""
+          - "<green>คลิกเพื่อรับ"
+        actions:
+          - "daily"
       40:
         icon: BOOK
         name: "<yellow>ช่วยเหลือ"

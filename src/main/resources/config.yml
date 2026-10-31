@@ -71,6 +71,25 @@ teleport:
   # คำขอวาร์ปหมดอายุในกี่วินาที
   request-seconds: 60
 
+crates:
+  # ประกาศทั้งเซิร์ฟเมื่อมีคนสุ่มได้ของหายาก
+  broadcast-rare: true
+
+daily:
+  # เตือนตอนเข้าเซิร์ฟว่ายังไม่ได้รับ
+  remind-on-join: true
+  days:
+    1: { money: 5000 }
+    2: { money: 8000 }
+    3: { money: 12000 }
+    4: { money: 18000 }
+    5: { money: 25000 }
+    6: { money: 35000 }
+    7:
+      money: 80000
+      commands:
+        - "crate key common <player> 1"
+
 dungeon:
   # โลกและจุดเริ่ม — ยืนตรงที่ต้องการแล้วพิมพ์ /dungeon setspawn
   world: dungeon

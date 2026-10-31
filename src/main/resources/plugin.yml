@@ -29,6 +29,13 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  crate:
+    description: Crates and keys
+    aliases: [crates, กล่อง]
+    usage: /crate <list|key|set|unset>
+  daily:
+    description: Daily login reward
+    aliases: [รายวัน]
   dungeon:
     description: Open the dungeon menu
     aliases: [dg, ดันเจียน]
