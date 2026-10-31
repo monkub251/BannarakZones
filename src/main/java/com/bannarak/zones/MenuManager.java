@@ -188,7 +188,7 @@ public class MenuManager implements Listener, CommandExecutor {
             } else if (lower.startsWith("sound:")) {
                 p.playSound(p.getLocation(), action.substring(6).trim(), 0.8f, 1.2f);
             } else if (lower.equals("close")) {
-                plugin.getServer().getScheduler().runTask(plugin, p::closeInventory);
+                plugin.getServer().getScheduler().runTask(plugin, () -> p.closeInventory());
             } else {
                 String cmd = (lower.startsWith("player:") ? action.substring(7) : action).trim();
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
