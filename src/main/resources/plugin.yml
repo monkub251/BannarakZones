@@ -29,6 +29,9 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  adminhud:
+    description: Toggle the admin sidebar
+    aliases: [hud]
   citem:
     description: Server-made items
     aliases: [customitem, ไอเทม]

@@ -189,6 +189,37 @@ menus:
         actions:
           - "message:<gray>ใช้คำสั่ง <white>/delhome <ชื่อบ้าน>"
           - "close"
+      18:
+        icon: ITEM_FRAME
+        name: "<yellow>แผงข้างจอ"
+        permission: zones.admin
+        lore:
+          - "<gray>TPS แรม เอนทิตี ชังก์"
+        actions:
+          - "adminhud"
+      20:
+        icon: NETHERITE_SWORD
+        name: "<gold>ไอเทมของเซิร์ฟ"
+        permission: zones.admin
+        actions:
+          - "citem list"
+      24:
+        icon: CHEST
+        name: "<aqua>แจกกุญแจกล่อง"
+        permission: zones.admin
+        lore:
+          - "<gray>/crate key <ชื่อกล่อง> <ผู้เล่น> [จำนวน]"
+        actions:
+          - "message:<gray>ใช้คำสั่ง <white>/crate key <ชื่อกล่อง> <ผู้เล่น> [จำนวน]"
+          - "close"
+      26:
+        icon: WITHER_SKELETON_SKULL
+        name: "<dark_red>ตั้งจุดเริ่มดันเจียน"
+        permission: zones.admin
+        lore:
+          - "<gray>ยืนตรงที่ต้องการแล้วกด"
+        actions:
+          - "dungeon setspawn"
       22:
         icon: ARROW
         name: "<white>กลับ"

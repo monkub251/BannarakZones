@@ -89,6 +89,8 @@ public class MarketManager implements Listener, CommandExecutor {
                     + plugin.money().format(price)));
     }
 
+    public int listingCount() { return listings.size(); }
+
     private int countOf(UUID seller) {
         int n = 0;
         for (Listing l : listings.values()) if (l.seller.equals(seller)) n++;
