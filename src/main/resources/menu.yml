@@ -106,6 +106,16 @@ menus:
           - "<green>คลิกเพื่อเปิด"
         actions:
           - "rank"
+      32:
+        icon: WITHER_SKELETON_SKULL
+        name: "<dark_red>ดันเจียน"
+        lore:
+          - "<gray>50 เวฟ ลงกับเพื่อน 3-5 คน"
+          - "<red>ตายแล้วออกทันที"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "dungeon"
       40:
         icon: BOOK
         name: "<yellow>ช่วยเหลือ"

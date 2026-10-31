@@ -71,6 +71,73 @@ teleport:
   # คำขอวาร์ปหมดอายุในกี่วินาที
   request-seconds: 60
 
+dungeon:
+  # โลกและจุดเริ่ม — ยืนตรงที่ต้องการแล้วพิมพ์ /dungeon setspawn
+  world: dungeon
+  spawn:
+    x: 0.5
+    y: 64
+    z: 0.5
+    yaw: 0
+    pitch: 0
+  # จำนวนเวฟทั้งหมด เวฟรองสุดท้าย = บอสรอง เวฟสุดท้าย = บอสใหญ่
+  waves: 50
+  party:
+    min: 3
+    max: 5
+  # เวลานับถอยหลังให้เตรียมของก่อนเริ่ม
+  countdown-seconds: 10
+  wave-break-seconds: 6
+  # ระยะที่มอบเกิดรอบจุดกลาง
+  spawn-radius: 12
+  # ลงได้อีกครั้งหลังผ่านไปกี่ชั่วโมง
+  cooldown-hours: 10
+
+  scaling:
+    health-per-wave: 0.06
+    damage-per-wave: 0.04
+
+  mobs:
+    base: 4
+    per-wave: 0.55
+    per-player: 1.2
+
+  # มอบที่ออกในแต่ละช่วงเวฟ
+  pools:
+    early:
+      waves: "1-10"
+      mobs: [ZOMBIE, SKELETON]
+    mid:
+      waves: "11-22"
+      mobs: [ZOMBIE, SKELETON, SPIDER, HUSK, STRAY]
+    deep:
+      waves: "23-35"
+      mobs: [ZOMBIE, SKELETON, CREEPER, WITCH, CAVE_SPIDER, DROWNED]
+    abyss:
+      waves: "36-48"
+      mobs: [WITHER_SKELETON, BLAZE, PIGLIN_BRUTE, RAVAGER, EVOKER, VINDICATOR]
+
+  miniboss:
+    type: RAVAGER
+    name: "<red>ผู้เฝ้าประตู"
+    health: 600
+    damage: 10
+
+  boss:
+    type: WITHER
+    name: "<dark_red>เจ้าแห่งเหวลึก"
+    health: 1400
+    damage: 16
+
+  rewards:
+    # เงินต่อเวฟ คูณขึ้นเรื่อย ๆ ตามเวฟ
+    per-wave: 2000
+    wave-multiplier: 1.08
+    # เงินก้อนตอนผ่านครบ
+    clear: 500000
+    # คำสั่งแถมตอนผ่าน ใช้ <player> แทนชื่อคน
+    clear-commands: []
+
 ranks:
   # ใส่ชื่อยศหน้าชื่อในแชท
   format-chat: true

@@ -29,6 +29,10 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  dungeon:
+    description: Open the dungeon menu
+    aliases: [dg, ดันเจียน]
+    usage: /dungeon [setspawn]
   rank:
     description: See the rank ladder
     aliases: [ranks, ยศ]

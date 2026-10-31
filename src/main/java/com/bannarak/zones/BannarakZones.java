@@ -26,6 +26,7 @@ public class BannarakZones extends JavaPlugin {
     private MenuManager menus;
     private ShopManager shop;
     private RankManager ranks;
+    private DungeonManager dungeons;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -105,6 +106,13 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(rankGui, this);
         ranks.startTracking();
 
+        dungeons = new DungeonManager(this);
+        DungeonGui dungeonGui = new DungeonGui(this);
+        var dungeonCmd = getCommand("dungeon");
+        if (dungeonCmd != null) dungeonCmd.setExecutor(dungeonGui);
+        getServer().getPluginManager().registerEvents(dungeons, this);
+        getServer().getPluginManager().registerEvents(dungeonGui, this);
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -178,6 +186,7 @@ public class BannarakZones extends JavaPlugin {
     public MenuManager menus() { return menus; }
     public ShopManager shop() { return shop; }
     public RankManager ranks() { return ranks; }
+    public DungeonManager dungeons() { return dungeons; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
