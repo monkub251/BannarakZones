@@ -29,6 +29,7 @@ public class BannarakZones extends JavaPlugin {
     private DungeonManager dungeons;
     private CrateManager crates;
     private DailyRewards daily;
+    private MarketManager market;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -127,6 +128,15 @@ public class BannarakZones extends JavaPlugin {
         if (dailyCmd != null) dailyCmd.setExecutor(daily);
         getServer().getPluginManager().registerEvents(daily, this);
 
+        market = new MarketManager(this);
+        market.load();
+        for (String name : new String[]{"market", "sell"}) {
+            var c3 = getCommand(name);
+            if (c3 != null) c3.setExecutor(market);
+        }
+        getServer().getPluginManager().registerEvents(market, this);
+        getServer().getScheduler().runTaskTimer(this, () -> market.expire(), 1200L, 72000L);
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -139,6 +149,7 @@ public class BannarakZones extends JavaPlugin {
         if (locations != null) locations.save(true);
         if (ranks != null) ranks.save(true);
         if (daily != null) daily.save(true);
+        if (market != null) market.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -204,6 +215,7 @@ public class BannarakZones extends JavaPlugin {
     public DungeonManager dungeons() { return dungeons; }
     public CrateManager crates() { return crates; }
     public DailyRewards daily() { return daily; }
+    public MarketManager market() { return market; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

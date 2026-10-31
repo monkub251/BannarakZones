@@ -134,6 +134,16 @@ menus:
           - "<green>คลิกเพื่อรับ"
         actions:
           - "daily"
+      29:
+        icon: VILLAGER_SPAWN_EGG
+        name: "<aqua>ตลาดกลาง"
+        lore:
+          - "<gray>ซื้อขายกับผู้เล่นคนอื่น"
+          - "<gray>ขายของ: ถือของแล้วพิมพ์ /sell <ราคา>"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "market"
       40:
         icon: BOOK
         name: "<yellow>ช่วยเหลือ"

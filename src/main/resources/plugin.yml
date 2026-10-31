@@ -29,6 +29,13 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  market:
+    description: Browse the player market
+    aliases: [ah, ตลาด]
+    usage: /market [mine|box]
+  sell:
+    description: List the item in your hand for sale
+    usage: /sell <price>
   crate:
     description: Crates and keys
     aliases: [crates, กล่อง]
