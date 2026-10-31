@@ -54,6 +54,10 @@ effects:
   sound-pitch-leave: 0.8
   # แสดงขอบเขตด้วยอนุภาคตอนสร้าง/อัปเกรด
   show-border: true
+  # จำนวนจังหวะที่กะพริบก่อนจางหาย (มากขึ้น = อยู่นานขึ้น)
+  border-pulses: 12
+  # ห่างกันกี่ tick ต่อจังหวะ (20 tick = 1 วินาที)
+  border-period-ticks: 7
 
 messages:
   prefix: "<gold>[เขต] <reset>"

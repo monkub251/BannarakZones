@@ -158,18 +158,57 @@ public class BannarakZones extends JavaPlugin {
         if (!getConfig().getBoolean("effects.show-border", true)) return;
         World w = Bukkit.getWorld(zone.world);
         if (w == null) return;
-        int y = zone.y + 1;
-        for (int i = -zone.radius; i <= zone.radius; i++) {
-            spawnDust(viewer, w, zone.x + i, y, zone.z - zone.radius);
-            spawnDust(viewer, w, zone.x + i, y, zone.z + zone.radius);
-            spawnDust(viewer, w, zone.x - zone.radius, y, zone.z + i);
-            spawnDust(viewer, w, zone.x + zone.radius, y, zone.z + i);
-        }
-    }
 
-    private void spawnDust(Player viewer, World w, int x, int y, int z) {
-        Location loc = new Location(w, x + 0.5, w.getHighestBlockYAt(x, z) + 1.2, z + 0.5);
-        viewer.spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0, 0, 0, 0);
+        final int pulses = Math.max(2, getConfig().getInt("effects.border-pulses", 12));
+        final long period = Math.max(2L, getConfig().getLong("effects.border-period-ticks", 7L));
+        final double edge = zone.radius + 0.5;
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int step = 0;
+
+            @Override
+            public void run() {
+                if (!viewer.isOnline() || step >= pulses) { cancel(); return; }
+                double life = 1.0 - (double) step / pulses;   // 1.0 -> 0.0, the fade
+                double spacing = 0.45 + (1.0 - life) * 2.2;   // dots drift apart as it fades
+                int layers = life > 0.66 ? 3 : (life > 0.33 ? 2 : 1);
+
+                for (double d = -edge; d <= edge; d += spacing) {
+                    drawPost(w, zone.x + d, zone.z - edge, layers, life);
+                    drawPost(w, zone.x + d, zone.z + edge, layers, life);
+                    drawPost(w, zone.x - edge, zone.z + d, layers, life);
+                    drawPost(w, zone.x + edge, zone.z + d, layers, life);
+                }
+                if (life > 0.25) {
+                    corner(w, zone.x - edge, zone.z - edge, life);
+                    corner(w, zone.x + edge, zone.z - edge, life);
+                    corner(w, zone.x - edge, zone.z + edge, life);
+                    corner(w, zone.x + edge, zone.z + edge, life);
+                }
+                step++;
+            }
+
+            private void drawPost(World world, double x, double z, int layers, double life) {
+                int ground = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z));
+                for (int i = 0; i < layers; i++) {
+                    Location loc = new Location(world, x, ground + 1.1 + i * 1.1, z);
+                    viewer.spawnParticle(Particle.END_ROD, loc, 1, 0.02, 0.02, 0.02, 0);
+                }
+                if (life > 0.6 && Math.random() < 0.08) {
+                    Location spark = new Location(world, x, ground + 1.4, z);
+                    viewer.spawnParticle(Particle.HAPPY_VILLAGER, spark, 1, 0.1, 0.1, 0.1, 0);
+                }
+            }
+
+            private void corner(World world, double x, double z, double life) {
+                int ground = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z));
+                int height = (int) Math.ceil(6 * life);
+                for (int i = 0; i < height; i++) {
+                    Location loc = new Location(world, x, ground + 1.1 + i * 0.9, z);
+                    viewer.spawnParticle(Particle.END_ROD, loc, 1, 0.02, 0.02, 0.02, 0);
+                }
+            }
+        }.runTaskTimer(this, 0L, period);
     }
 
     public void playSound(Player p, String key, float pitch) {
