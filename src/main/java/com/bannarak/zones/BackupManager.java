@@ -52,7 +52,7 @@ public class BackupManager implements CommandExecutor {
         }
         running = true;
 
-        plugin.store().save(true);
+        plugin.store().save();
         plugin.money().save(true);
         plugin.missions().save(true);
         plugin.locations().save(true);
