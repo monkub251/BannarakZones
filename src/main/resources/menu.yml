@@ -1,0 +1,219 @@
+# ===== เมนูของเซิร์ฟ =====
+# แก้ไฟล์นี้แล้วพิมพ์ /zone reload
+#
+# slot นับจาก 0 ซ้ายบน ไปขวา แถวละ 9 ช่อง
+# actions ใส่ได้หลายบรรทัด ทำงานเรียงจากบนลงล่าง:
+#   <คำสั่ง>          สั่งในนามผู้เล่น เช่น  spawn
+#   console:<คำสั่ง>   สั่งในนามเซิร์ฟ เช่น  console:give <player> bread 1
+#   open:<ชื่อเมนู>    เปิดอีกเมนู
+#   message:<ข้อความ>  ส่งข้อความ
+#   sound:<ชื่อเสียง>  เล่นเสียง
+#   close             ปิดเมนู
+#
+# ตัวแปรที่ใช้ได้ใน name/lore: <player> <money> <zones> <slots> <homes>
+
+menus:
+
+  main:
+    title: "<dark_gray>เมนูหลัก"
+    rows: 5
+    filler: GRAY_STAINED_GLASS_PANE
+    items:
+      4:
+        icon: PLAYER_HEAD
+        name: "<gold><player>"
+        lore:
+          - "<gray>เงิน <gold><money>"
+          - "<gray>เขต <white><zones><gray>/<white><slots>"
+          - "<gray>บ้าน <white><homes>"
+      19:
+        icon: RED_BED
+        name: "<yellow>บ้านของฉัน"
+        lore:
+          - "<gray>กลับบ้าน ตั้งบ้าน ลบบ้าน"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "open:homes"
+      20:
+        icon: ENDER_PEARL
+        name: "<aqua>วาร์ป"
+        lore:
+          - "<gray>ไปยังจุดที่แอดมินตั้งไว้"
+          - ""
+          - "<green>คลิกเพื่อดูรายการ"
+        actions:
+          - "warp"
+      21:
+        icon: BEACON
+        name: "<light_purple>เขตของฉัน"
+        lore:
+          - "<gray>มี <white><zones> <gray>เขต"
+          - "<gray>วางบีคอนเพื่อสร้างเขตใหม่"
+          - ""
+          - "<green>คลิกเพื่อดูรายการ"
+        actions:
+          - "zone list"
+      23:
+        icon: PLAYER_HEAD
+        name: "<green>ขอวาร์ปหาเพื่อน"
+        lore:
+          - "<gray>เลือกจากคนที่ออนไลน์"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "tpa"
+      24:
+        icon: DIAMOND
+        name: "<gold>ภารกิจ"
+        lore:
+          - "<gray>ทำภารกิจรับเหรียญ"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "mission"
+      25:
+        icon: GOLD_INGOT
+        name: "<gold>กระเป๋าเงิน"
+        lore:
+          - "<gray>ยอดของคุณ <gold><money>"
+          - ""
+          - "<green>คลิกเพื่อดูอันดับคนรวย"
+        actions:
+          - "baltop"
+      31:
+        icon: NETHER_STAR
+        name: "<white>จุดเกิด"
+        lore:
+          - "<gray>กลับไปที่ล็อบบี้"
+        actions:
+          - "spawn"
+      40:
+        icon: BOOK
+        name: "<yellow>ช่วยเหลือ"
+        lore:
+          - "<gray>คำสั่งที่ใช้บ่อย"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "open:help"
+      44:
+        icon: COMMAND_BLOCK
+        name: "<red>เมนูแอดมิน"
+        permission: zones.admin
+        lore:
+          - "<gray>เฉพาะทีมงาน"
+        actions:
+          - "open:admin"
+
+  homes:
+    title: "<dark_gray>บ้านของฉัน"
+    rows: 3
+    filler: GRAY_STAINED_GLASS_PANE
+    items:
+      11:
+        icon: RED_BED
+        name: "<yellow>ไปบ้าน"
+        lore:
+          - "<gray>มี <white><homes> <gray>หลัง"
+        actions:
+          - "home"
+      13:
+        icon: OAK_DOOR
+        name: "<green>ตั้งบ้านตรงนี้"
+        lore:
+          - "<gray>บันทึกจุดที่ยืนอยู่"
+        actions:
+          - "sethome"
+      15:
+        icon: BARRIER
+        name: "<red>ลบบ้าน"
+        lore:
+          - "<gray>พิมพ์ /delhome <ชื่อ>"
+        actions:
+          - "message:<gray>ใช้คำสั่ง <white>/delhome <ชื่อบ้าน>"
+          - "close"
+      22:
+        icon: ARROW
+        name: "<white>กลับ"
+        actions:
+          - "open:main"
+
+  help:
+    title: "<dark_gray>ช่วยเหลือ"
+    rows: 4
+    filler: GRAY_STAINED_GLASS_PANE
+    items:
+      10:
+        icon: BEACON
+        name: "<light_purple>เขตป้องกัน"
+        lore:
+          - "<gray>วางบีคอน = สร้างเขต"
+          - "<gray>คลิกขวาบีคอน = เปิดเมนูตั้งค่า"
+          - "<gray>ทุบบีคอน = ลบเขต"
+      12:
+        icon: GOLD_INGOT
+        name: "<gold>เงิน"
+        lore:
+          - "<gray>/money - ดูเงิน"
+          - "<gray>/pay <ชื่อ> <จำนวน> - โอน"
+          - "<gray>/baltop - อันดับคนรวย"
+      14:
+        icon: RED_BED
+        name: "<yellow>เดินทาง"
+        lore:
+          - "<gray>/sethome /home /delhome"
+          - "<gray>/warp /spawn"
+          - "<gray>/tpa /tpaccept /tpdeny"
+      16:
+        icon: DIAMOND
+        name: "<aqua>ภารกิจ"
+        lore:
+          - "<gray>/mission - ดูความคืบหน้า"
+          - "<gray>ผ่านขั้นแล้วได้เงินทันที"
+      31:
+        icon: ARROW
+        name: "<white>กลับ"
+        actions:
+          - "open:main"
+
+  admin:
+    title: "<dark_gray>เมนูแอดมิน"
+    rows: 3
+    filler: GRAY_STAINED_GLASS_PANE
+    items:
+      10:
+        icon: COMPASS
+        name: "<yellow>ตั้งจุดเกิดตรงนี้"
+        permission: zones.admin
+        actions:
+          - "setspawn"
+      12:
+        icon: ENDER_EYE
+        name: "<aqua>ตั้งวาร์ปตรงนี้"
+        permission: zones.admin
+        lore:
+          - "<gray>พิมพ์ /setwarp <ชื่อ>"
+        actions:
+          - "message:<gray>ใช้คำสั่ง <white>/setwarp <ชื่อ> [ICON]"
+          - "close"
+      14:
+        icon: PAPER
+        name: "<green>โหลดค่าใหม่"
+        permission: zones.admin
+        actions:
+          - "zone reload"
+      16:
+        icon: GOLD_BLOCK
+        name: "<gold>จัดการเงิน"
+        permission: zones.admin
+        lore:
+          - "<gray>/eco give|take|set <ชื่อ> <จำนวน>"
+        actions:
+          - "message:<gray>ใช้คำสั่ง <white>/eco give|take|set <ชื่อ> <จำนวน>"
+          - "close"
+      22:
+        icon: ARROW
+        name: "<white>กลับ"
+        actions:
+          - "open:main"

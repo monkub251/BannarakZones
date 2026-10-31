@@ -42,6 +42,10 @@ economy:
   # ยกเงินของเราให้ปลั๊กอินอื่นใช้ผ่าน Vault
   register-with-vault: true
 
+menu:
+  # คลิกขวาเข็มทิศเพื่อเปิดเมนูหลัก
+  compass-item: true
+
 spawn:
   # จุดเกิดของเซิร์ฟ (ใช้เมื่อยังไม่เคย /setspawn)
   world: lobby

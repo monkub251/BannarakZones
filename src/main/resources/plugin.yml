@@ -25,6 +25,10 @@ commands:
     description: Open the mission menu
     aliases: [missions, quest, quests, ภารกิจ]
     usage: /mission
+  menu:
+    description: Open the server menu
+    aliases: [m, hub, เมนู]
+    usage: /menu [name]
   spawn:
     description: Go to the server spawn
   setspawn:
