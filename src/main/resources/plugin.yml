@@ -1,0 +1,17 @@
+name: BannarakZones
+version: ${project.version}
+main: com.bannarak.zones.BannarakZones
+api-version: '26.3'
+authors: [Lord_Bannarak]
+description: Beacon-anchored protection zones with upgrades, members and entry effects.
+softdepend: [Vault, VaultUnlocked, Essentials]
+commands:
+  zone:
+    description: Zone commands
+    aliases: [z, protect, zn]
+    usage: /zone
+permissions:
+  zones.use:
+    default: true
+  zones.admin:
+    default: op

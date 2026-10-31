@@ -1,0 +1,236 @@
+package com.bannarak.zones;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.*;
+
+public class BannarakZones extends JavaPlugin {
+
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+
+    private ZoneStore store;
+    private Economy economy;
+    private ZoneGui gui;
+
+    private Material zoneBlock = Material.BEACON;
+    private int defaultRadius = 16;
+    private int maxRadius = 48;
+    private boolean fullHeight = true;
+    private int verticalRange = 32;
+    private boolean firstFree = true;
+    private int minGap = 4;
+    private Set<String> blockedWorlds = new HashSet<>();
+    private final TreeMap<Integer, Double> radiusPrices = new TreeMap<>();
+    private double slotBase = 20000;
+    private double slotMultiplier = 2.0;
+
+    @Override
+    public void onEnable() {
+        saveDefaultConfig();
+        store = new ZoneStore(this);
+        readConfig();
+        store.load();
+        gui = new ZoneGui(this);
+
+        hookEconomy();
+
+        getServer().getPluginManager().registerEvents(new ProtectionListener(this), this);
+        getServer().getPluginManager().registerEvents(new MoveListener(this), this);
+        getServer().getPluginManager().registerEvents(gui, this);
+
+        getServer().getScheduler().runTaskTimer(this, () -> store.save(), 6000L, 6000L);
+        getLogger().info("BannarakZones enabled.");
+    }
+
+    @Override
+    public void onDisable() {
+        if (store != null) store.save();
+    }
+
+    // ---------------- config ----------------
+
+    public void readConfig() {
+        reloadConfig();
+        var c = getConfig();
+        Material m = Material.matchMaterial(c.getString("zone.block", "BEACON"));
+        zoneBlock = m == null ? Material.BEACON : m;
+        defaultRadius = c.getInt("zone.default-radius", 16);
+        maxRadius = c.getInt("zone.max-radius", 48);
+        fullHeight = "full".equalsIgnoreCase(c.getString("zone.outsider-vertical", "full"));
+        verticalRange = c.getInt("zone.vertical-range", 32);
+        firstFree = c.getBoolean("zone.first-zone-free", true);
+        minGap = c.getInt("zone.min-gap", 4);
+        blockedWorlds = new HashSet<>(c.getStringList("zone.blocked-worlds"));
+        radiusPrices.clear();
+        var sec = c.getConfigurationSection("upgrades.radius");
+        if (sec != null)
+            for (String k : sec.getKeys(false))
+                try { radiusPrices.put(Integer.parseInt(k), sec.getDouble(k)); } catch (NumberFormatException ignored) { }
+        slotBase = c.getDouble("upgrades.slots.base-price", 20000);
+        slotMultiplier = c.getDouble("upgrades.slots.multiplier", 2.0);
+    }
+
+    private void hookEconomy() {
+        try {
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            if (rsp != null) {
+                economy = rsp.getProvider();
+                getLogger().info("Economy hooked: " + economy.getName());
+            } else {
+                getLogger().warning("No Vault economy found - upgrades will be disabled.");
+            }
+        } catch (Throwable t) {
+            getLogger().warning("Vault not present - upgrades will be disabled.");
+        }
+    }
+
+    public ZoneStore store() { return store; }
+    public ZoneGui gui() { return gui; }
+    public Economy economy() { return economy; }
+    public Material zoneBlock() { return zoneBlock; }
+    public int defaultRadius() { return defaultRadius; }
+    public int maxRadius() { return maxRadius; }
+    public boolean outsiderFullHeight() { return fullHeight; }
+    public int verticalRange() { return verticalRange; }
+    public boolean firstZoneFree() { return firstFree; }
+    public int minGap() { return minGap; }
+    public boolean worldBlocked(String w) { return blockedWorlds.contains(w); }
+    public boolean protect(String key) { return getConfig().getBoolean("protection." + key, true); }
+
+    /** Next radius step above the given radius, or -1 if already maxed. */
+    public int nextRadius(int current) {
+        Integer next = radiusPrices.higherKey(current);
+        if (next == null || next > maxRadius) return -1;
+        return next;
+    }
+
+    public double radiusPrice(int targetRadius) {
+        return radiusPrices.getOrDefault(targetRadius, Double.MAX_VALUE);
+    }
+
+    public double slotPrice(int currentSlots) {
+        return slotBase * Math.pow(slotMultiplier, Math.max(0, currentSlots - 1));
+    }
+
+    // ---------------- messages ----------------
+
+    public Component mm(String path, TagResolver... tags) {
+        String raw = getConfig().getString("messages." + path, path);
+        return MM.deserialize(raw, tags);
+    }
+
+    public void msg(CommandSender to, String path, TagResolver... tags) {
+        String prefix = getConfig().getString("messages.prefix", "");
+        to.sendMessage(MM.deserialize(prefix).append(mm(path, tags)));
+    }
+
+    public Component effect(String path, TagResolver... tags) {
+        String raw = getConfig().getString("effects." + path, "");
+        return MM.deserialize(raw, tags);
+    }
+
+    public static TagResolver p(String key, String value) {
+        return Placeholder.unparsed(key, value == null ? "" : value);
+    }
+
+    public static String money(double amount) {
+        if (amount >= 1_000_000) return String.format(Locale.US, "%,.0f", amount);
+        return String.format(Locale.US, "%,.0f", amount);
+    }
+
+    // ---------------- helpers ----------------
+
+    public boolean canBypass(Player p) {
+        return p.hasPermission("zones.admin");
+    }
+
+    public void showBorder(Player viewer, Zone zone) {
+        if (!getConfig().getBoolean("effects.show-border", true)) return;
+        World w = Bukkit.getWorld(zone.world);
+        if (w == null) return;
+        int y = zone.y + 1;
+        for (int i = -zone.radius; i <= zone.radius; i++) {
+            spawnDust(viewer, w, zone.x + i, y, zone.z - zone.radius);
+            spawnDust(viewer, w, zone.x + i, y, zone.z + zone.radius);
+            spawnDust(viewer, w, zone.x - zone.radius, y, zone.z + i);
+            spawnDust(viewer, w, zone.x + zone.radius, y, zone.z + i);
+        }
+    }
+
+    private void spawnDust(Player viewer, World w, int x, int y, int z) {
+        Location loc = new Location(w, x + 0.5, w.getHighestBlockYAt(x, z) + 1.2, z + 0.5);
+        viewer.spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0, 0, 0, 0);
+    }
+
+    public void playSound(Player p, String key, float pitch) {
+        float vol = (float) getConfig().getDouble("effects.sound-volume", 0.7);
+        p.playSound(p.getLocation(), key, vol, pitch);
+    }
+
+    // ---------------- command ----------------
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+            if (!sender.hasPermission("zones.admin")) { msg(sender, "not-owner"); return true; }
+            readConfig();
+            msg(sender, "reloaded");
+            return true;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Players only.");
+            return true;
+        }
+        if (args.length == 0) {
+            Zone here = store.zoneAt(player.getLocation());
+            if (here != null && (here.isTrusted(player.getUniqueId()) || canBypass(player))) {
+                gui.openMain(player, here);
+            } else {
+                sendHelp(player);
+            }
+            return true;
+        }
+        switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "info" -> {
+                Zone here = store.zoneAt(player.getLocation());
+                if (here == null) {
+                    player.sendMessage(MM.deserialize("<gray>ตรงนี้ไม่มีเขตของใคร"));
+                } else {
+                    player.sendMessage(MM.deserialize(
+                            "<gold>เขตของ <yellow>" + here.ownerName
+                                    + " <gray>| รัศมี <white>" + here.radius
+                                    + " <gray>| สมาชิก <white>" + here.members.size()));
+                }
+            }
+            case "list" -> {
+                List<Zone> mine = store.zonesOf(player.getUniqueId());
+                player.sendMessage(MM.deserialize("<gold>เขตของคุณ: <white>" + mine.size()
+                        + "<gray>/<white>" + store.slotsOf(player.getUniqueId())));
+                for (Zone z : mine)
+                    player.sendMessage(MM.deserialize("<gray> - <white>" + z.world + " <gray>("
+                            + z.x + ", " + z.y + ", " + z.z + ") <gray>รัศมี <white>" + z.radius));
+            }
+            default -> sendHelp(player);
+        }
+        return true;
+    }
+
+    private void sendHelp(Player p) {
+        p.sendMessage(MM.deserialize("<gold>=== เขตป้องกัน ==="));
+        p.sendMessage(MM.deserialize("<white>วาง <yellow>" + zoneBlock.name().toLowerCase(Locale.ROOT)
+                + " <white>เพื่อสร้างเขต"));
+        p.sendMessage(MM.deserialize("<white>คลิกขวาที่บล็อกนั้นเพื่อเปิดเมนูตั้งค่า"));
+        p.sendMessage(MM.deserialize("<gray>/zone info <white>- ดูว่าตรงนี้เป็นเขตของใคร"));
+        p.sendMessage(MM.deserialize("<gray>/zone list <white>- ดูเขตทั้งหมดของคุณ"));
+    }
+}

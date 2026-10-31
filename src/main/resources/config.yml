@@ -1,0 +1,76 @@
+# ===== BannarakZones =====
+# แก้ค่าแล้วพิมพ์ /zone reload ในเกม ไม่ต้องรีสตาร์ทเซิร์ฟ
+
+zone:
+  # บล็อกที่วางแล้วเกิดเขต
+  block: BEACON
+  # รัศมีเริ่มต้น (16 = พื้นที่ 32x32)
+  default-radius: 16
+  # รัศมีสูงสุดที่อัปได้
+  max-radius: 48
+  # ความสูงของเขตสำหรับ "คนนอก" — full = เต็มความสูงโลก กันขุดจากข้างบน/ข้างล่าง
+  outsider-vertical: full
+  # ระยะแนวตั้งที่เจ้าของใช้งานได้ (ใช้เมื่อ outsider-vertical ไม่ใช่ full)
+  vertical-range: 32
+  # เขตแรกฟรี
+  first-zone-free: true
+  # เว้นระยะห่างขั้นต่ำระหว่างเขตของคนละคน (บล็อก)
+  min-gap: 4
+  # โลกที่ห้ามสร้างเขต
+  blocked-worlds:
+    - lobby
+
+upgrades:
+  # ราคาขยายรัศมี: รัศมีปลายทาง -> ราคา
+  radius:
+    24: 10000
+    32: 30000
+    48: 80000
+  slots:
+    # ราคาเขตที่ 2 แล้วคูณต่อไปเรื่อย ๆ
+    base-price: 20000
+    multiplier: 2.0
+
+protection:
+  block-break: true
+  block-place: true
+  containers: true
+  pvp: true
+  explosions: true
+  fire: true
+  buckets: true
+  entities: true
+  pistons: true
+
+effects:
+  enter: "<green>▶ <white>เข้าเขตของ <yellow><owner>"
+  leave: "<gray>◀ <white>ออกจากเขตของ <yellow><owner>"
+  enter-own: "<green>▶ <white>กลับเข้าเขตของคุณ"
+  leave-own: "<gray>◀ <white>ออกจากเขตของคุณ"
+  sound-enter: "block.note_block.pling"
+  sound-leave: "block.note_block.bass"
+  sound-volume: 0.7
+  sound-pitch-enter: 1.6
+  sound-pitch-leave: 0.8
+  # แสดงขอบเขตด้วยอนุภาคตอนสร้าง/อัปเกรด
+  show-border: true
+
+messages:
+  prefix: "<gold>[เขต] <reset>"
+  created: "<green>สร้างเขตเรียบร้อย รัศมี <yellow><radius> <green>บล็อก"
+  removed: "<yellow>ลบเขตแล้ว"
+  no-slots: "<red>เขตเต็มแล้ว ซื้อช่องเพิ่มที่เมนูบีคอน (<yellow><price> <red>เหรียญ)"
+  overlap: "<red>ตรงนี้ชนกับเขตของคนอื่น หาที่ใหม่"
+  blocked-world: "<red>สร้างเขตในโลกนี้ไม่ได้"
+  deny-build: "<red>ที่นี่เป็นเขตของ <yellow><owner>"
+  deny-container: "<red>หีบนี้อยู่ในเขตของ <yellow><owner>"
+  deny-pvp: "<red>ตีกันในเขตไม่ได้"
+  not-owner: "<red>คุณไม่ใช่เจ้าของเขตนี้"
+  no-money: "<red>เงินไม่พอ ต้องมี <yellow><price> <red>เหรียญ"
+  upgraded: "<green>ขยายเขตเป็นรัศมี <yellow><radius> <green>แล้ว"
+  slot-bought: "<green>ซื้อช่องเขตเพิ่มแล้ว ตอนนี้มี <yellow><slots> <green>ช่อง"
+  max-radius: "<yellow>เขตนี้ขยายสุดแล้ว"
+  no-economy: "<red>ระบบเงินยังไม่พร้อม ติดต่อแอดมิน"
+  member-added: "<green>เพิ่ม <yellow><player> <green>เข้าเขตแล้ว"
+  member-removed: "<yellow>เอา <white><player> <yellow>ออกจากเขตแล้ว"
+  reloaded: "<green>โหลดค่าใหม่แล้ว"
