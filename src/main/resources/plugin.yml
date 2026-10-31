@@ -29,6 +29,10 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  backup:
+    description: Back up the worlds and plugin data now
+    aliases: [สำรอง]
+    usage: /backup [list]
   adminhud:
     description: Toggle the admin sidebar
     aliases: [hud]

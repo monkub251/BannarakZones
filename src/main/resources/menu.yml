@@ -220,6 +220,14 @@ menus:
           - "<gray>ยืนตรงที่ต้องการแล้วกด"
         actions:
           - "dungeon setspawn"
+      16:
+        icon: ENDER_CHEST
+        name: "<green>สำรองข้อมูลเดี๋ยวนี้"
+        permission: zones.admin
+        lore:
+          - "<gray>ย่อโลกและข้อมูลทั้งหมดเป็นไฟล์ zip"
+        actions:
+          - "backup"
       22:
         icon: ARROW
         name: "<white>กลับ"

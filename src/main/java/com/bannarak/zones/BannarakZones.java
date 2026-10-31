@@ -32,6 +32,7 @@ public class BannarakZones extends JavaPlugin {
     private MarketManager market;
     private CustomItems customItems;
     private AdminHud adminHud;
+    private BackupManager backups;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -151,6 +152,11 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(adminHud, this);
         adminHud.start();
 
+        backups = new BackupManager(this);
+        var backupCmd = getCommand("backup");
+        if (backupCmd != null) backupCmd.setExecutor(backups);
+        backups.schedule();
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -231,6 +237,7 @@ public class BannarakZones extends JavaPlugin {
     public DailyRewards daily() { return daily; }
     public MarketManager market() { return market; }
     public CustomItems customItems() { return customItems; }
+    public BackupManager backups() { return backups; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
