@@ -37,6 +37,7 @@ public class BannarakZones extends JavaPlugin {
     private AdminPanel adminPanel;
     private WebPanel webPanel;
     private ChatManager chat;
+    private WorldManager worlds;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -174,6 +175,14 @@ public class BannarakZones extends JavaPlugin {
         if (panelCmd != null) panelCmd.setExecutor(adminPanel);
         getServer().getPluginManager().registerEvents(adminPanel, this);
 
+        worlds = new WorldManager(this);
+        worlds.prepareWorlds();
+        worlds.applyBorders();
+        for (String name : new String[]{"rtp", "world"}) {
+            var c6 = getCommand(name);
+            if (c6 != null) { c6.setExecutor(worlds); c6.setTabCompleter(worlds); }
+        }
+
         chat = new ChatManager(this);
         chat.load();
         for (String name : new String[]{"msg", "r", "ignore", "chat"}) {
@@ -274,6 +283,7 @@ public class BannarakZones extends JavaPlugin {
     public AdminPanel adminPanel() { return adminPanel; }
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
+    public WorldManager worlds() { return worlds; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

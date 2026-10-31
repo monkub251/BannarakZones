@@ -142,6 +142,13 @@ commands:
   chat:
     description: Staff chat controls
     usage: /chat <clear|lock|spy>
+  rtp:
+    description: Teleport somewhere random in the wild
+    usage: /rtp
+    aliases: [wild, สำรวจ]
+  world:
+    description: List worlds, travel between them, set borders
+    usage: /world [name|border]
 permissions:
   zones.use:
     default: true

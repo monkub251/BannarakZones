@@ -325,3 +325,48 @@ chat:
   repeat: "<red>พูดซ้ำเดิมไม่ได้"
   no-links: "<red>ส่งลิงก์ในแชตไม่ได้"
   filtered: "<red>คำนี้ใช้ในแชตไม่ได้"
+
+# ─────────────────────────────────────────────────────────────
+# โลก: สร้างโลกเพิ่ม, ขอบโลก, สุ่มวาร์ปออกไปสำรวจ
+# ─────────────────────────────────────────────────────────────
+worlds:
+
+  # โลกที่จะสร้างให้ตอนเปิดเซิร์ฟ ถ้ายังไม่มี
+  # type: void (ฟ้าโล่ง) / flat / normal / nether / end
+  create:
+    lobby:
+      type: void
+      seed: ""
+      starter-platform: true    # วางแท่นชั่วคราวให้ยืน จะรื้อทีหลังตอนสร้างล็อบบี้จริง
+      platform-block: SMOOTH_STONE
+      platform-x: 0
+      platform-y: 99
+      platform-z: 0
+      gamerules:
+        - "doMobSpawning=false"
+        - "doDaylightCycle=false"
+        - "doWeatherCycle=false"
+        - "keepInventory=true"
+        - "fallDamage=false"
+        - "doFireTick=false"
+
+  # ขอบโลก — รัศมีเป็นบล็อกจากจุดกลาง, 0 = ไม่จำกัด
+  # ตั้งในเกมได้ด้วย /world border <ชื่อ> <รัศมี>
+  border:
+    world:
+      x: 0
+      z: 0
+      radius: 10000
+    lobby:
+      x: 0
+      z: 0
+      radius: 200
+
+  # สุ่มวาร์ปออกไปสำรวจ (/rtp)
+  rtp:
+    world: "world"            # สุ่มลงในโลกไหน
+    min-distance: 300         # ห่างจากจุดกลางอย่างน้อยกี่บล็อก
+    max-distance: 4000        # ไกลสุดกี่บล็อก (ควรน้อยกว่ารัศมีขอบโลก)
+    cooldown-seconds: 300     # รอกี่วินาทีจึงสุ่มได้อีก
+    price: 0                  # ค่าใช้บริการ (0 = ฟรี)
+    attempts: 40              # ลองหาที่ลงกี่ครั้งก่อนยอมแพ้
