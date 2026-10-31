@@ -29,6 +29,10 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  shop:
+    description: Open the server shop
+    aliases: [ร้าน, store]
+    usage: /shop [category]
   spawn:
     description: Go to the server spawn
   setspawn:

@@ -81,6 +81,15 @@ menus:
           - "<green>คลิกเพื่อดูอันดับคนรวย"
         actions:
           - "baltop"
+      22:
+        icon: EMERALD
+        name: "<green>ร้านค้า"
+        lore:
+          - "<gray>ซื้อขายกับร้านของเซิร์ฟ"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "shop"
       31:
         icon: NETHER_STAR
         name: "<white>จุดเกิด"

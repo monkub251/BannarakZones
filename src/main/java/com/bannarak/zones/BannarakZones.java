@@ -24,6 +24,7 @@ public class BannarakZones extends JavaPlugin {
     private MissionManager missions;
     private LocStore locations;
     private MenuManager menus;
+    private ShopManager shop;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -87,6 +88,12 @@ public class BannarakZones extends JavaPlugin {
         var menuCmd = getCommand("menu");
         if (menuCmd != null) menuCmd.setExecutor(menus);
         getServer().getPluginManager().registerEvents(menus, this);
+
+        shop = new ShopManager(this);
+        shop.load();
+        var shopCmd = getCommand("shop");
+        if (shopCmd != null) shopCmd.setExecutor(shop);
+        getServer().getPluginManager().registerEvents(shop, this);
 
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
@@ -158,6 +165,7 @@ public class BannarakZones extends JavaPlugin {
     public MissionManager missions() { return missions; }
     public LocStore locations() { return locations; }
     public MenuManager menus() { return menus; }
+    public ShopManager shop() { return shop; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
@@ -288,6 +296,7 @@ public class BannarakZones extends JavaPlugin {
             readConfig();
             if (missions != null) missions.loadDefinitions();
             if (menus != null) menus.load();
+            if (shop != null) shop.load();
             msg(sender, "reloaded");
             return true;
         }
