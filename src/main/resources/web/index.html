@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BANNARAKX · แผงควบคุม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ ประตูหน้า: ใส่รหัสที่ขอจากในเกม ============ -->
+<div id="gate" class="gate">
+  <div class="gate-glow"></div>
+  <form id="gate-form" class="gate-card" autocomplete="off">
+    <div class="crest" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="56" height="56">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f0cf8a"/><stop offset="1" stop-color="#b8863a"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 3 56 13v22c0 14-10 23-24 26C18 58 8 49 8 35V13z" fill="none" stroke="url(#g1)" stroke-width="2.5"/>
+        <path d="M32 16v30M22 27h20" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>BANNARAKX</h1>
+    <p class="gate-sub">แผงควบคุมทีมงาน</p>
+    <label for="code">รหัสเข้าใช้งาน</label>
+    <input id="code" inputmode="numeric" maxlength="6" placeholder="------" aria-label="รหัส 6 หลัก">
+    <button type="submit" id="gate-go">เข้าสู่ระบบ</button>
+    <p id="gate-error" class="gate-error" role="alert"></p>
+    <p class="gate-hint">ขอรหัสในเกมด้วยคำสั่ง <code>/admin web</code><br>รหัสใช้ได้ครั้งเดียว และหมดอายุใน 5 นาที</p>
+  </form>
+</div>
+
+<!-- ============ แผงจริง ============ -->
+<div id="app" class="app" hidden>
+
+  <aside class="rail">
+    <div class="rail-crest">
+      <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+        <path d="M32 3 56 13v22c0 14-10 23-24 26C18 58 8 49 8 35V13z" fill="none" stroke="#d4a24a" stroke-width="3"/>
+        <path d="M32 16v30M22 27h20" stroke="#d4a24a" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span>BANNARAKX</span>
+    </div>
+    <nav id="nav">
+      <button class="nav-item is-on" data-tab="dash"><i data-ic="dash"></i>ภาพรวม</button>
+      <button class="nav-item" data-tab="players"><i data-ic="players"></i>ผู้เล่น<em id="badge-players">0</em></button>
+      <button class="nav-item" data-tab="worlds"><i data-ic="worlds"></i>โลก</button>
+      <button class="nav-item" data-tab="economy"><i data-ic="economy"></i>เศรษฐกิจ</button>
+      <button class="nav-item" data-tab="bans"><i data-ic="bans"></i>บทลงโทษ<em id="badge-bans">0</em></button>
+      <button class="nav-item" data-tab="tools"><i data-ic="tools"></i>เครื่องมือ</button>
+    </nav>
+    <div class="rail-foot">
+      <div class="who">เข้าใช้งานเป็น<strong id="who-name">—</strong></div>
+      <div class="pulse"><span id="pulse-dot" class="dot"></span><span id="pulse-text">กำลังเชื่อมต่อ</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="strip">
+      <div class="stat"><span class="k">TPS</span><b id="s-tps">—</b></div>
+      <div class="stat"><span class="k">แรม</span><b id="s-ram">—</b><div class="meter"><i id="s-ram-bar"></i></div></div>
+      <div class="stat"><span class="k">ผู้เล่น</span><b id="s-players">—</b></div>
+      <div class="stat"><span class="k">เอนทิตี</span><b id="s-entities">—</b></div>
+      <div class="stat"><span class="k">ชังก์</span><b id="s-chunks">—</b></div>
+      <div class="strip-end"><span id="s-version">—</span></div>
+    </header>
+
+    <!-- ภาพรวม -->
+    <section class="tab is-on" data-pane="dash">
+      <div class="grid">
+        <article class="card span2">
+          <h2>สถานะเซิร์ฟเวอร์</h2>
+          <div class="tiles">
+            <div class="tile"><span>TPS</span><b id="d-tps">—</b><em id="d-tps-note">—</em></div>
+            <div class="tile"><span>แรมที่ใช้</span><b id="d-ram">—</b><em id="d-ram-note">—</em></div>
+            <div class="tile"><span>เขตที่วางไว้</span><b id="d-zones">—</b><em>บล็อกป้องกัน</em></div>
+            <div class="tile"><span>ดันเจียนที่เล่นอยู่</span><b id="d-dungeons">—</b><em>ทีม</em></div>
+            <div class="tile"><span>ของในตลาด</span><b id="d-listings">—</b><em>รายการ</em></div>
+            <div class="tile"><span>เงินในระบบ</span><b id="d-money">—</b><em>รวมทุกบัญชี</em></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>ประกาศทั้งเซิร์ฟ</h2>
+          <textarea id="say" rows="3" placeholder="พิมพ์ข้อความที่จะประกาศ…"></textarea>
+          <button class="btn gold" data-act="announce" data-from="#say">ประกาศ</button>
+        </article>
+
+        <article class="card">
+          <h2>ทางลัด</h2>
+          <div class="btn-row">
+            <button class="btn" data-act="time" data-value="day">กลางวัน</button>
+            <button class="btn" data-act="time" data-value="night">กลางคืน</button>
+            <button class="btn" data-act="weather" data-value="clear">ฟ้าใส</button>
+            <button class="btn" data-act="weather" data-value="rain">ฝนตก</button>
+            <button class="btn" data-act="healAll" data-confirm="รักษาผู้เล่นทุกคน?">รักษาทุกคน</button>
+            <button class="btn" data-act="reload" data-confirm="โหลดไฟล์ตั้งค่าใหม่ทั้งหมด?">โหลดค่าใหม่</button>
+            <button class="btn warn" data-act="backup" data-confirm="เริ่มสำรองข้อมูลเดี๋ยวนี้?">สำรองข้อมูล</button>
+          </div>
+        </article>
+
+        <article class="card span2">
+          <h2>ผู้เล่นที่ออนไลน์</h2>
+          <div id="d-players" class="chiplist"><p class="empty">ยังไม่มีใครออนไลน์</p></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ผู้เล่น -->
+    <section class="tab" data-pane="players">
+      <div class="card">
+        <div class="card-head">
+          <h2>ผู้เล่นที่ออนไลน์</h2>
+          <input id="player-search" class="search" placeholder="ค้นหาชื่อ…">
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr>
+              <th>ชื่อ</th><th>ยศ</th><th>เลือด</th><th>โลก</th><th>พิกัด</th>
+              <th>โหมด</th><th>เงิน</th><th>ปิง</th><th>สถานะ</th><th></th>
+            </tr></thead>
+            <tbody id="player-rows"><tr><td colspan="10" class="empty">ยังไม่มีใครออนไลน์</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- โลก -->
+    <section class="tab" data-pane="worlds">
+      <div class="card">
+        <h2>โลกทั้งหมด</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>ชื่อโลก</th><th>ผู้เล่น</th><th>เอนทิตี</th><th>ชังก์</th><th>เวลา</th><th>อากาศ</th></tr></thead>
+            <tbody id="world-rows"><tr><td colspan="6" class="empty">กำลังอ่าน…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- เศรษฐกิจ -->
+    <section class="tab" data-pane="economy">
+      <div class="grid">
+        <article class="card">
+          <h2>ภาพรวมเงิน</h2>
+          <div class="tiles">
+            <div class="tile"><span>เงินในระบบ</span><b id="e-total">—</b><em>รวมทุกบัญชี</em></div>
+            <div class="tile"><span>จำนวนบัญชี</span><b id="e-accounts">—</b><em>คน</em></div>
+            <div class="tile"><span>เฉลี่ยต่อคน</span><b id="e-avg">—</b><em>ต่อบัญชี</em></div>
+          </div>
+        </article>
+        <article class="card span2">
+          <h2>คนรวยที่สุด 10 อันดับ</h2>
+          <ol id="e-top" class="rank"><li class="empty">กำลังอ่าน…</li></ol>
+        </article>
+      </div>
+    </section>
+
+    <!-- บทลงโทษ -->
+    <section class="tab" data-pane="bans">
+      <div class="card">
+        <h2>บทลงโทษที่ยังมีผล</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>ชื่อ</th><th>ประเภท</th><th>เหตุผล</th><th>ทีมงาน</th><th>เหลือ</th><th></th></tr></thead>
+            <tbody id="ban-rows"><tr><td colspan="6" class="empty">ไม่มีใครถูกลงโทษอยู่</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- เครื่องมือ -->
+    <section class="tab" data-pane="tools">
+      <div class="grid">
+        <article class="card">
+          <h2>จัดการผู้เล่นด้วยชื่อ</h2>
+          <label>ชื่อผู้เล่น</label>
+          <input id="t-name" placeholder="เช่น Lord_Bannarak">
+          <label>ค่าเพิ่มเติม (ระยะเวลา / จำนวนเงิน / เหตุผล)</label>
+          <input id="t-value" placeholder="เช่น 7d หรือ 5000 หรือ โกงของ">
+          <div class="btn-row">
+            <button class="btn" data-act="heal" data-target="#t-name">รักษา</button>
+            <button class="btn" data-act="freeze" data-target="#t-name">แช่แข็ง / ปลด</button>
+            <button class="btn" data-act="money" data-target="#t-name" data-from="#t-value">ปรับเงิน</button>
+            <button class="btn" data-act="warn" data-target="#t-name" data-from="#t-value">เตือน</button>
+            <button class="btn" data-act="mute" data-target="#t-name" data-from="#t-value">ปิดปาก</button>
+            <button class="btn" data-act="unmute" data-target="#t-name">ปลดปิดปาก</button>
+            <button class="btn warn" data-act="kick" data-target="#t-name" data-from="#t-value">เตะ</button>
+            <button class="btn danger" data-act="ban" data-target="#t-name" data-from="#t-value" data-confirm="แบนคนนี้?">แบน</button>
+            <button class="btn" data-act="unban" data-target="#t-name">ปลดแบน</button>
+            <button class="btn" data-act="resetDungeon" data-target="#t-name">ล้างคูลดาวน์ดันเจียน</button>
+          </div>
+        </article>
+        <article class="card">
+          <h2>เปลี่ยนโหมดเกม</h2>
+          <div class="btn-row">
+            <button class="btn" data-act="gamemode" data-target="#t-name" data-value="survival">เอาชีวิตรอด</button>
+            <button class="btn" data-act="gamemode" data-target="#t-name" data-value="creative">สร้างสรรค์</button>
+            <button class="btn" data-act="gamemode" data-target="#t-name" data-value="adventure">ผจญภัย</button>
+            <button class="btn" data-act="gamemode" data-target="#t-name" data-value="spectator">ผู้ชม</button>
+          </div>
+          <p class="note">ใช้ชื่อในช่อง “ชื่อผู้เล่น” ด้านซ้าย</p>
+        </article>
+        <article class="card">
+          <h2>ตัวช่วยจำระยะเวลา</h2>
+          <ul class="kv">
+            <li><code>30m</code><span>30 นาที</span></li>
+            <li><code>2h</code><span>2 ชั่วโมง</span></li>
+            <li><code>7d</code><span>7 วัน</span></li>
+            <li><code>2w</code><span>2 สัปดาห์</span></li>
+            <li><code>perm</code><span>ถาวร</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- แผ่นข้อมูลผู้เล่นรายคน -->
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-bg" data-close></div>
+  <div class="sheet-card">
+    <button class="sheet-x" data-close aria-label="ปิด">&times;</button>
+    <h2 id="sheet-name">—</h2>
+    <p id="sheet-meta" class="sheet-meta">—</p>
+    <label>ค่าเพิ่มเติม (ระยะเวลา / จำนวนเงิน / เหตุผล)</label>
+    <input id="sheet-value" placeholder="เช่น 7d หรือ 5000">
+    <div class="btn-row" id="sheet-actions"></div>
+  </div>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

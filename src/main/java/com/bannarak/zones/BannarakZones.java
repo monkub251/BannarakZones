@@ -35,6 +35,7 @@ public class BannarakZones extends JavaPlugin {
     private BackupManager backups;
     private Punishments punishments;
     private AdminPanel adminPanel;
+    private WebPanel webPanel;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -172,12 +173,16 @@ public class BannarakZones extends JavaPlugin {
         if (panelCmd != null) panelCmd.setExecutor(adminPanel);
         getServer().getPluginManager().registerEvents(adminPanel, this);
 
+        webPanel = new WebPanel(this);
+        webPanel.start();
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
     @Override
     public void onDisable() {
+        if (webPanel != null) webPanel.stop();
         if (store != null) store.save();
         if (money != null) money.save(true);
         if (missions != null) missions.save(true);
@@ -256,6 +261,7 @@ public class BannarakZones extends JavaPlugin {
     public BackupManager backups() { return backups; }
     public Punishments punishments() { return punishments; }
     public AdminPanel adminPanel() { return adminPanel; }
+    public WebPanel webPanel() { return webPanel; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

@@ -31,6 +31,7 @@ commands:
     usage: /menu [name]
   admin:
     description: Open the staff panel
+    usage: /admin [web]
     aliases: [ap, แอดมิน]
   ban:
     description: Ban a player

@@ -489,6 +489,33 @@ public class AdminPanel implements Listener, CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player p)) { sender.sendMessage("Players only."); return true; }
         if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return true; }
+
+        if (args.length > 0 && args[0].equalsIgnoreCase("web")) {
+            if (!plugin.getConfig().getBoolean("web.enabled", false)) {
+                Notify.chat(p, "<red>แผงหน้าเว็บปิดอยู่ <gray>เปิดได้ที่ config.yml → web.enabled");
+                return true;
+            }
+            String code = plugin.webPanel().issueCode(p);
+            long minutes = plugin.getConfig().getLong("web.code-minutes", 5);
+            String url = plugin.getConfig().getString("web.public-url", "");
+            if (url == null || url.isBlank())
+                url = "http://<ไอพีเซิร์ฟ>:" + plugin.getConfig().getInt("web.port", 8765);
+
+            Notify.chat(p, "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            Notify.chat(p, "<gold>แผงควบคุมหน้าเว็บ");
+            Notify.chat(p, "<gray>ที่อยู่ <white>" + url);
+            p.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<gray>รหัสของคุณ <bold><yellow>" + code
+                            + "</yellow></bold> <dark_gray>(กดเพื่อคัดลอก)")
+                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.copyToClipboard(code))
+                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
+                            MiniMessage.miniMessage().deserialize("<yellow>กดเพื่อคัดลอกรหัส"))));
+            Notify.chat(p, "<dark_gray>ใช้ได้ครั้งเดียว หมดอายุใน " + minutes + " นาที");
+            Notify.chat(p, "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            p.playSound(p.getLocation(), "block.note_block.bell", 0.7f, 1.4f);
+            return true;
+        }
+
         open(p, Tab.DASHBOARD, null);
         return true;
     }
