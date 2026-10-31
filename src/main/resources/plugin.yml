@@ -127,8 +127,29 @@ commands:
     description: Admin money control
     aliases: [economy]
     usage: /eco <give|take|set> <player> <amount>
+  msg:
+    description: Send a private message
+    usage: /msg <player> <message>
+    aliases: [w, tell, whisper, pm]
+  r:
+    description: Reply to the last private message
+    usage: /r <message>
+    aliases: [reply]
+  ignore:
+    description: Stop seeing a player's chat
+    usage: /ignore [player]
+    aliases: [block]
+  chat:
+    description: Staff chat controls
+    usage: /chat <clear|lock|spy>
 permissions:
   zones.use:
     default: true
   zones.admin:
+    default: op
+  zones.chat.bypass:
+    description: Ignore the chat cooldown, repeat check and word filter
+    default: op
+  zones.chat.link:
+    description: Allowed to post links in chat
     default: op

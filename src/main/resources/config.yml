@@ -284,3 +284,44 @@ web:
   session-hours: 2        # ล็อกอินค้างได้กี่ชั่วโมง
   max-attempts: 5         # กรอกผิดได้กี่ครั้งก่อนโดนล็อก
   lock-minutes: 10        # โดนล็อกนานกี่นาที
+
+# ─────────────────────────────────────────────────────────────
+# แชต: ข้อความส่วนตัว, บล็อกคน, กรองคำ, กันสแปม, TAB
+# ─────────────────────────────────────────────────────────────
+chat:
+  join-messages: true       # แสดงข้อความคนเข้า-ออก
+  tab-list: true            # ใส่ยศหน้าชื่อในหน้า TAB และใส่หัว-ท้าย
+  cooldown-ms: 1200         # พิมพ์ติดกันได้เร็วสุดกี่มิลลิวินาที
+  block-repeats: true       # ห้ามพูดประโยคเดิมซ้ำติดกัน
+  block-links: true         # ห้ามส่งลิงก์ (ยกเว้นคนที่มีสิทธิ์ zones.chat.link)
+
+  # คำที่ห้ามพูด — ระบบจะตัดช่องว่างและจุดออกก่อนเทียบ
+  # เลยจับ "โ ก ง" หรือ "โ.ก.ง" ได้ด้วย เพิ่มได้ตามใจ
+  blocked-words:
+    - "ควย"
+    - "เหี้ย"
+    - "สัส"
+    - "ไอ้สัตว์"
+
+  tab-header:
+    - ""
+    - "<gradient:#f0cf8a:#b8863a><bold>BANNARAKX</bold></gradient>"
+    - "<gray>ออนไลน์ <white><online><gray>/<white><max>"
+    - ""
+  tab-footer:
+    - ""
+    - "<gray>เงินของคุณ <gold><money>"
+    - "<dark_gray>bannarakx</dark_gray>"
+    - ""
+
+  # ข้อความต่าง ๆ — <player> <from> <to> <message> ใช้แทนค่าได้
+  first-join: "<gold>✦ <white><player> <gray>เข้าเซิร์ฟครั้งแรก ต้อนรับหน่อย!"
+  join: "<dark_gray>[<green>+<dark_gray>] <gray><player>"
+  quit: "<dark_gray>[<red>-<dark_gray>] <gray><player>"
+  whisper-out: "<dark_gray>[<gray>คุณ <dark_gray>→ <gray><to><dark_gray>] <white><message>"
+  whisper-in: "<dark_gray>[<gray><from> <dark_gray>→ <gray>คุณ<dark_gray>] <white><message>"
+  locked: "<red>แชตถูกล็อกอยู่ ทีมงานกำลังคุยกัน"
+  too-fast: "<red>พิมพ์ช้าลงหน่อย"
+  repeat: "<red>พูดซ้ำเดิมไม่ได้"
+  no-links: "<red>ส่งลิงก์ในแชตไม่ได้"
+  filtered: "<red>คำนี้ใช้ในแชตไม่ได้"

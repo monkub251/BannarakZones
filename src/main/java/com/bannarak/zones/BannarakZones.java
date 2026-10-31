@@ -36,6 +36,7 @@ public class BannarakZones extends JavaPlugin {
     private Punishments punishments;
     private AdminPanel adminPanel;
     private WebPanel webPanel;
+    private ChatManager chat;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -173,6 +174,15 @@ public class BannarakZones extends JavaPlugin {
         if (panelCmd != null) panelCmd.setExecutor(adminPanel);
         getServer().getPluginManager().registerEvents(adminPanel, this);
 
+        chat = new ChatManager(this);
+        chat.load();
+        for (String name : new String[]{"msg", "r", "ignore", "chat"}) {
+            var c5 = getCommand(name);
+            if (c5 != null) { c5.setExecutor(chat); c5.setTabCompleter(chat); }
+        }
+        getServer().getPluginManager().registerEvents(chat, this);
+        chat.startTabTimer();
+
         webPanel = new WebPanel(this);
         webPanel.start();
 
@@ -191,6 +201,7 @@ public class BannarakZones extends JavaPlugin {
         if (daily != null) daily.save(true);
         if (market != null) market.save(true);
         if (punishments != null) punishments.save(true);
+        if (chat != null) chat.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -262,6 +273,7 @@ public class BannarakZones extends JavaPlugin {
     public Punishments punishments() { return punishments; }
     public AdminPanel adminPanel() { return adminPanel; }
     public WebPanel webPanel() { return webPanel; }
+    public ChatManager chat() { return chat; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
