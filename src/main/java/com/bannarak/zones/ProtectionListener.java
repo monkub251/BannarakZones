@@ -226,21 +226,24 @@ public class ProtectionListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if (!plugin.protect("pistons")) return;
-        Zone origin = zoneAt(e.getBlock().getLocation());
-        for (Block b : e.getBlocks()) {
-            Zone z = zoneAt(b.getLocation());
-            if (z != null && (origin == null || !origin.id.equals(z.id))) { e.setCancelled(true); return; }
-        }
+        if (pistonBlocked(e.getBlock().getLocation(), e.getBlocks())) e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent e) {
         if (!plugin.protect("pistons")) return;
-        Zone origin = zoneAt(e.getBlock().getLocation());
-        for (Block b : e.getBlocks()) {
+        if (pistonBlocked(e.getBlock().getLocation(), e.getBlocks())) e.setCancelled(true);
+    }
+
+    private boolean pistonBlocked(Location piston, java.util.List<Block> moved) {
+        Zone origin = zoneAt(piston);
+        for (Block b : moved) {
+            // never let a piston shove the anchor block out of place
+            if (plugin.store().zoneByBeacon(b.getLocation()) != null) return true;
             Zone z = zoneAt(b.getLocation());
-            if (z != null && (origin == null || !origin.id.equals(z.id))) { e.setCancelled(true); return; }
+            if (z != null && (origin == null || !origin.id.equals(z.id))) return true;
         }
+        return false;
     }
 
     // ---------- entities and pvp ----------

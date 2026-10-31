@@ -219,10 +219,8 @@ public class ZoneGui implements Listener {
             }
             case 26 -> {
                 if (!owner) return;
-                plugin.store().remove(z);
-                plugin.store().save();
                 p.closeInventory();
-                plugin.msg(p, "removed");
+                removeZoneAndBlock(p, z);
             }
             default -> { }
         }
@@ -257,6 +255,25 @@ public class ZoneGui implements Listener {
         plugin.store().save();
         plugin.msg(p, "member-added", BannarakZones.p("player", op.getName() == null ? "?" : op.getName()));
         openMembers(p, z);
+    }
+
+    /** Deletes the zone, takes the anchor block out of the world and returns it to the player. */
+    private void removeZoneAndBlock(Player p, Zone z) {
+        org.bukkit.World w = Bukkit.getWorld(z.world);
+        if (w != null) {
+            org.bukkit.block.Block b = w.getBlockAt(z.x, z.y, z.z);
+            if (b.getType() == plugin.zoneBlock()) {
+                b.setType(Material.AIR);
+                ItemStack give = new ItemStack(plugin.zoneBlock());
+                java.util.Map<Integer, ItemStack> left = p.getInventory().addItem(give);
+                for (ItemStack rest : left.values())
+                    w.dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), rest);
+            }
+        }
+        plugin.store().remove(z);
+        plugin.store().save();
+        plugin.msg(p, "removed");
+        plugin.playSound(p, "block.beacon.deactivate", 0.8f);
     }
 
     // ---------------- purchases ----------------
