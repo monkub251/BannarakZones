@@ -30,6 +30,7 @@ public class BannarakZones extends JavaPlugin {
     private CrateManager crates;
     private DailyRewards daily;
     private MarketManager market;
+    private CustomItems customItems;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -137,6 +138,12 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(market, this);
         getServer().getScheduler().runTaskTimer(this, () -> market.expire(), 1200L, 72000L);
 
+        customItems = new CustomItems(this);
+        customItems.load();
+        var itemCmd = getCommand("citem");
+        if (itemCmd != null) itemCmd.setExecutor(customItems);
+        getServer().getPluginManager().registerEvents(customItems, this);
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -216,6 +223,7 @@ public class BannarakZones extends JavaPlugin {
     public CrateManager crates() { return crates; }
     public DailyRewards daily() { return daily; }
     public MarketManager market() { return market; }
+    public CustomItems customItems() { return customItems; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
@@ -349,6 +357,7 @@ public class BannarakZones extends JavaPlugin {
             if (shop != null) shop.load();
             if (ranks != null) ranks.load();
             if (crates != null) crates.load();
+            if (customItems != null) customItems.load();
             msg(sender, "reloaded");
             return true;
         }

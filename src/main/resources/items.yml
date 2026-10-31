@@ -1,0 +1,98 @@
+# ===== ไอเทมของเซิร์ฟ =====
+# material  : ไอเทมพื้นฐานในเกมที่เอามาสวมโมเดล
+# model-data: เลข custom model data ที่ตรงกับ resource pack ที่ทำจาก Blockbench/Blender
+#             (ยังไม่มี pack ก็ใช้ได้ แค่จะเห็นเป็นรูปไอเทมพื้นฐาน)
+# stats     : ค่าที่เพิ่มให้ ใส่เฉพาะที่ต้องการ
+#   attack-damage / attack-speed      -> ตอนถือในมือ
+#   armor / armor-toughness / knockback-resistance -> ตอนใส่เป็นเกราะ
+#   max-health / movement-speed       -> ตลอดเวลาที่พกไว้
+#
+# แจกของ: /citem give <id> <ชื่อผู้เล่น> [จำนวน]
+# ดูรายการ: /citem
+
+items:
+
+  bannarak_blade:
+    material: NETHERITE_SWORD
+    model-data: 1001
+    name: "<gradient:#ffd966:#f0a500>ดาบบรรณรักษ์</gradient>"
+    lore:
+      - "<gray>ดาบประจำตระกูล"
+      - "<dark_gray>ตีแรงกว่าดาบเนเธอไรต์ปกติ"
+    enchants:
+      sharpness: 6
+      unbreaking: 5
+      fire_aspect: 2
+    stats:
+      attack-damage: 11
+      attack-speed: 1.7
+    unbreakable: true
+
+  abyss_pickaxe:
+    material: NETHERITE_PICKAXE
+    model-data: 1002
+    name: "<aqua>จอบเหวลึก</aqua>"
+    lore:
+      - "<gray>ขุดเร็วผิดธรรมชาติ"
+    enchants:
+      efficiency: 8
+      fortune: 4
+      unbreaking: 5
+    unbreakable: true
+
+  guardian_helm:
+    material: NETHERITE_HELMET
+    model-data: 1003
+    name: "<gold>หมวกผู้พิทักษ์"
+    lore:
+      - "<gray>ของที่ตกจากบอสรอง"
+    enchants:
+      protection: 5
+      respiration: 3
+    stats:
+      armor: 5
+      armor-toughness: 4
+      max-health: 4
+    unbreakable: true
+
+  abyss_chest:
+    material: NETHERITE_CHESTPLATE
+    model-data: 1004
+    name: "<dark_red>เกราะอกเหวลึก"
+    lore:
+      - "<gray>ของที่ตกจากบอสใหญ่"
+    enchants:
+      protection: 6
+      thorns: 3
+    stats:
+      armor: 11
+      armor-toughness: 6
+      knockback-resistance: 0.3
+      max-health: 6
+    unbreakable: true
+
+  traveler_boots:
+    material: NETHERITE_BOOTS
+    model-data: 1005
+    name: "<green>รองเท้านักเดินทาง"
+    lore:
+      - "<gray>เดินเร็วขึ้นอย่างเห็นได้ชัด"
+    enchants:
+      feather_falling: 4
+      depth_strider: 3
+    stats:
+      armor: 4
+      movement-speed: 0.025
+    unbreakable: true
+
+  lucky_charm:
+    material: NETHER_STAR
+    model-data: 1006
+    name: "<light_purple>เครื่องรางนำโชค"
+    lore:
+      - "<gray>พกไว้เฉย ๆ ก็อุ่นใจ"
+      - "<dark_gray>เพิ่มหัวใจและความเร็วเล็กน้อย"
+    glow: true
+    stats:
+      max-health: 4
+      movement-speed: 0.01

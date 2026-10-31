@@ -29,6 +29,10 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  citem:
+    description: Server-made items
+    aliases: [customitem, ไอเทม]
+    usage: /citem [list|give]
   market:
     description: Browse the player market
     aliases: [ah, ตลาด]
