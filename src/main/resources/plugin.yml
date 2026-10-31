@@ -29,6 +29,9 @@ commands:
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
+  rank:
+    description: See the rank ladder
+    aliases: [ranks, ยศ]
   shop:
     description: Open the server shop
     aliases: [ร้าน, store]

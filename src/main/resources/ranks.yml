@@ -1,0 +1,70 @@
+# ===== ยศ =====
+# order  : ลำดับยศ เลขน้อย = ต่ำ เลขมาก = สูง
+# prefix : ข้อความหน้าชื่อในแชท (ใส่สีแบบ MiniMessage ได้)
+# require: เงื่อนไขเลื่อนยศอัตโนมัติ (hours = ชั่วโมงที่เล่นสะสม)
+# price  : ราคาถ้าให้ซื้อได้ ลบบรรทัดนี้ออก = ซื้อไม่ได้ ต้องเลื่อนเอง
+# permissions: สิทธิ์ที่ได้ เช่น zones.homes.3 = ตั้งบ้านได้ 3 หลัง
+
+ranks:
+
+  newbie:
+    display: "<gray>[ชาวบ้าน]"
+    prefix: "<gray>[ชาวบ้าน] "
+    order: 0
+    permissions:
+      - zones.homes.1
+
+  settler:
+    display: "<green>[ชาวเมือง]"
+    prefix: "<green>[ชาวเมือง] "
+    order: 10
+    require:
+      hours: 2
+    permissions:
+      - zones.homes.2
+
+  merchant:
+    display: "<aqua>[พ่อค้า]"
+    prefix: "<aqua>[พ่อค้า] "
+    order: 20
+    require:
+      hours: 10
+      money: 100000
+    permissions:
+      - zones.homes.3
+
+  veteran:
+    display: "<light_purple>[ขาประจำ]"
+    prefix: "<light_purple>[ขาประจำ] "
+    order: 30
+    require:
+      hours: 40
+      missions: 5
+    permissions:
+      - zones.homes.5
+
+  legend:
+    display: "<gold>[ตำนาน]"
+    prefix: "<gold>[ตำนาน] "
+    order: 40
+    require:
+      hours: 150
+      missions: 12
+    permissions:
+      - zones.homes.8
+
+  vip:
+    display: "<yellow>[VIP]"
+    prefix: "<yellow>[VIP] "
+    order: 25
+    price: 250000
+    permissions:
+      - zones.homes.4
+
+  vipplus:
+    display: "<gold>[VIP+]"
+    prefix: "<gold>[VIP+] "
+    order: 35
+    price: 900000
+    permissions:
+      - zones.homes.6

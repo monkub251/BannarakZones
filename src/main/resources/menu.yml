@@ -97,6 +97,15 @@ menus:
           - "<gray>กลับไปที่ล็อบบี้"
         actions:
           - "spawn"
+      30:
+        icon: NAME_TAG
+        name: "<light_purple>ยศ"
+        lore:
+          - "<gray>ดูเงื่อนไขและซื้อยศ"
+          - ""
+          - "<green>คลิกเพื่อเปิด"
+        actions:
+          - "rank"
       40:
         icon: BOOK
         name: "<yellow>ช่วยเหลือ"

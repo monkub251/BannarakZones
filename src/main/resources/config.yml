@@ -71,6 +71,13 @@ teleport:
   # คำขอวาร์ปหมดอายุในกี่วินาที
   request-seconds: 60
 
+ranks:
+  # ใส่ชื่อยศหน้าชื่อในแชท
+  format-chat: true
+  chat-format: "<prefix><white><player><gray>: <white><message>"
+  # ประกาศทั้งเซิร์ฟเมื่อมีคนเลื่อนยศ
+  broadcast: true
+
 missions:
   # เด้งตัวหนังสือกลางจอตอนผ่านขั้น (false = ใช้แถบเหนือช่องไอเทมแทน)
   popup: true

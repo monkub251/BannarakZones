@@ -25,6 +25,7 @@ public class BannarakZones extends JavaPlugin {
     private LocStore locations;
     private MenuManager menus;
     private ShopManager shop;
+    private RankManager ranks;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -95,6 +96,15 @@ public class BannarakZones extends JavaPlugin {
         if (shopCmd != null) shopCmd.setExecutor(shop);
         getServer().getPluginManager().registerEvents(shop, this);
 
+        ranks = new RankManager(this);
+        ranks.load();
+        RankGui rankGui = new RankGui(this);
+        var rankCmd = getCommand("rank");
+        if (rankCmd != null) rankCmd.setExecutor(rankGui);
+        getServer().getPluginManager().registerEvents(ranks, this);
+        getServer().getPluginManager().registerEvents(rankGui, this);
+        ranks.startTracking();
+
         getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
@@ -105,6 +115,7 @@ public class BannarakZones extends JavaPlugin {
         if (money != null) money.save(true);
         if (missions != null) missions.save(true);
         if (locations != null) locations.save(true);
+        if (ranks != null) ranks.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -166,6 +177,7 @@ public class BannarakZones extends JavaPlugin {
     public LocStore locations() { return locations; }
     public MenuManager menus() { return menus; }
     public ShopManager shop() { return shop; }
+    public RankManager ranks() { return ranks; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }
@@ -297,6 +309,7 @@ public class BannarakZones extends JavaPlugin {
             if (missions != null) missions.loadDefinitions();
             if (menus != null) menus.load();
             if (shop != null) shop.load();
+            if (ranks != null) ranks.load();
             msg(sender, "reloaded");
             return true;
         }
