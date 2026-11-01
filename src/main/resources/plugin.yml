@@ -128,6 +128,19 @@ commands:
   spawn:
     permission: zones.command.spawn
     description: Go to the server spawn
+  points:
+    permission: zones.command.points
+    description: Your points balance
+    aliases: [p, พ้อย, point]
+    usage: /points [player] | /points give|take|set <player> <amount> | /points log
+  pshop:
+    permission: zones.command.pshop
+    description: Spend points on cosmetics
+    aliases: [ร้านพ้อย, pointshop]
+  topup:
+    permission: zones.command.topup
+    description: How to buy points
+    aliases: [เติมเงิน, เติมพ้อย]
   vanish:
     permission: zones.admin.vanish
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
@@ -311,6 +324,9 @@ permissions:
       zones.command.dungeon: true
       zones.command.rank: true
       zones.command.shop: true
+      zones.command.points: true
+      zones.command.pshop: true
+      zones.command.topup: true
       zones.command.spawn: true
       zones.command.home: true
       zones.command.sethome: true
@@ -349,6 +365,7 @@ permissions:
       zones.admin.invsee: true
       zones.admin.head: true
       zones.admin.mining: true
+      zones.admin.points: true
       zones.admin.npc: true
       zones.admin.setspawn: true
       zones.admin.setwarp: true

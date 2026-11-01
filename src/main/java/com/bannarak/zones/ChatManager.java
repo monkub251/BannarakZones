@@ -123,6 +123,16 @@ public class ChatManager implements Listener, CommandExecutor, TabCompleter {
         for (Player viewer : Bukkit.getOnlinePlayers())
             if (ignores(viewer.getUniqueId(), p.getUniqueId())) hidden.add(viewer.getUniqueId());
         if (!hidden.isEmpty()) e.viewers().removeIf(v -> v instanceof Player pl && hidden.contains(pl.getUniqueId()));
+
+        // dress the line: rank prefix, then the name in whatever colour they bought
+        e.renderer((source, sourceDisplayName, message, viewer) -> {
+            var r = plugin.ranks() == null ? null : plugin.ranks().rankOf(source.getUniqueId());
+            String prefix = r == null ? "" : r.prefix;
+            String painted = plugin.cosmetics() == null
+                    ? "<white>" + source.getName()
+                    : plugin.cosmetics().paint(source.getUniqueId(), source.getName());
+            return MM.deserialize(prefix + painted + "<dark_gray> » <white>").append(message);
+        });
     }
 
     /** Catches the word even when it is spaced or padded out: "โ ก ง" or "โกooง". */

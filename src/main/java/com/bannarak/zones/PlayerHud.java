@@ -106,11 +106,23 @@ public class PlayerHud implements Listener {
         }
     }
 
+    /** Rotates through the tips in config so the sidebar teaches commands on its own. */
+    private String tip() {
+        List<String> tips = plugin.getConfig().getStringList("hud.tips");
+        if (tips.isEmpty()) return "";
+        long every = Math.max(1L, plugin.getConfig().getLong("hud.tip-seconds", 6));
+        int i = (int) ((System.currentTimeMillis() / 1000L / every) % tips.size());
+        return tips.get(i);
+    }
+
     private String fill(String s, Player p) {
         var rank = plugin.ranks() == null ? null : plugin.ranks().rankOf(p.getUniqueId());
         return s.replace("<player>", p.getName())
                 .replace("<rank>", rank == null ? "-" : rank.display)
                 .replace("<money>", plugin.money().format(plugin.money().get(p.getUniqueId())))
+                .replace("<points>", plugin.points() == null ? "0"
+                        : plugin.points().format(plugin.points().get(p.getUniqueId())))
+                .replace("<tip>", tip())
                 .replace("<online>", String.valueOf(Bukkit.getOnlinePlayers().size()))
                 .replace("<max>", String.valueOf(Bukkit.getMaxPlayers()))
                 .replace("<world>", p.getWorld().getName())

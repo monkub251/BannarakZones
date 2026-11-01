@@ -60,6 +60,7 @@ public class WebPanel {
             server.createContext("/api/action", secure(this::apiAction));
             server.createContext("/api/discord/link", this::apiDiscordLink);
             server.createContext("/api/discord/roles", this::apiDiscordRoles);
+            server.createContext("/api/points/add", this::apiPointsAdd);
             server.setExecutor(Executors.newFixedThreadPool(4));
             server.start();
             plugin.getLogger().info("Web panel listening on " + bind + ":" + port);
@@ -277,6 +278,52 @@ public class WebPanel {
         boolean ok = sync(() -> plugin.ranks().setRoles(id, roles), false);
         send(ex, ok ? 200 : 404, "application/json",
                 ok ? "{\"ok\":true}" : "{\"error\":\"ยังไม่มีใครผูกไอดีนี้\"}");
+    }
+
+    /**
+     * POST {player, points, reference} - the website calls this once a payment
+     * has really cleared. Guarded by the same X-Bot-Token as the Discord hooks.
+     *
+     * reference is whatever the payment provider calls the transaction. It is
+     * stored and refused if it has been seen before, so a retried webhook does
+     * not credit the same payment twice.
+     */
+    private void apiPointsAdd(HttpExchange ex) throws IOException {
+        if (!"POST".equals(ex.getRequestMethod())) { send(ex, 405, "application/json", "{}"); return; }
+        if (!botAuthorised(ex)) { send(ex, 401, "application/json", "{\"error\":\"bad token\"}"); return; }
+        String raw = body(ex);
+        String name = field(raw, "player");
+        String ref = field(raw, "reference");
+        String pointsRaw = field(raw, "points");
+        if (name == null || pointsRaw == null) {
+            send(ex, 400, "application/json", "{\"error\":\"missing player or points\"}");
+            return;
+        }
+        long points;
+        try { points = Long.parseLong(pointsRaw.trim()); }
+        catch (NumberFormatException e) { send(ex, 400, "application/json", "{\"error\":\"points must be a number\"}"); return; }
+        if (points <= 0) { send(ex, 400, "application/json", "{\"error\":\"points must be positive\"}"); return; }
+        final String reference = ref == null ? "-" : ref;
+
+        String result = sync(() -> {
+            if (!reference.equals("-") && plugin.points().seenReference(reference)) return "DUPLICATE";
+            var off = Bukkit.getOfflinePlayer(name);
+            if (off.getUniqueId() == null) return "NOPLAYER";
+            plugin.points().topup(off.getUniqueId(), name, points, reference);
+            return String.valueOf(plugin.points().get(off.getUniqueId()));
+        }, "ERROR");
+
+        if ("DUPLICATE".equals(result)) {
+            send(ex, 409, "application/json", "{\"error\":\"reference already credited\"}");
+            return;
+        }
+        if ("NOPLAYER".equals(result) || "ERROR".equals(result)) {
+            send(ex, 404, "application/json", "{\"error\":\"ไม่พบผู้เล่นชื่อนี้\"}");
+            return;
+        }
+        plugin.getLogger().info("Points: credited " + points + " P to " + name + " ref " + reference);
+        send(ex, 200, "application/json",
+                "{\"ok\":true,\"player\":\"" + esc(name) + "\",\"balance\":" + result + "}");
     }
 
     private void apiStatus(HttpExchange ex) throws IOException {

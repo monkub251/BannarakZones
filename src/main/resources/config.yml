@@ -403,9 +403,20 @@ hud:
     - "<gray>ชื่อ <white><player>"
     - "<gray>ยศ <yellow><rank>"
     - "<gray>เงิน <gold><money>"
+    - "<gray>พ้อย <yellow><points> P"
     - ""
     - "<gray>ออนไลน์ <white><online><dark_gray>/<gray><max>"
+    - "<tip>"
     - "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  # บรรทัด <tip> จะสลับไปเรื่อย ๆ สอนคำสั่งให้คนเล่นเอง
+  tip-seconds: 6
+  tips:
+    - "<yellow>/menu <gray>เมนูคำสั่ง"
+    - "<yellow>/rtp <gray>สุ่มพื้นที่"
+    - "<yellow>/market <gray>ตลาดผู้เล่น"
+    - "<yellow>/mission <gray>ภารกิจ"
+    - "<yellow>/daily <gray>รางวัลรายวัน"
+    - "<yellow>/pshop <gray>ร้านพ้อย"
 
 # ─────────────────────────────────────────────────────────────
 # เครื่องมือทีมงาน
@@ -453,3 +464,70 @@ anticheat:
   # เตือนทีมงานในแชตเมื่อคะแนนถึงเท่านี้ (เตือนคนละไม่เกิน 1 ครั้งต่อ 10 นาที)
   alert-at: 60
   alert-staff: true
+
+# ─────────────────────────────────────────────────────────────
+# พ้อย — สกุลเงินที่ซื้อด้วยเงินจริงบนเว็บ
+# ─────────────────────────────────────────────────────────────
+#
+# พ้อยซื้อได้แต่ "ของตกแต่ง" เท่านั้น ห้ามซื้อเงินในเกม ไอเทม หรือสิทธิ์ใด ๆ
+# เหตุผลสองข้อ:
+#   1. กฎของ Mojang ห้ามขายสิ่งที่ทำให้ได้เปรียบในการแข่งขัน
+#   2. เศรษฐกิจเซิร์ฟนี้ให้ของมาจากผู้เล่นด้วยกัน ถ้าเติมเงินแล้วข้ามขั้นได้ ระบบพัง
+#
+# เว็บเติมพ้อยด้วยการยิง POST /api/points/add
+#   header X-Bot-Token: <web.bot-token>
+#   body   {"player":"ชื่อในเกม","points":1000,"reference":"รหัสรายการจ่ายเงิน"}
+# reference ซ้ำจะถูกปฏิเสธ (กัน webhook ยิงซ้ำแล้วได้พ้อยสองรอบ)
+points:
+  topup-url: ""              # ลิงก์หน้าเติมเงิน แสดงตอนพิมพ์ /topup
+
+cosmetics:
+  # สีชื่อ — tag ใส่เป็น MiniMessage
+  colours:
+    gold:
+      display: "สีทอง"
+      tag: "<gold>"
+      icon: GOLD_INGOT
+      price: 500
+    aqua:
+      display: "สีฟ้า"
+      tag: "<aqua>"
+      icon: DIAMOND
+      price: 500
+    pink:
+      display: "สีชมพู"
+      tag: "<light_purple>"
+      icon: PINK_DYE
+      price: 500
+    rainbow:
+      display: "ไล่สีรุ้ง"
+      tag: "<gradient:#ff5555:#ffff55:#55ff55:#55ffff:#ff55ff>"
+      icon: NETHER_STAR
+      price: 3000
+
+  # สัตว์เลี้ยง — เดินตามอย่างเดียว ตีไม่ได้ โดนตีไม่ได้ ไม่ดรอปอะไร
+  # entity ใส่ชื่อ EntityType ของมายคราฟ
+  pets:
+    cat:
+      display: "<yellow>แมว"
+      entity: CAT
+      icon: COD
+      name: "<yellow>แมวของ <owner>"
+      price: 1500
+    allay:
+      display: "<aqua>อัลเลย์"
+      entity: ALLAY
+      icon: AMETHYST_SHARD
+      name: "<aqua>อัลเลย์ของ <owner>"
+      price: 2500
+    fox:
+      display: "<gold>จิ้งจอก"
+      entity: FOX
+      icon: SWEET_BERRIES
+      name: "<gold>จิ้งจอกของ <owner>"
+      price: 2000
+
+  # หมวดอื่น ๆ — ซื้อแล้วรันคำสั่งที่ใส่ไว้ ใช้ %player% แทนชื่อคนซื้อ
+  # นำหน้าด้วย console: ถ้าอยากให้เซิร์ฟเป็นคนสั่ง
+  # ตัวอย่างสกินยังว่างไว้ ต้องเช็กรูปแบบคำสั่งของ SkinsRestorer ก่อนใส่
+  extras: {}
