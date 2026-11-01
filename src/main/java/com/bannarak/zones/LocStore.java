@@ -21,6 +21,8 @@ public class LocStore {
     private final Map<String, Location> warps = new LinkedHashMap<>();
     private final Map<String, String> warpIcons = new LinkedHashMap<>();
     private Location spawn;
+    private Location firstSpawn;
+    private Location deathSpawn;
     private boolean dirty = false;
 
     public LocStore(BannarakZones plugin) {
@@ -98,6 +100,40 @@ public class LocStore {
         dirty = true;
     }
 
+    /** Where a brand new player lands on their very first join. Falls back to the main spawn. */
+    public Location firstSpawn() {
+        return firstSpawn != null ? firstSpawn : spawn();
+    }
+
+    public boolean hasFirstSpawn() { return firstSpawn != null; }
+
+    public void setFirstSpawn(Location loc) {
+        firstSpawn = loc;
+        dirty = true;
+    }
+
+    public void clearFirstSpawn() {
+        firstSpawn = null;
+        dirty = true;
+    }
+
+    /** Where a player respawns after dying with no bed or anchor. Falls back to the main spawn. */
+    public Location deathSpawn() {
+        return deathSpawn != null ? deathSpawn : spawn();
+    }
+
+    public boolean hasDeathSpawn() { return deathSpawn != null; }
+
+    public void setDeathSpawn(Location loc) {
+        deathSpawn = loc;
+        dirty = true;
+    }
+
+    public void clearDeathSpawn() {
+        deathSpawn = null;
+        dirty = true;
+    }
+
     // ---------- persistence ----------
 
     private static void write(YamlConfiguration cfg, String path, Location l) {
@@ -118,7 +154,8 @@ public class LocStore {
     }
 
     public void load() {
-        homes.clear(); warps.clear(); warpIcons.clear(); spawn = null;
+        homes.clear(); warps.clear(); warpIcons.clear();
+        spawn = null; firstSpawn = null; deathSpawn = null;
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 
@@ -148,6 +185,8 @@ public class LocStore {
         }
 
         spawn = read(cfg.getConfigurationSection("spawn"));
+        firstSpawn = read(cfg.getConfigurationSection("first-spawn"));
+        deathSpawn = read(cfg.getConfigurationSection("death-spawn"));
     }
 
     public void save(boolean force) {
@@ -161,6 +200,8 @@ public class LocStore {
             cfg.set("warps." + e.getKey() + ".icon", warpIcons.get(e.getKey()));
         }
         if (spawn != null) write(cfg, "spawn", spawn);
+        if (firstSpawn != null) write(cfg, "first-spawn", firstSpawn);
+        if (deathSpawn != null) write(cfg, "death-spawn", deathSpawn);
         try {
             if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();
             cfg.save(file);

@@ -55,14 +55,16 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
     public void onJoin(PlayerJoinEvent e) {
         if (!plugin.getConfig().getBoolean("spawn.teleport-on-first-join", true)) return;
         Player p = e.getPlayer();
-        if (!p.hasPlayedBefore()) p.teleport(locs.spawn());
+        if (p.hasPlayedBefore()) return;
+        p.teleport(locs.firstSpawn());
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         if (!plugin.getConfig().getBoolean("spawn.respawn-at-spawn", false)) return;
+        // นอนเตียงหรือตั้ง respawn anchor ไว้แล้ว -> ปล่อยให้เกิดตรงนั้นตามปกติ
         if (e.isBedSpawn() || e.isAnchorSpawn()) return;
-        e.setRespawnLocation(locs.spawn());
+        e.setRespawnLocation(locs.deathSpawn());
     }
 
     // ---------------- commands ----------------
@@ -73,10 +75,7 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
         if (name.equals("setspawn")) {
             if (!(sender instanceof Player p)) return true;
             if (!p.hasPermission("zones.admin.setspawn")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return true; }
-            locs.setSpawn(p.getLocation());
-            locs.save(true);
-            Notify.chat(p, "<green>ตั้งจุดเกิดใหม่แล้ว");
-            return true;
+            return setSpawnCommand(p, args);
         }
         if (!(sender instanceof Player p)) { sender.sendMessage("Players only."); return true; }
         switch (name) {
@@ -93,6 +92,75 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
             default -> { return false; }
         }
         return true;
+    }
+
+    /**
+     * /setspawn            -> main spawn (used by /spawn and as the fallback for the two below)
+     * /setspawn first      -> where a new player lands on their very first join
+     * /setspawn death      -> where a player respawns after dying without a bed
+     * adding "ลบ" / "clear" to first or death removes that point and falls back to the main spawn
+     */
+    private boolean setSpawnCommand(Player p, String[] args) {
+        String sub = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "";
+        boolean clear = args.length > 1
+                && (args[1].equalsIgnoreCase("clear")
+                 || args[1].equalsIgnoreCase("ลบ")
+                 || args[1].equalsIgnoreCase("reset"));
+
+        switch (sub) {
+            case "" -> {
+                locs.setSpawn(p.getLocation());
+                locs.save(true);
+                Notify.chat(p, "<green>ตั้ง <yellow>จุดเกิดหลัก <green>ตรงที่คุณยืนแล้ว");
+                Notify.chat(p, "<gray>ใช้กับ <white>/spawn <gray>และเป็นค่าสำรองของอีกสองจุด");
+            }
+            case "first", "firstjoin", "join", "แรก", "เข้าครั้งแรก" -> {
+                if (clear) {
+                    locs.clearFirstSpawn();
+                    locs.save(true);
+                    Notify.chat(p, "<yellow>ลบจุดเข้าครั้งแรกแล้ว <gray>คนใหม่จะไปจุดเกิดหลักแทน");
+                    return true;
+                }
+                locs.setFirstSpawn(p.getLocation());
+                locs.save(true);
+                Notify.chat(p, "<green>ตั้ง <yellow>จุดเข้าครั้งแรก <green>ตรงที่คุณยืนแล้ว");
+                if (!plugin.getConfig().getBoolean("spawn.teleport-on-first-join", true))
+                    Notify.chat(p, "<red>หมายเหตุ: <gray>ตอนนี้ <white>spawn.teleport-on-first-join <gray>ปิดอยู่ จุดนี้จะยังไม่ถูกใช้");
+            }
+            case "death", "die", "respawn", "ตาย", "เกิดใหม่" -> {
+                if (clear) {
+                    locs.clearDeathSpawn();
+                    locs.save(true);
+                    Notify.chat(p, "<yellow>ลบจุดเกิดหลังตายแล้ว <gray>จะไปจุดเกิดหลักแทน");
+                    return true;
+                }
+                locs.setDeathSpawn(p.getLocation());
+                locs.save(true);
+                Notify.chat(p, "<green>ตั้ง <yellow>จุดเกิดหลังตาย <green>ตรงที่คุณยืนแล้ว");
+                Notify.chat(p, "<gray>ใช้เฉพาะคนที่ <white>ไม่ได้นอนเตียง <gray>ไว้");
+                if (!plugin.getConfig().getBoolean("spawn.respawn-at-spawn", false))
+                    Notify.chat(p, "<red>หมายเหตุ: <gray>ตอนนี้ <white>spawn.respawn-at-spawn <gray>ปิดอยู่ จุดนี้จะยังไม่ถูกใช้");
+            }
+            case "list", "ดู", "info" -> {
+                Notify.chat(p, "<gold>จุดเกิดที่ตั้งไว้");
+                Notify.chat(p, "<gray>หลัก: <white>" + describe(locs.spawn()));
+                Notify.chat(p, "<gray>เข้าครั้งแรก: <white>"
+                        + (locs.hasFirstSpawn() ? describe(locs.firstSpawn()) : "<dark_gray>ยังไม่ตั้ง (ใช้จุดหลัก)"));
+                Notify.chat(p, "<gray>หลังตาย: <white>"
+                        + (locs.hasDeathSpawn() ? describe(locs.deathSpawn()) : "<dark_gray>ยังไม่ตั้ง (ใช้จุดหลัก)"));
+            }
+            default -> {
+                Notify.chat(p, "<red>ไม่รู้จัก <white>" + sub);
+                Notify.chat(p, "<gray>/setspawn <white>· <gray>/setspawn <white>first <gray>· <gray>/setspawn <white>death <gray>· <gray>/setspawn <white>list");
+            }
+        }
+        return true;
+    }
+
+    private String describe(Location l) {
+        if (l == null || l.getWorld() == null) return "-";
+        return l.getWorld().getName() + " "
+                + (int) l.getX() + ", " + (int) l.getY() + ", " + (int) l.getZ();
     }
 
     private void setHome(Player p, String[] args) {
@@ -304,9 +372,21 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         List<String> out = new ArrayList<>();
-        if (!(sender instanceof Player p) || args.length != 1) return out;
+        if (!(sender instanceof Player p)) return out;
+        if (args.length == 2 && cmd.getName().equalsIgnoreCase("setspawn")) {
+            String s1 = args[0].toLowerCase(Locale.ROOT);
+            if ((s1.equals("first") || s1.equals("death")) && p.hasPermission("zones.admin.setspawn"))
+                for (String n : List.of("clear")) if (n.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(n);
+            return out;
+        }
+        if (args.length != 1) return out;
         String prefix = args[0].toLowerCase(Locale.ROOT);
         switch (cmd.getName().toLowerCase(Locale.ROOT)) {
+            case "setspawn" -> {
+                if (!p.hasPermission("zones.admin.setspawn")) return out;
+                for (String n : List.of("first", "death", "list"))
+                    if (n.startsWith(prefix)) out.add(n);
+            }
             case "home", "delhome" -> {
                 for (String n : locs.homesOf(p.getUniqueId()).keySet())
                     if (n.startsWith(prefix)) out.add(n);
