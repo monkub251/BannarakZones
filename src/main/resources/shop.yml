@@ -1,7 +1,9 @@
-# ===== ร้านค้าของเซิร์ฟ =====
+# ===== ร้านรับซื้อของเซิร์ฟ =====
 # แก้ราคาแล้วพิมพ์ /zone reload
 #
-# buy  = ราคาที่ผู้เล่นซื้อจากร้าน (ลบออกหรือใส่ -1 = ไม่ขาย)
+# เซิร์ฟ "ไม่ขาย" ของให้ใครทั้งนั้น หน้านี้มีแต่ฝั่งรับซื้อ
+# ของทุกชิ้นในเซิร์ฟต้องขุดเอง หรือซื้อจากผู้เล่นด้วยกันที่ /market
+#
 # sell = ราคาที่ร้านรับซื้อจากผู้เล่น (ลบออกหรือใส่ -1 = ไม่รับซื้อ)
 # slot = ตำแหน่งไอคอนหมวดในหน้าแรก (ไม่ใส่ก็เรียงให้เอง)
 
@@ -12,28 +14,28 @@ categories:
     icon: BRICKS
     slot: 10
     items:
-      STONE: { buy: 20, sell: 5 }
-      COBBLESTONE: { buy: 12, sell: 3 }
-      OAK_LOG: { buy: 60, sell: 20 }
-      OAK_PLANKS: { buy: 18, sell: 5 }
-      GLASS: { buy: 45, sell: 12 }
-      BRICKS: { buy: 120, sell: 35 }
-      SAND: { buy: 15, sell: 4 }
-      DIRT: { buy: 8, sell: 2 }
+      STONE: { sell: 5 }
+      COBBLESTONE: { sell: 3 }
+      OAK_LOG: { sell: 20 }
+      OAK_PLANKS: { sell: 5 }
+      GLASS: { sell: 12 }
+      BRICKS: { sell: 35 }
+      SAND: { sell: 4 }
+      DIRT: { sell: 2 }
 
   ores:
     display: "แร่"
     icon: DIAMOND
     slot: 12
     items:
-      COAL: { buy: 80, sell: 25 }
-      IRON_INGOT: { buy: 250, sell: 90 }
-      COPPER_INGOT: { buy: 120, sell: 40 }
-      GOLD_INGOT: { buy: 400, sell: 150 }
-      REDSTONE: { buy: 100, sell: 30 }
-      LAPIS_LAZULI: { buy: 120, sell: 40 }
-      EMERALD: { buy: 900, sell: 350 }
-      DIAMOND: { buy: 2500, sell: 1000 }
+      COAL: { sell: 25 }
+      IRON_INGOT: { sell: 90 }
+      COPPER_INGOT: { sell: 40 }
+      GOLD_INGOT: { sell: 150 }
+      REDSTONE: { sell: 30 }
+      LAPIS_LAZULI: { sell: 40 }
+      EMERALD: { sell: 350 }
+      DIAMOND: { sell: 1000 }
       NETHERITE_SCRAP: { sell: 6000 }
 
   food:
@@ -41,41 +43,41 @@ categories:
     icon: COOKED_BEEF
     slot: 14
     items:
-      BREAD: { buy: 50, sell: 15 }
-      COOKED_BEEF: { buy: 120, sell: 40 }
-      COOKED_PORKCHOP: { buy: 110, sell: 35 }
-      GOLDEN_APPLE: { buy: 4000, sell: 1200 }
-      CARROT: { buy: 30, sell: 8 }
-      POTATO: { buy: 30, sell: 8 }
-      WHEAT: { buy: 35, sell: 10 }
-      SUGAR_CANE: { buy: 40, sell: 12 }
+      BREAD: { sell: 15 }
+      COOKED_BEEF: { sell: 40 }
+      COOKED_PORKCHOP: { sell: 35 }
+      GOLDEN_APPLE: { sell: 1200 }
+      CARROT: { sell: 8 }
+      POTATO: { sell: 8 }
+      WHEAT: { sell: 10 }
+      SUGAR_CANE: { sell: 12 }
 
   tools:
     display: "เครื่องมือและอาวุธ"
     icon: IRON_PICKAXE
     slot: 16
     items:
-      IRON_PICKAXE: { buy: 900 }
-      IRON_AXE: { buy: 900 }
-      IRON_SHOVEL: { buy: 400 }
-      IRON_SWORD: { buy: 800 }
-      DIAMOND_PICKAXE: { buy: 9000 }
-      DIAMOND_SWORD: { buy: 8500 }
-      BOW: { buy: 1200 }
-      ARROW: { buy: 25, sell: 6 }
-      FISHING_ROD: { buy: 700 }
+      IRON_PICKAXE: { sell: -1 }
+      IRON_AXE: { sell: -1 }
+      IRON_SHOVEL: { sell: -1 }
+      IRON_SWORD: { sell: -1 }
+      DIAMOND_PICKAXE: { sell: -1 }
+      DIAMOND_SWORD: { sell: -1 }
+      BOW: { sell: -1 }
+      ARROW: { sell: 6 }
+      FISHING_ROD: { sell: -1 }
 
   farming:
     display: "การเกษตร"
     icon: WHEAT_SEEDS
     slot: 28
     items:
-      WHEAT_SEEDS: { buy: 20, sell: 5 }
-      BEETROOT_SEEDS: { buy: 25, sell: 6 }
-      MELON_SLICE: { buy: 25, sell: 7 }
-      PUMPKIN: { buy: 90, sell: 25 }
-      BONE_MEAL: { buy: 60, sell: 18 }
-      OAK_SAPLING: { buy: 50, sell: 12 }
+      WHEAT_SEEDS: { sell: 5 }
+      BEETROOT_SEEDS: { sell: 6 }
+      MELON_SLICE: { sell: 7 }
+      PUMPKIN: { sell: 25 }
+      BONE_MEAL: { sell: 18 }
+      OAK_SAPLING: { sell: 12 }
 
   mobdrops:
     display: "ของดรอปจากมอบ"
@@ -83,25 +85,25 @@ categories:
     slot: 30
     items:
       ROTTEN_FLESH: { sell: 8 }
-      BONE: { buy: 60, sell: 18 }
-      STRING: { buy: 70, sell: 20 }
-      GUNPOWDER: { buy: 180, sell: 60 }
+      BONE: { sell: 18 }
+      STRING: { sell: 20 }
+      GUNPOWDER: { sell: 60 }
       SPIDER_EYE: { sell: 25 }
-      ENDER_PEARL: { buy: 1500, sell: 500 }
-      BLAZE_ROD: { buy: 2000, sell: 700 }
-      SLIME_BALL: { buy: 200, sell: 70 }
+      ENDER_PEARL: { sell: 500 }
+      BLAZE_ROD: { sell: 700 }
+      SLIME_BALL: { sell: 70 }
 
   misc:
     display: "เบ็ดเตล็ด"
     icon: BEACON
     slot: 32
     items:
-      BEACON: { buy: 150000 }
-      TORCH: { buy: 15, sell: 3 }
-      CHEST: { buy: 120, sell: 30 }
-      ENDER_CHEST: { buy: 12000 }
-      ANVIL: { buy: 6000 }
-      BOOK: { buy: 150, sell: 40 }
-      NAME_TAG: { buy: 5000 }
-      SADDLE: { buy: 4000 }
-      OAK_BOAT: { buy: 300, sell: 80 }
+      BEACON: { sell: -1 }
+      TORCH: { sell: 3 }
+      CHEST: { sell: 30 }
+      ENDER_CHEST: { sell: -1 }
+      ANVIL: { sell: -1 }
+      BOOK: { sell: 40 }
+      NAME_TAG: { sell: -1 }
+      SADDLE: { sell: -1 }
+      OAK_BOAT: { sell: 80 }

@@ -61,6 +61,8 @@ public class ShopManager implements Listener, CommandExecutor {
     // ---------------- loading ----------------
 
     public void load() {
+        // one switch for the whole policy: when this is off the server never sells, whatever shop.yml says
+        boolean serverSells = plugin.getConfig().getBoolean("economy.server-sells-items", false);
         categories.clear();
         File f = new File(plugin.getDataFolder(), "shop.yml");
         if (!f.exists()) plugin.saveResource("shop.yml", false);
@@ -82,7 +84,7 @@ public class ShopManager implements Listener, CommandExecutor {
                 if (m == null) { plugin.getLogger().warning("Shop: unknown item " + key); continue; }
                 Entry e = new Entry();
                 e.material = m;
-                e.buy = items.getDouble(key + ".buy", -1);
+                e.buy = serverSells ? items.getDouble(key + ".buy", -1) : -1;
                 e.sell = items.getDouble(key + ".sell", -1);
                 e.name = items.getString(key + ".name");
                 c.entries.add(e);
@@ -98,7 +100,7 @@ public class ShopManager implements Listener, CommandExecutor {
         Holder holder = new Holder(null);
         int rows = Math.max(3, (int) Math.ceil(categories.size() / 9.0) + 2);
         Inventory inv = Bukkit.createInventory(holder, Math.min(54, rows * 9),
-                MM.deserialize("<dark_gray>ร้านค้า"));
+                MM.deserialize("<dark_gray>ร้านรับซื้อ"));
         holder.setInventory(inv);
         int auto = 10;
         for (Category c : categories.values()) {
@@ -129,7 +131,8 @@ public class ShopManager implements Listener, CommandExecutor {
             }
             lore.add("");
             if (e.buy >= 0) lore.add("<yellow>คลิกซ้าย <gray>ซื้อ 1 · <yellow>ชิฟต์+ซ้าย <gray>ซื้อ 1 สแต็ก");
-            if (e.sell >= 0) lore.add("<yellow>คลิกขวา <gray>ขาย 1 · <yellow>ชิฟต์+ขวา <gray>ขายทั้งหมด");
+            if (e.sell >= 0) lore.add("<yellow>คลิก <gray>ขาย 1 · <yellow>ชิฟต์+คลิก <gray>ขายทั้งหมด");
+            if (e.buy < 0 && e.sell < 0) lore.add("<dark_gray>ร้านไม่ยุ่งกับของชิ้นนี้");
             String display = e.name != null ? e.name : "<white>" + pretty(e.material);
             inv.setItem(slot++, item(e.material, display, lore));
         }
@@ -182,7 +185,9 @@ public class ShopManager implements Listener, CommandExecutor {
         if (entry == null) return;
 
         ClickType type = e.getClick();
-        if (type.isLeftClick()) buy(p, entry, type.isShiftClick() ? entry.material.getMaxStackSize() : 1);
+        // the server sells nothing, so when there is no buy price every click sells
+        if (entry.buy < 0) sell(p, entry, type.isShiftClick() ? -1 : 1);
+        else if (type.isLeftClick()) buy(p, entry, type.isShiftClick() ? entry.material.getMaxStackSize() : 1);
         else if (type.isRightClick()) sell(p, entry, type.isShiftClick() ? -1 : 1);
         refreshBalance(e.getInventory(), p);
     }
@@ -194,7 +199,7 @@ public class ShopManager implements Listener, CommandExecutor {
     }
 
     private void buy(Player p, Entry e, int amount) {
-        if (e.buy < 0) { Notify.bar(p, "<red>ของชิ้นนี้ไม่ได้วางขาย", "block.note_block.bass", 0.8f); return; }
+        if (e.buy < 0) { Notify.bar(p, "<red>เซิร์ฟไม่ขายของ ซื้อกันเองที่ /market", "block.note_block.bass", 0.8f); return; }
         double cost = e.buy * amount;
         if (!plugin.money().has(p.getUniqueId(), cost)) {
             Notify.bar(p, "<red>เงินไม่พอ ต้องมี <gold>" + plugin.money().format(cost),

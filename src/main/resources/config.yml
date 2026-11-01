@@ -38,6 +38,9 @@ upgrades:
     multiplier: 2.0
 
 economy:
+  # เซิร์ฟขายของให้ผู้เล่นไหม — ปิดไว้ ของทุกชิ้นต้องขุดเองหรือซื้อจากผู้เล่นที่ /market
+  # เปิดเป็น true เมื่อไหร่ ราคา buy: ใน shop.yml ถึงจะถูกใช้
+  server-sells-items: false
   # ชื่อสกุลเงินและสัญลักษณ์หน้าตัวเลข
   currency-name: "เหรียญ"
   currency-symbol: "₡"

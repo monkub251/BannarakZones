@@ -1,6 +1,8 @@
 # ===== กล่องสุ่ม =====
 # weight = น้ำหนักการสุ่ม ยิ่งเลขน้อยยิ่งหายาก (ของที่ weight <= 2 จะประกาศทั้งเซิร์ฟ)
-# ใส่ได้ทั้ง money, item + amount และ commands พร้อมกัน
+#
+# กล่องทุกใบจ่าย "เงินอย่างเดียว" ตามที่ตั้งไว้ — เซิร์ฟไม่แจกไอเทมให้ใคร
+# ของทุกชิ้นในเซิร์ฟต้องมาจากการขุดเอง หรือซื้อจากผู้เล่นด้วยกันที่ /market
 #
 # วิธีตั้งกล่องในโลก: ยืนมองบล็อกที่จะทำเป็นกล่อง แล้วพิมพ์ /crate set <ชื่อกล่อง>
 # แจกกุญแจ: /crate key <ชื่อกล่อง> <ชื่อผู้เล่น> [จำนวน]
@@ -13,30 +15,30 @@ crates:
     key-item: TRIPWIRE_HOOK
     key-name: "<white>กุญแจธรรมดา"
     rewards:
-      coins_small:
+      coins_tiny:
         display: "<gold>5,000 เหรียญ"
         icon: GOLD_NUGGET
         money: 5000
         weight: 40
+      coins_small:
+        display: "<gold>12,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 12000
+        weight: 25
       coins_mid:
         display: "<gold>20,000 เหรียญ"
         icon: GOLD_INGOT
         money: 20000
         weight: 20
-      iron:
-        display: "<white>เหล็ก 16 ก้อน"
-        item: IRON_INGOT
-        amount: 16
-        weight: 25
-      diamond:
-        display: "<aqua>เพชร 3 เม็ด"
-        item: DIAMOND
-        amount: 3
+      coins_good:
+        display: "<gold>45,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 45000
         weight: 10
-      golden_apple:
-        display: "<gold>แอปเปิลทอง"
-        item: GOLDEN_APPLE
-        amount: 2
+      coins_lucky:
+        display: "<gold>90,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 90000
         weight: 5
 
   rare:
@@ -50,28 +52,23 @@ crates:
         icon: GOLD_BLOCK
         money: 100000
         weight: 30
-      diamond_block:
-        display: "<aqua>บล็อกเพชร"
-        item: DIAMOND_BLOCK
-        amount: 2
+      coins_bigger:
+        display: "<gold>180,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 180000
         weight: 20
-      netherite_scrap:
-        display: "<dark_red>เศษเนเธอไรต์"
-        item: NETHERITE_SCRAP
-        amount: 2
+      coins_huge:
+        display: "<gold>300,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 300000
         weight: 12
-      elytra:
-        display: "<light_purple>ปีกเอลิตร้า"
-        item: ELYTRA
-        amount: 1
-        weight: 2
-      beacon:
-        display: "<yellow>บีคอน (ไว้สร้างเขต)"
-        item: BEACON
-        amount: 1
+      coins_rich:
+        display: "<gold>600,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 600000
         weight: 8
-      totem:
-        display: "<gold>โทเท็มอมตะ"
-        item: TOTEM_OF_UNDYING
-        amount: 1
-        weight: 4
+      coins_jackpot:
+        display: "<gold><bold>1,500,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 1500000
+        weight: 2
