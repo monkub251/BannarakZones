@@ -488,7 +488,9 @@ public class AdminPanel implements Listener, CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player p)) { sender.sendMessage("Players only."); return true; }
-        if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return true; }
+        if (!p.hasPermission("zones.admin.admin")) {
+            Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return true;
+        }
 
         if (args.length > 0 && args[0].equalsIgnoreCase("web")) {
             if (!plugin.getConfig().getBoolean("web.enabled", false)) {

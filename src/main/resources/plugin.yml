@@ -7,157 +7,279 @@ description: Beacon-anchored protection zones with upgrades, members and entry e
 softdepend: [Vault, VaultUnlocked, Essentials]
 commands:
   zone:
+    permission: zones.command.zone
     description: Zone commands
     aliases: [z, protect, zn]
     usage: /zone
   money:
+    permission: zones.command.money
     description: Show a balance
     aliases: [bal, balance, เงิน]
     usage: /money [player]
   pay:
+    permission: zones.command.pay
     description: Send money to another player
     usage: /pay <player> <amount>
   baltop:
+    permission: zones.command.baltop
     description: Richest players
     aliases: [moneytop, top]
     usage: /baltop
   mission:
+    permission: zones.command.mission
     description: Open the mission menu
     aliases: [missions, quest, quests, ภารกิจ]
     usage: /mission
   menu:
+    permission: zones.command.menu
     description: Open the server menu
     aliases: [m, hub, เมนู]
     usage: /menu [name]
   admin:
+    permission: zones.admin.admin
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Open the staff panel
     usage: /admin [web]
     aliases: [ap, แอดมิน]
   ban:
+    permission: zones.admin.ban
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Ban a player
     usage: /ban <player> [time] [reason]
   unban:
+    permission: zones.admin.unban
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Lift a ban
     usage: /unban <player>
   mute:
+    permission: zones.admin.mute
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Stop a player chatting
     usage: /mute <player> [time] [reason]
   unmute:
+    permission: zones.admin.unmute
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Lift a mute
     usage: /unmute <player>
   kick:
+    permission: zones.admin.kick
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Kick a player
     usage: /kick <player> [reason]
   warn:
+    permission: zones.admin.warn
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Warn a player
     usage: /warn <player> <reason>
   history:
+    permission: zones.admin.history
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Punishment history for a player
     usage: /history <player>
   backup:
+    permission: zones.admin.backup
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Back up the worlds and plugin data now
     aliases: [สำรอง]
     usage: /backup [list]
   adminhud:
+    permission: zones.admin.adminhud
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Toggle the admin sidebar
     aliases: [hud]
   citem:
+    permission: zones.admin.citem
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Server-made items
     aliases: [customitem, ไอเทม]
     usage: /citem [list|give]
   market:
+    permission: zones.command.market
     description: Browse the player market
     aliases: [ah, ตลาด]
     usage: /market [mine|box]
   sell:
+    permission: zones.command.sell
     description: List the item in your hand for sale
     usage: /sell <price>
   crate:
+    permission: zones.command.crate
     description: Crates and keys
     aliases: [crates, กล่อง]
     usage: /crate <list|key|set|unset>
   daily:
+    permission: zones.command.daily
     description: Daily login reward
     aliases: [รายวัน]
   dungeon:
+    permission: zones.command.dungeon
     description: Open the dungeon menu
     aliases: [dg, ดันเจียน]
     usage: /dungeon [setspawn]
   rank:
+    permission: zones.command.rank
     description: See the rank ladder
     aliases: [ranks, ยศ]
   shop:
+    permission: zones.command.shop
     description: Open the server shop
     aliases: [ร้าน, store]
     usage: /shop [category]
   spawn:
+    permission: zones.command.spawn
     description: Go to the server spawn
   setspawn:
+    permission: zones.admin.setspawn
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Set the server spawn
   home:
+    permission: zones.command.home
     description: Go to one of your homes
     aliases: [h, บ้าน]
     usage: /home [name]
   sethome:
+    permission: zones.command.sethome
     description: Save your current spot as a home
     usage: /sethome [name]
   delhome:
+    permission: zones.command.delhome
     description: Remove a home
     usage: /delhome <name>
   warp:
+    permission: zones.command.warp
     description: Travel to a warp
     aliases: [warps]
     usage: /warp [name]
   setwarp:
+    permission: zones.admin.setwarp
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Create a warp
     usage: /setwarp <name> [ICON]
   delwarp:
+    permission: zones.admin.delwarp
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Remove a warp
     usage: /delwarp <name>
   tpa:
+    permission: zones.command.tpa
     description: Ask to teleport to a player
     usage: /tpa [player]
   tpaccept:
+    permission: zones.command.tpaccept
     description: Accept a teleport request
     aliases: [tpyes]
   tpdeny:
+    permission: zones.command.tpdeny
     description: Refuse a teleport request
     aliases: [tpno]
   eco:
+    permission: zones.admin.eco
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Admin money control
     aliases: [economy]
     usage: /eco <give|take|set> <player> <amount>
   msg:
+    permission: zones.command.msg
     description: Send a private message
     usage: /msg <player> <message>
     aliases: [w, tell, whisper, pm]
   r:
+    permission: zones.command.r
     description: Reply to the last private message
     usage: /r <message>
     aliases: [reply]
   ignore:
+    permission: zones.command.ignore
     description: Stop seeing a player's chat
     usage: /ignore [player]
     aliases: [block]
   chat:
+    permission: zones.admin.chat
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: Staff chat controls
     usage: /chat <clear|lock|spy>
   rtp:
+    permission: zones.command.rtp
     description: Teleport somewhere random in the wild
     usage: /rtp
     aliases: [wild, สำรวจ]
   world:
+    permission: zones.admin.world
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: List worlds, travel between them, set borders
     usage: /world [name|border]
   job:
+    permission: zones.command.job
     description: Pick a job and see your progress
     usage: /job [top <job>]
     aliases: [jobs, อาชีพ]
+  commands:
+    description: Show every command you are allowed to use
+    usage: /commands
+    permission: zones.command.commands
+    aliases: [cmds, คำสั่ง, ช่วย]
 permissions:
   zones.use:
+    description: Base access to the plugin
     default: true
+
+  # ───── คำสั่งของผู้เล่นทั่วไป เปิดให้ทุกคนโดยปริยาย ─────
+  zones.player:
+    description: Every command an ordinary player may use
+    default: true
+    children:
+      zones.command.commands: true
+      zones.command.zone: true
+      zones.command.money: true
+      zones.command.pay: true
+      zones.command.baltop: true
+      zones.command.mission: true
+      zones.command.menu: true
+      zones.command.market: true
+      zones.command.sell: true
+      zones.command.crate: true
+      zones.command.daily: true
+      zones.command.dungeon: true
+      zones.command.rank: true
+      zones.command.shop: true
+      zones.command.spawn: true
+      zones.command.home: true
+      zones.command.sethome: true
+      zones.command.delhome: true
+      zones.command.warp: true
+      zones.command.tpa: true
+      zones.command.tpaccept: true
+      zones.command.tpdeny: true
+      zones.command.msg: true
+      zones.command.r: true
+      zones.command.ignore: true
+      zones.command.rtp: true
+      zones.command.job: true
+
+  # ───── คำสั่งทีมงาน ปิดไว้ ให้เฉพาะ op หรือยศที่ตั้งสิทธิ์ ─────
   zones.admin:
+    description: Full staff access, grants every staff command below
     default: op
+    children:
+      zones.admin.admin: true
+      zones.admin.ban: true
+      zones.admin.unban: true
+      zones.admin.mute: true
+      zones.admin.unmute: true
+      zones.admin.kick: true
+      zones.admin.warn: true
+      zones.admin.history: true
+      zones.admin.backup: true
+      zones.admin.adminhud: true
+      zones.admin.citem: true
+      zones.admin.eco: true
+      zones.admin.setspawn: true
+      zones.admin.setwarp: true
+      zones.admin.delwarp: true
+      zones.admin.chat: true
+      zones.admin.world: true
+
+  # ───── สิทธิ์พิเศษอื่น ─────
   zones.chat.bypass:
     description: Ignore the chat cooldown, repeat check and word filter
     default: op

@@ -142,7 +142,7 @@ public class BackupManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("zones.admin")) {
+        if (!sender.hasPermission("zones.admin.backup")) {
             sender.sendMessage(Notify.of("<red>ไม่มีสิทธิ์"));
             return true;
         }

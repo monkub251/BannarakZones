@@ -114,7 +114,7 @@ public class MoneyCommands implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void eco(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("zones.admin")) {
+        if (!sender.hasPermission("zones.admin.eco")) {
             sender.sendMessage(Notify.of("<red>ไม่มีสิทธิ์"));
             return;
         }

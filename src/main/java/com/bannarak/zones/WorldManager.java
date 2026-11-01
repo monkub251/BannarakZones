@@ -222,7 +222,9 @@ public class WorldManager implements CommandExecutor, TabCompleter {
     }
 
     private boolean worldCommand(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("zones.admin")) { sender.sendMessage("§cไม่มีสิทธิ์"); return true; }
+        if (!sender.hasPermission("zones.admin.world")) {
+            sender.sendMessage("§cคำสั่งนี้สำหรับทีมงานเท่านั้น"); return true;
+        }
         if (args.length == 0) {
             sender.sendMessage("§7โลกทั้งหมด:");
             for (World w : Bukkit.getWorlds())

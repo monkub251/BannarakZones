@@ -206,11 +206,14 @@ public class Punishments implements Listener, CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("zones.admin")) {
-            sender.sendMessage(Notify.of("<red>ไม่มีสิทธิ์"));
+        String name = cmd.getName().toLowerCase(Locale.ROOT);
+        // Each punishment is its own permission, so a moderator can be given
+        // mute without also being handed the ban hammer. zones.admin is the
+        // parent of all of them, so full staff keep everything.
+        if (!sender.hasPermission("zones.admin." + name)) {
+            sender.sendMessage(Notify.of("<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"));
             return true;
         }
-        String name = cmd.getName().toLowerCase(Locale.ROOT);
         if (name.equals("history")) {
             if (args.length == 0) { sender.sendMessage(Notify.of("<gray>/history <ชื่อ>")); return true; }
             showHistory(sender, args[0]);

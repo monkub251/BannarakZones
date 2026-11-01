@@ -211,7 +211,7 @@ public class CustomItems implements Listener, CommandExecutor {
             return true;
         }
         if (args[0].equalsIgnoreCase("give")) {
-            if (!sender.hasPermission("zones.admin")) { sender.sendMessage(Notify.of("<red>ไม่มีสิทธิ์")); return true; }
+            if (!sender.hasPermission("zones.admin.citem")) { sender.sendMessage(Notify.of("<red>คำสั่งนี้สำหรับทีมงานเท่านั้น")); return true; }
             if (args.length < 3) { sender.sendMessage(Notify.of("<gray>/citem give <id> <ผู้เล่น> [จำนวน]")); return true; }
             Def d = items.get(args[1].toLowerCase(Locale.ROOT));
             Player target = Bukkit.getPlayerExact(args[2]);

@@ -117,7 +117,7 @@ public class AdminHud implements Listener, CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player p)) { sender.sendMessage("Players only."); return true; }
-        if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return true; }
+        if (!p.hasPermission("zones.admin.adminhud")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return true; }
         if (showing.remove(p.getUniqueId())) {
             clear(p);
             Notify.bar(p, "<gray>ปิดแผงผู้ดูแลแล้ว", null, 1f);

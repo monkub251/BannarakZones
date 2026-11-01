@@ -290,7 +290,9 @@ public class ChatManager implements Listener, CommandExecutor, TabCompleter {
     }
 
     private boolean adminChat(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("zones.admin")) { sender.sendMessage("§cไม่มีสิทธิ์"); return true; }
+        if (!sender.hasPermission("zones.admin.chat")) {
+            sender.sendMessage("§cคำสั่งนี้สำหรับทีมงานเท่านั้น"); return true;
+        }
         String sub = args.length == 0 ? "help" : args[0].toLowerCase(Locale.ROOT);
         switch (sub) {
             case "clear" -> {

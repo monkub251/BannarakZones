@@ -72,7 +72,7 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
         String name = cmd.getName().toLowerCase(Locale.ROOT);
         if (name.equals("setspawn")) {
             if (!(sender instanceof Player p)) return true;
-            if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return true; }
+            if (!p.hasPermission("zones.admin.setspawn")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return true; }
             locs.setSpawn(p.getLocation());
             locs.save(true);
             Notify.chat(p, "<green>ตั้งจุดเกิดใหม่แล้ว");
@@ -137,7 +137,7 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void setWarp(Player p, String[] args) {
-        if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return; }
+        if (!p.hasPermission("zones.admin.setwarp")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return; }
         if (args.length == 0) { Notify.chat(p, "<gray>ใช้: /setwarp <ชื่อ> [ICON]"); return; }
         locs.setWarp(args[0], p.getLocation(), args.length > 1 ? args[1].toUpperCase(Locale.ROOT) : null);
         locs.save(true);
@@ -145,7 +145,7 @@ public class TravelCommands implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void delWarp(Player p, String[] args) {
-        if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>ไม่มีสิทธิ์"); return; }
+        if (!p.hasPermission("zones.admin.delwarp")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น"); return; }
         if (args.length == 0) { Notify.chat(p, "<gray>ใช้: /delwarp <ชื่อ>"); return; }
         if (locs.deleteWarp(args[0])) { locs.save(true); Notify.chat(p, "<yellow>ลบวาร์ปแล้ว"); }
         else Notify.chat(p, "<red>ไม่มีวาร์ปชื่อนี้");

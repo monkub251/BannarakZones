@@ -191,6 +191,9 @@ public class BannarakZones extends JavaPlugin {
             if (c6 != null) { c6.setExecutor(worlds); c6.setTabCompleter(worlds); }
         }
 
+        var helpCmd = getCommand("commands");
+        if (helpCmd != null) helpCmd.setExecutor(new HelpCommand());
+
         chat = new ChatManager(this);
         chat.load();
         for (String name : new String[]{"msg", "r", "ignore", "chat"}) {
