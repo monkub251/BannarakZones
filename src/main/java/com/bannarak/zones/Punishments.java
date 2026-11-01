@@ -150,6 +150,33 @@ public class Punishments implements Listener, CommandExecutor, TabCompleter {
                 + "<gray>" + plugin.getConfig().getString("punish.appeal", "ติดต่อทีมงานใน Discord"));
     }
 
+    /**
+     * Finds the id a name was actually punished under. A Bedrock player
+     * arrives through Floodgate with an id that is not derived from their
+     * name, so deriving one from the name finds nothing and the unban
+     * quietly does nothing. The punishment record itself is the only
+     * reliable place to look once they are offline.
+     */
+    public UUID resolve(String name) {
+        if (name == null || name.isBlank()) return null;
+        Player online = Bukkit.getPlayerExact(name);
+        if (online != null) return online.getUniqueId();
+        for (int i = history.size() - 1; i >= 0; i--) {
+            Entry e = history.get(i);
+            if (e.targetName != null && e.targetName.equalsIgnoreCase(name)) return e.target;
+        }
+        return Bukkit.getOfflinePlayer(name).getUniqueId();
+    }
+
+    /** The name we last saw on a punishment for this id, for display. */
+    public String nameOf(UUID id) {
+        for (int i = history.size() - 1; i >= 0; i--) {
+            Entry e = history.get(i);
+            if (e.target.equals(id) && e.targetName != null) return e.targetName;
+        }
+        return null;
+    }
+
     public boolean lift(UUID target, Type type) {
         Entry e = activeOf(target, type);
         if (e == null) return false;

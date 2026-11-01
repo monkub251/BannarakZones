@@ -112,10 +112,14 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, target: target || null, value: value || null })
       });
-      toast(out.message || 'เรียบร้อย');
+      const msg = out.message || 'เรียบร้อย';
+      toast(msg);
+      if (action === 'console' && $('#cmd-log')) logLine(msg, 'ok');
       refresh();
     } catch (err) {
-      if (err.message !== 'session') toast(err.message, true);
+      if (err.message === 'session') return;
+      toast(err.message, true);
+      if (action === 'console' && $('#cmd-log')) logLine(err.message, 'bad');
     }
   }
 
@@ -128,23 +132,61 @@
                  : b.dataset.value || '';
     if (b.dataset.target && !target) { toast('ใส่ชื่อผู้เล่นก่อน', true); return; }
     act(b.dataset.act, target, value, b.dataset.confirm);
-    if (b.dataset.from) { const f = $(b.dataset.from); if (f && f.tagName === 'TEXTAREA') f.value = ''; }
+    if (b.dataset.from) {
+      const f = $(b.dataset.from);
+      if (f && (f.tagName === 'TEXTAREA' || f.id === 'cmd')) {
+        if (f.id === 'cmd' && value) logLine('> ' + value, 'echo');
+        f.value = '';
+      }
+    }
+  });
+
+  // ---------- ช่องคอนโซล ----------
+
+  function logLine(text, cls) {
+    const box = $('#cmd-log');
+    const el = document.createElement('div');
+    el.className = cls || '';
+    el.textContent = text;
+    box.prepend(el);
+    while (box.children.length > 40) box.lastChild.remove();
+  }
+
+  $('#cmd').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const cmd = $('#cmd').value.trim();
+    if (!cmd) return;
+    logLine('> ' + cmd, 'echo');
+    $('#cmd').value = '';
+    act('console', null, cmd);
   });
 
   // ---------- แผ่นผู้เล่นรายคน ----------
 
   const SHEET_BUTTONS = [
-    ['heal',         'รักษา',                  '',       null],
-    ['freeze',       'แช่แข็ง / ปลด',          '',       null],
-    ['gamemode',     'โหมดสร้างสรรค์',        'creative', null],
-    ['gamemode',     'โหมดเอาชีวิตรอด',       'survival', null],
-    ['money',        'ปรับเงิน (ใช้ค่าด้านบน)', 'FROM',   null],
-    ['resetDungeon', 'ล้างคูลดาวน์ดันเจียน',   '',       null],
-    ['warn',         'เตือน',                  'FROM',   null],
-    ['mute',         'ปิดปาก',                 'FROM',   null],
-    ['unmute',       'ปลดปิดปาก',              '',       null],
-    ['kick',         'เตะ',                    'FROM',   'เตะคนนี้ออกจากเซิร์ฟ?'],
-    ['ban',          'แบน',                    'FROM',   'แบนคนนี้?']
+    ['heal',             'รักษา',                  '',         null],
+    ['feed',             'เติมความอิ่ม',           '',         null],
+    ['fly',              'บิน เปิด/ปิด',           '',         null],
+    ['god',              'อมตะ เปิด/ปิด',          '',         null],
+    ['freeze',           'แช่แข็ง / ปลด',          '',         null],
+    ['toSpawn',          'ส่งกลับจุดเกิด',         '',         null],
+    ['gamemode',         'โหมดสร้างสรรค์',        'creative', null],
+    ['gamemode',         'โหมดเอาชีวิตรอด',       'survival', null],
+    ['money',            'เพิ่ม/หักเงิน',          'FROM',     null],
+    ['setMoney',         'ตั้งเงินเป็น',           'FROM',     null],
+    ['give',             'ให้ไอเทม',               'FROM',     null],
+    ['setRank',          'ตั้งยศ',                 'FROM',     null],
+    ['clearInventory',   'ล้างกระเป๋า',            '',         'ล้างกระเป๋าคนนี้ทั้งหมด?'],
+    ['resetDungeon',     'ล้างคูลดาวน์ดันเจียน',   '',         null],
+    ['warn',             'เตือน',                  'FROM',     null],
+    ['mute',             'ปิดปาก',                 'FROM',     null],
+    ['unmute',           'ปลดปิดปาก',              '',         null],
+    ['kill',             'ฆ่า',                    '',         'ฆ่าคนนี้?'],
+    ['kick',             'เตะ',                    'FROM',     'เตะคนนี้ออกจากเซิร์ฟ?'],
+    ['ban',              'แบน',                    'FROM',     'แบนคนนี้?'],
+    ['unban',            'ปลดแบน',                 '',         null],
+    ['clearPunishments', 'ล้างประวัติโทษ',         '',         'ล้างบทลงโทษทั้งหมดของคนนี้?']
   ];
 
   function openSheet(p) {
@@ -160,7 +202,8 @@
     row.innerHTML = '';
     for (const [action, label, value, confirmText] of SHEET_BUTTONS) {
       const b = document.createElement('button');
-      b.className = 'btn sm' + (action === 'ban' ? ' danger' : action === 'kick' ? ' warn' : '');
+      b.className = 'btn sm' + (action === 'ban' || action === 'kill' ? ' danger'
+                 : action === 'kick' || action === 'clearInventory' ? ' warn' : '');
       b.textContent = label;
       b.addEventListener('click', () => {
         const v = value === 'FROM' ? $('#sheet-value').value.trim() : value;
@@ -212,6 +255,18 @@
       : '<p class="empty">ยังไม่มีใครออนไลน์</p>';
     $$('[data-chip]', chips).forEach(b => b.addEventListener('click',
       () => openSheet(list.find(p => p.name === b.dataset.chip))));
+
+    const quick = $('#t-quick');
+    if (quick) {
+      quick.innerHTML = list.length
+        ? list.map(p => `<button class="chip" data-pick="${esc(p.name)}">${face(p.name)}
+            ${esc(p.name)}</button>`).join('')
+        : '<p class="empty">ยังไม่มีใครออนไลน์ — พิมพ์ชื่อเองได้</p>';
+      $$('[data-pick]', quick).forEach(b => b.addEventListener('click', () => {
+        $('#t-name').value = b.dataset.pick;
+        toast('เลือก ' + b.dataset.pick + ' แล้ว');
+      }));
+    }
 
     const shown = search ? list.filter(p => p.name.toLowerCase().includes(search)) : list;
     const body = $('#player-rows');
@@ -283,7 +338,8 @@
     try {
       const jobs = [api('/api/status').then(drawStatus)];
       const tab = tabNow();
-      if (tab === 'dash' || tab === 'players') jobs.push(api('/api/players').then(drawPlayers));
+      if (tab === 'dash' || tab === 'players' || tab === 'tools')
+        jobs.push(api('/api/players').then(drawPlayers));
       if (tab === 'worlds')  jobs.push(api('/api/worlds').then(drawWorlds));
       if (tab === 'economy') jobs.push(api('/api/economy').then(drawEconomy));
       jobs.push(api('/api/bans').then(drawBans));

@@ -101,14 +101,38 @@
             <button class="btn" data-act="weather" data-value="clear">ฟ้าใส</button>
             <button class="btn" data-act="weather" data-value="rain">ฝนตก</button>
             <button class="btn" data-act="healAll" data-confirm="รักษาผู้เล่นทุกคน?">รักษาทุกคน</button>
+            <button class="btn" data-act="saveAll">บันทึกทุกอย่าง</button>
             <button class="btn" data-act="reload" data-confirm="โหลดไฟล์ตั้งค่าใหม่ทั้งหมด?">โหลดค่าใหม่</button>
             <button class="btn warn" data-act="backup" data-confirm="เริ่มสำรองข้อมูลเดี๋ยวนี้?">สำรองข้อมูล</button>
+          </div>
+          <h2 style="margin-top:18px">แก้แลค / ดูแลเซิร์ฟ</h2>
+          <div class="btn-row">
+            <button class="btn" data-act="clearDrops" data-confirm="เก็บของที่ตกอยู่ทั้งเซิร์ฟ?">เก็บของตกพื้น</button>
+            <button class="btn" data-act="clearMobs" data-confirm="ล้างมอนสเตอร์ทั้งเซิร์ฟ?">ล้างมอนสเตอร์</button>
+            <button class="btn" data-act="chatClear">ล้างแชต</button>
+            <button class="btn" data-act="chatLock">ล็อก / ปลดล็อกแชต</button>
+            <button class="btn warn" data-act="whitelist" data-value="on" data-confirm="เปิดไวต์ลิสต์? คนนอกรายชื่อจะเข้าไม่ได้">เปิดไวต์ลิสต์</button>
+            <button class="btn" data-act="whitelist" data-value="off">ปิดไวต์ลิสต์</button>
+            <button class="btn danger" data-act="kickAll" data-from="#say" data-confirm="เตะผู้เล่นทุกคนที่ไม่ใช่ทีมงาน?">เตะทุกคนออก</button>
           </div>
         </article>
 
         <article class="card span2">
           <h2>ผู้เล่นที่ออนไลน์</h2>
           <div id="d-players" class="chiplist"><p class="empty">ยังไม่มีใครออนไลน์</p></div>
+        </article>
+
+        <article class="card span3">
+          <h2>คอนโซล — สั่งอะไรก็ได้</h2>
+          <p class="note" style="margin:0 0 10px">
+            พิมพ์คำสั่งแบบที่พิมพ์ในคอนโซลเซิร์ฟ ไม่ต้องใส่ <code>/</code> ก็ได้
+            เช่น <code>give Monkub251 diamond 64</code> หรือ <code>mv remove lobby</code>
+          </p>
+          <div style="display:flex;gap:8px">
+            <input id="cmd" placeholder="พิมพ์คำสั่ง แล้วกด Enter" style="flex:1" autocomplete="off">
+            <button class="btn gold" data-act="console" data-from="#cmd">สั่ง</button>
+          </div>
+          <div id="cmd-log" class="cmdlog"></div>
         </article>
       </div>
     </section>
@@ -179,43 +203,84 @@
     <!-- เครื่องมือ -->
     <section class="tab" data-pane="tools">
       <div class="grid">
+        <article class="card span3">
+          <h2>เลือกคนที่จะจัดการ</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <label>ชื่อผู้เล่น <span class="note">(คนเล่นมือถือมีจุดนำหน้า เช่น .To9127)</span></label>
+              <input id="t-name" placeholder="เช่น Lord_Bannarak หรือ .To9127">
+            </div>
+            <div style="flex:1;min-width:200px">
+              <label>ค่าเพิ่มเติม — ระยะเวลา / จำนวนเงิน / ยศ / ไอเทม / เหตุผล</label>
+              <input id="t-value" placeholder="7d · 5000 · vip · diamond 64 · โกงของ">
+            </div>
+          </div>
+          <div id="t-quick" class="chiplist" style="margin-top:12px"></div>
+        </article>
+
         <article class="card">
-          <h2>จัดการผู้เล่นด้วยชื่อ</h2>
-          <label>ชื่อผู้เล่น</label>
-          <input id="t-name" placeholder="เช่น Lord_Bannarak">
-          <label>ค่าเพิ่มเติม (ระยะเวลา / จำนวนเงิน / เหตุผล)</label>
-          <input id="t-value" placeholder="เช่น 7d หรือ 5000 หรือ โกงของ">
+          <h2>ดูแลตัวผู้เล่น</h2>
           <div class="btn-row">
             <button class="btn" data-act="heal" data-target="#t-name">รักษา</button>
+            <button class="btn" data-act="feed" data-target="#t-name">เติมความอิ่ม</button>
+            <button class="btn" data-act="fly" data-target="#t-name">บิน เปิด/ปิด</button>
+            <button class="btn" data-act="god" data-target="#t-name">อมตะ เปิด/ปิด</button>
             <button class="btn" data-act="freeze" data-target="#t-name">แช่แข็ง / ปลด</button>
-            <button class="btn" data-act="money" data-target="#t-name" data-from="#t-value">ปรับเงิน</button>
-            <button class="btn" data-act="warn" data-target="#t-name" data-from="#t-value">เตือน</button>
-            <button class="btn" data-act="mute" data-target="#t-name" data-from="#t-value">ปิดปาก</button>
-            <button class="btn" data-act="unmute" data-target="#t-name">ปลดปิดปาก</button>
-            <button class="btn warn" data-act="kick" data-target="#t-name" data-from="#t-value">เตะ</button>
-            <button class="btn danger" data-act="ban" data-target="#t-name" data-from="#t-value" data-confirm="แบนคนนี้?">แบน</button>
-            <button class="btn" data-act="unban" data-target="#t-name">ปลดแบน</button>
-            <button class="btn" data-act="resetDungeon" data-target="#t-name">ล้างคูลดาวน์ดันเจียน</button>
+            <button class="btn warn" data-act="kill" data-target="#t-name" data-confirm="ฆ่าคนนี้?">ฆ่า</button>
           </div>
         </article>
+
         <article class="card">
-          <h2>เปลี่ยนโหมดเกม</h2>
+          <h2>ย้ายตัว</h2>
+          <div class="btn-row">
+            <button class="btn" data-act="toSpawn" data-target="#t-name">ส่งกลับจุดเกิด</button>
+            <button class="btn" data-act="toWorld" data-target="#t-name" data-value="world">ไปโลกหลัก</button>
+            <button class="btn" data-act="toWorld" data-target="#t-name" data-value="lobby">ไปล็อบบี้</button>
+          </div>
+          <h2 style="margin-top:18px">โหมดเกม</h2>
           <div class="btn-row">
             <button class="btn" data-act="gamemode" data-target="#t-name" data-value="survival">เอาชีวิตรอด</button>
             <button class="btn" data-act="gamemode" data-target="#t-name" data-value="creative">สร้างสรรค์</button>
             <button class="btn" data-act="gamemode" data-target="#t-name" data-value="adventure">ผจญภัย</button>
             <button class="btn" data-act="gamemode" data-target="#t-name" data-value="spectator">ผู้ชม</button>
           </div>
-          <p class="note">ใช้ชื่อในช่อง “ชื่อผู้เล่น” ด้านซ้าย</p>
         </article>
+
         <article class="card">
-          <h2>ตัวช่วยจำระยะเวลา</h2>
+          <h2>ของและเงิน</h2>
+          <p class="note" style="margin:0 0 8px">ใช้ค่าในช่อง “ค่าเพิ่มเติม”</p>
+          <div class="btn-row">
+            <button class="btn" data-act="money" data-target="#t-name" data-from="#t-value">เพิ่ม/หักเงิน</button>
+            <button class="btn" data-act="setMoney" data-target="#t-name" data-from="#t-value">ตั้งเงินเป็น</button>
+            <button class="btn" data-act="give" data-target="#t-name" data-from="#t-value">ให้ไอเทม</button>
+            <button class="btn" data-act="setRank" data-target="#t-name" data-from="#t-value">ตั้งยศ</button>
+            <button class="btn warn" data-act="clearInventory" data-target="#t-name" data-confirm="ล้างกระเป๋าคนนี้ทั้งหมด?">ล้างกระเป๋า</button>
+            <button class="btn" data-act="resetDungeon" data-target="#t-name">ล้างคูลดาวน์ดันเจียน</button>
+          </div>
+        </article>
+
+        <article class="card span2">
+          <h2>บทลงโทษ</h2>
+          <div class="btn-row">
+            <button class="btn" data-act="warn" data-target="#t-name" data-from="#t-value">เตือน</button>
+            <button class="btn" data-act="mute" data-target="#t-name" data-from="#t-value">ปิดปาก</button>
+            <button class="btn" data-act="unmute" data-target="#t-name">ปลดปิดปาก</button>
+            <button class="btn warn" data-act="kick" data-target="#t-name" data-from="#t-value">เตะ</button>
+            <button class="btn danger" data-act="ban" data-target="#t-name" data-from="#t-value" data-confirm="แบนคนนี้?">แบน</button>
+            <button class="btn" data-act="unban" data-target="#t-name">ปลดแบน</button>
+            <button class="btn" data-act="clearPunishments" data-target="#t-name" data-confirm="ล้างบทลงโทษทั้งหมดของคนนี้?">ล้างประวัติโทษทั้งหมด</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>ตัวช่วยจำ</h2>
           <ul class="kv">
             <li><code>30m</code><span>30 นาที</span></li>
             <li><code>2h</code><span>2 ชั่วโมง</span></li>
             <li><code>7d</code><span>7 วัน</span></li>
-            <li><code>2w</code><span>2 สัปดาห์</span></li>
             <li><code>perm</code><span>ถาวร</span></li>
+            <li><code>-500</code><span>หักเงิน 500</span></li>
+            <li><code>diamond 64</code><span>ให้เพชร 64</span></li>
           </ul>
         </article>
       </div>

@@ -104,6 +104,20 @@ public class RankManager implements Listener {
         return done;
     }
 
+    /** Sets someone's rank outright, for staff tools. False if no such rank. */
+    public boolean setRank(UUID uuid, String rankId) {
+        for (Rank r : ranks) {
+            if (!r.id.equalsIgnoreCase(rankId)) continue;
+            current.put(uuid, r.id);
+            dirty = true;
+            save(false);
+            Player online = Bukkit.getPlayer(uuid);
+            if (online != null) applyPermissions(online);
+            return true;
+        }
+        return false;
+    }
+
     public boolean qualifies(Player p, Rank r) {
         return plugin.money().get(p.getUniqueId()) >= r.needMoney
                 && hoursPlayed(p) >= r.needHours

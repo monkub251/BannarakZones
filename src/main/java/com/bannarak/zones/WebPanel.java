@@ -148,7 +148,8 @@ public class WebPanel {
         }
         int end = i;
         while (end < json.length() && ",}".indexOf(json.charAt(end)) < 0) end++;
-        return json.substring(i, end).trim();
+        String raw = json.substring(i, end).trim();
+        return raw.equals("null") || raw.isEmpty() ? null : raw;
     }
 
     private static String esc(String s) {
@@ -408,11 +409,68 @@ public class WebPanel {
                 for (World world : Bukkit.getWorlds()) { world.setStorm(rain); world.setThundering(false); }
                 return rain ? "ให้ฝนตกแล้ว" : "ฟ้าใสแล้ว";
             }
+            case "saveAll" -> {
+                plugin.store().save();
+                plugin.money().save(true);
+                plugin.missions().save(true);
+                plugin.punishments().save(true);
+                plugin.chat().save(true);
+                plugin.jobs().save(true);
+                for (World world : Bukkit.getWorlds()) world.save();
+                return "บันทึกทุกอย่างแล้ว";
+            }
+            case "clearDrops" -> {
+                int n = 0;
+                for (World world : Bukkit.getWorlds())
+                    for (var e : world.getEntities())
+                        if (e instanceof org.bukkit.entity.Item) { e.remove(); n++; }
+                Bukkit.broadcast(Notify.of("<gold>[ระบบ] <gray>เก็บของที่ตกอยู่ <white>" + n + " <gray>ชิ้น"));
+                return "เก็บของตกพื้น " + n + " ชิ้น";
+            }
+            case "clearMobs" -> {
+                int n = 0;
+                for (World world : Bukkit.getWorlds())
+                    for (var e : world.getEntities())
+                        if (e instanceof org.bukkit.entity.Monster) { e.remove(); n++; }
+                return "ล้างมอนสเตอร์ " + n + " ตัว";
+            }
+            case "kickAll" -> {
+                String why = value == null ? "ทีมงานปิดเซิร์ฟชั่วคราว" : value;
+                int n = 0;
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p.hasPermission("zones.admin")) continue;
+                    p.kick(Notify.of("<red>" + why));
+                    n++;
+                }
+                return "เตะออก " + n + " คน";
+            }
+            case "whitelist" -> {
+                boolean on = !"off".equals(value);
+                Bukkit.setWhitelist(on);
+                Bukkit.setWhitelistEnforced(on);
+                return on ? "เปิดไวต์ลิสต์แล้ว (เฉพาะคนในรายชื่อเข้าได้)" : "ปิดไวต์ลิสต์แล้ว";
+            }
+            case "chatLock" -> {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "chat lock");
+                return "สลับการล็อกแชตแล้ว";
+            }
+            case "chatClear" -> {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "chat clear");
+                return "ล้างแชตแล้ว";
+            }
+            case "console" -> {
+                if (value == null || value.isBlank()) return "ไม่มีคำสั่ง";
+                String cmd = value.startsWith("/") ? value.substring(1) : value;
+                plugin.getLogger().warning("Web panel: " + staff + " ran console command: " + cmd);
+                boolean ok = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                return ok ? "สั่ง /" + cmd + " แล้ว" : "ไม่รู้จักคำสั่ง /" + cmd;
+            }
             default -> { }
         }
 
         if (target == null) return "ไม่ได้ระบุผู้เล่น";
-        UUID id = t != null ? t.getUniqueId() : Bukkit.getOfflinePlayer(target).getUniqueId();
+        UUID id = plugin.punishments().resolve(target);
+        if (id == null) return "ไม่รู้จักผู้เล่นคนนี้";
         String name = t != null ? t.getName() : target;
 
         switch (action) {
@@ -477,6 +535,89 @@ public class WebPanel {
             case "resetDungeon" -> {
                 plugin.dungeons().clearCooldown(id);
                 return "รีเซ็ตคูลดาวน์ของ " + name + " แล้ว";
+            }
+            case "feed" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                t.setFoodLevel(20);
+                t.setSaturation(20f);
+                return "เติมความอิ่มให้ " + name + " แล้ว";
+            }
+            case "kill" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                t.setHealth(0);
+                return "ฆ่า " + name + " แล้ว";
+            }
+            case "fly" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                boolean on = !t.getAllowFlight();
+                t.setAllowFlight(on);
+                t.setFlying(on && t.isFlying());
+                Notify.bar(t, on ? "<aqua>เปิดโหมดบินให้แล้ว" : "<gray>ปิดโหมดบินแล้ว", null, 1f);
+                return (on ? "เปิด" : "ปิด") + "โหมดบินของ " + name + " แล้ว";
+            }
+            case "god" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                boolean on = !t.isInvulnerable();
+                t.setInvulnerable(on);
+                Notify.bar(t, on ? "<gold>อมตะแล้ว" : "<gray>เลิกอมตะ", null, 1f);
+                return (on ? "เปิด" : "ปิด") + "อมตะของ " + name + " แล้ว";
+            }
+            case "clearInventory" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                t.getInventory().clear();
+                Notify.chat(t, "<red>ทีมงานล้างกระเป๋าของคุณ");
+                return "ล้างกระเป๋าของ " + name + " แล้ว";
+            }
+            case "toSpawn" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                Location spawn = plugin.locations().spawn();
+                if (spawn == null) spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
+                t.teleportAsync(spawn);
+                return "ส่ง " + name + " กลับจุดเกิดแล้ว";
+            }
+            case "toWorld" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                World w = value == null ? null : Bukkit.getWorld(value);
+                if (w == null) return "ไม่เจอโลกชื่อนี้";
+                t.teleportAsync(w.getSpawnLocation().add(0.5, 0, 0.5));
+                return "ส่ง " + name + " ไปโลก " + w.getName() + " แล้ว";
+            }
+            case "setMoney" -> {
+                double amount;
+                try { amount = Double.parseDouble(value == null ? "0" : value); }
+                catch (NumberFormatException ex) { return "จำนวนเงินไม่ถูกต้อง"; }
+                plugin.money().set(id, amount);
+                plugin.money().save(false);
+                return "ตั้งเงินของ " + name + " เป็น " + Math.round(amount) + " แล้ว";
+            }
+            case "setRank" -> {
+                if (value == null || value.isBlank()) return "ไม่ได้ระบุยศ";
+                boolean ok = plugin.ranks().setRank(id, value.trim());
+                if (!ok) return "ไม่มียศชื่อ " + value;
+                if (t != null) Notify.popup(t, "<gold>ได้รับยศใหม่", "<gray>" + value,
+                        "ui.toast.challenge_complete", 1.1f);
+                return "ตั้งยศของ " + name + " เป็น " + value + " แล้ว";
+            }
+            case "give" -> {
+                if (t == null) return "คนนี้ไม่ได้ออนไลน์";
+                if (value == null || value.isBlank()) return "ไม่ได้ระบุไอเทม";
+                String[] bits = value.trim().split("\\s+");
+                Material mat = Material.matchMaterial(bits[0]);
+                if (mat == null) return "ไม่รู้จักไอเทม " + bits[0];
+                int count = 1;
+                if (bits.length > 1) {
+                    try { count = Math.max(1, Math.min(2304, Integer.parseInt(bits[1]))); }
+                    catch (NumberFormatException ex) { return "จำนวนไม่ถูกต้อง"; }
+                }
+                t.getInventory().addItem(new org.bukkit.inventory.ItemStack(mat, count));
+                return "ให้ " + bits[0] + " x" + count + " กับ " + name + " แล้ว";
+            }
+            case "clearPunishments" -> {
+                int n = 0;
+                for (Punishments.Entry e : plugin.punishments().history())
+                    if (e.target.equals(id) && !e.lifted) { e.lifted = true; n++; }
+                plugin.punishments().save(true);
+                return "ล้างบทลงโทษของ " + name + " ไป " + n + " รายการ";
             }
             default -> {
                 return "ไม่รู้จักคำสั่งนี้";
