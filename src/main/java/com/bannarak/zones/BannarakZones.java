@@ -25,13 +25,15 @@ public class BannarakZones extends JavaPlugin {
     private LocStore locations;
     private MenuManager menus;
     private ShopManager shop;
-    private RankManager ranks;
+    private DiscordRanks ranks;
     private DungeonManager dungeons;
     private CrateManager crates;
     private DailyRewards daily;
     private MarketManager market;
     private CustomItems customItems;
     private AdminHud adminHud;
+    private PlayerHud playerHud;
+    private AdminTools adminTools;
     private BackupManager backups;
     private Punishments punishments;
     private AdminPanel adminPanel;
@@ -41,7 +43,7 @@ public class BannarakZones extends JavaPlugin {
     private Material adminBlock = Material.REINFORCED_DEEPSLATE;
     private int adminRadius = 64;
     private final Set<String> lockedWorlds = new HashSet<>();
-    private JobManager jobs;
+    private final Set<String> safeWorlds = new HashSet<>();
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -112,14 +114,11 @@ public class BannarakZones extends JavaPlugin {
         if (shopCmd != null) shopCmd.setExecutor(shop);
         getServer().getPluginManager().registerEvents(shop, this);
 
-        ranks = new RankManager(this);
+        ranks = new DiscordRanks(this);
         ranks.load();
-        RankGui rankGui = new RankGui(this);
         var rankCmd = getCommand("rank");
-        if (rankCmd != null) rankCmd.setExecutor(rankGui);
+        if (rankCmd != null) rankCmd.setExecutor(ranks);
         getServer().getPluginManager().registerEvents(ranks, this);
-        getServer().getPluginManager().registerEvents(rankGui, this);
-        ranks.startTracking();
 
         dungeons = new DungeonManager(this);
         DungeonGui dungeonGui = new DungeonGui(this);
@@ -161,6 +160,18 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(adminHud, this);
         adminHud.start();
 
+        adminTools = new AdminTools(this);
+        adminTools.load();
+        for (String n : new String[]{"astick", "jail", "unjail", "setjail", "spectate"}) {
+            var c7 = getCommand(n);
+            if (c7 != null) { c7.setExecutor(adminTools); c7.setTabCompleter(adminTools); }
+        }
+        getServer().getPluginManager().registerEvents(adminTools, this);
+
+        playerHud = new PlayerHud(this);
+        getServer().getPluginManager().registerEvents(playerHud, this);
+        playerHud.start();
+
         backups = new BackupManager(this);
         var backupCmd = getCommand("backup");
         if (backupCmd != null) backupCmd.setExecutor(backups);
@@ -178,13 +189,6 @@ public class BannarakZones extends JavaPlugin {
         var panelCmd = getCommand("admin");
         if (panelCmd != null) panelCmd.setExecutor(adminPanel);
         getServer().getPluginManager().registerEvents(adminPanel, this);
-
-        jobs = new JobManager(this);
-        jobs.load();
-        jobs.loadProgress();
-        var jobCmd = getCommand("job");
-        if (jobCmd != null) jobCmd.setExecutor(jobs);
-        getServer().getPluginManager().registerEvents(jobs, this);
 
         worlds = new WorldManager(this);
         worlds.prepareWorlds();
@@ -209,7 +213,7 @@ public class BannarakZones extends JavaPlugin {
         webPanel = new WebPanel(this);
         webPanel.start();
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); jobs.save(false); }, 6000L, 6000L);
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
@@ -225,7 +229,7 @@ public class BannarakZones extends JavaPlugin {
         if (market != null) market.save(true);
         if (punishments != null) punishments.save(true);
         if (chat != null) chat.save(true);
-        if (jobs != null) jobs.save(true);
+        if (adminTools != null) adminTools.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -257,6 +261,9 @@ public class BannarakZones extends JavaPlugin {
         lockedWorlds.clear();
         for (String w : c.getStringList("protection.locked-worlds"))
             lockedWorlds.add(w.toLowerCase(Locale.ROOT));
+        safeWorlds.clear();
+        for (String w : c.getStringList("protection.no-mob-damage-worlds"))
+            safeWorlds.add(w.toLowerCase(Locale.ROOT));
 
         defaultRadius = c.getInt("zone.default-radius", 16);
         maxRadius = c.getInt("zone.max-radius", 48);
@@ -294,7 +301,7 @@ public class BannarakZones extends JavaPlugin {
     public LocStore locations() { return locations; }
     public MenuManager menus() { return menus; }
     public ShopManager shop() { return shop; }
-    public RankManager ranks() { return ranks; }
+    public DiscordRanks ranks() { return ranks; }
     public DungeonManager dungeons() { return dungeons; }
     public CrateManager crates() { return crates; }
     public DailyRewards daily() { return daily; }
@@ -313,7 +320,14 @@ public class BannarakZones extends JavaPlugin {
     public boolean worldLocked(String world) {
         return world != null && lockedWorlds.contains(world.toLowerCase(Locale.ROOT));
     }
-    public JobManager jobs() { return jobs; }
+
+    /** A world where hostile mobs cannot hurt anyone. */
+    public boolean safeWorld(String world) {
+        return world != null && safeWorlds.contains(world.toLowerCase(Locale.ROOT));
+    }
+    public AdminHud adminHud() { return adminHud; }
+    public PlayerHud playerHud() { return playerHud; }
+    public AdminTools adminTools() { return adminTools; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

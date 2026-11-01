@@ -101,7 +101,7 @@ menus:
         icon: NAME_TAG
         name: "<light_purple>ยศ"
         lore:
-          - "<gray>ดูเงื่อนไขและซื้อยศ"
+          - "<gray>ผูกบัญชีดิสคอร์ดเพื่อรับยศ"
           - ""
           - "<green>คลิกเพื่อเปิด"
         actions:

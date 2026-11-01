@@ -28,6 +28,9 @@ public class AdminHud implements Listener, CommandExecutor {
         this.plugin = plugin;
     }
 
+    /** True while this staffer has the admin sidebar switched on. */
+    public boolean isOn(UUID id) { return showing.contains(id); }
+
     public void start() {
         long period = Math.max(20L, plugin.getConfig().getLong("admin-hud.refresh-ticks", 40L));
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::refreshAll, 100L, period);

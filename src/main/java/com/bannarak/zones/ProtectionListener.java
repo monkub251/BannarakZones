@@ -26,6 +26,24 @@ public class ProtectionListener implements Listener {
         this.plugin = plugin;
     }
 
+    /** True for a hostile mob, or for something a hostile mob threw. */
+    private boolean hostile(Entity damager) {
+        if (damager instanceof Monster || damager instanceof Slime
+                || damager instanceof Phantom || damager instanceof Hoglin) return true;
+        if (damager instanceof Projectile pr && pr.getShooter() instanceof Entity shooter)
+            return hostile(shooter);
+        return damager instanceof Explosive || damager instanceof AreaEffectCloud;
+    }
+
+    /** Where mobs are not allowed to hurt anyone. */
+    private boolean safeFromMobs(Location loc) {
+        if (loc == null || loc.getWorld() == null) return false;
+        if (plugin.worldLocked(loc.getWorld().getName())) return true;
+        if (plugin.safeWorld(loc.getWorld().getName())) return true;
+        Zone z = plugin.store().zoneAt(loc);
+        return z != null && !z.allowMobDamage;
+    }
+
     private boolean denied(Player player, Location loc) {
         if (player != null && plugin.canBypass(player)) return false;
         // A locked world is staff-only ground, zone or no zone. This is what
@@ -296,6 +314,14 @@ public class ProtectionListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent e) {
         Entity victim = e.getEntity();
+
+        // Hostile mobs first: a safe world or a safe zone means a player
+        // takes nothing from them, whether it is a claw or an arrow.
+        if (victim instanceof Player hurt && hostile(e.getDamager()) && safeFromMobs(hurt.getLocation())) {
+            e.setCancelled(true);
+            return;
+        }
+
         Zone z = zoneAt(victim.getLocation());
         if (z == null) return;
         Player att = attacker(e.getDamager());

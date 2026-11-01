@@ -36,6 +36,15 @@ public final class Notify {
 
     /** Fading centre-screen text. Reserved for milestones. */
     public static void popup(Player p, String mainMini, String subMini, String sound, float pitch) {
+        // Some people would rather read a milestone than have it painted
+        // across the middle of the screen while they are fighting.
+        if (plugin != null && plugin.getConfig().getBoolean("notify.milestones-in-chat", true)) {
+            String line = (mainMini == null ? "" : mainMini)
+                    + (subMini == null || subMini.isBlank() ? "" : " <dark_gray>· " + subMini);
+            p.sendMessage(MM.deserialize(line));
+            if (sounds() && sound != null) p.playSound(p.getLocation(), sound, 0.8f, pitch);
+            return;
+        }
         Component main = MM.deserialize(mainMini == null ? "" : mainMini);
         Component sub = MM.deserialize(subMini == null ? "" : subMini);
         p.showTitle(Title.title(main, sub, Title.Times.times(

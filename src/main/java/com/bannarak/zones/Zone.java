@@ -19,6 +19,9 @@ public class Zone {
     /** A staff zone. Nobody but staff gets through it, members and all. */
     public boolean admin = false;
 
+    /** When false, nothing hostile may lay a finger on a player in here. */
+    public boolean allowMobDamage = false;
+
     public Zone(UUID id, UUID owner, String ownerName, String world, int x, int y, int z, int radius) {
         this.id = id; this.owner = owner; this.ownerName = ownerName;
         this.world = world; this.x = x; this.y = y; this.z = z; this.radius = radius;

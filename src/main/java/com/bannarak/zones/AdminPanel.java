@@ -601,7 +601,6 @@ public class AdminPanel implements Listener, CommandExecutor {
                 plugin.missions().save(true);
                 plugin.punishments().save(true);
                 plugin.chat().save(true);
-                plugin.jobs().save(true);
                 for (World w : Bukkit.getWorlds()) w.save();
                 Notify.bar(p, "<green>บันทึกทุกอย่างแล้ว", "block.note_block.pling", 1.4f);
             }

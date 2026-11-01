@@ -1,9 +1,21 @@
-# ===== ยศ =====
-# order  : ลำดับยศ เลขน้อย = ต่ำ เลขมาก = สูง
-# prefix : ข้อความหน้าชื่อในแชท (ใส่สีแบบ MiniMessage ได้)
-# require: เงื่อนไขเลื่อนยศอัตโนมัติ (hours = ชั่วโมงที่เล่นสะสม)
-# price  : ราคาถ้าให้ซื้อได้ ลบบรรทัดนี้ออก = ซื้อไม่ได้ ต้องเลื่อนเอง
-# permissions: สิทธิ์ที่ได้ เช่น zones.homes.3 = ตั้งบ้านได้ 3 หลัง
+# ===== ยศ — ผูกกับ Discord =====
+# ไม่มีการไต่ยศหรือซื้อยศในเกมแล้ว ยศมาจาก role ในดิสคอร์ดล้วน ๆ
+#
+# วิธีใช้
+#   1. ในดิสคอร์ด เปิดโหมดนักพัฒนา แล้วคลิกขวาที่ role → คัดลอก ID
+#   2. เอา ID มาใส่ช่อง discord-role ของยศนั้น
+#   3. ผู้เล่นพิมพ์ /rank ในเกม จะได้รหัส 6 หลัก
+#   4. เอารหัสไปยืนยันกับบอท บอทยิงเข้า /api/discord/link ของแผงเว็บ
+#   5. role เปลี่ยนเมื่อไหร่ บอทยิง /api/discord/roles ยศในเกมเปลี่ยนตาม
+#
+# ช่องที่ใช้
+#   display      ชื่อยศที่โชว์ในแถบข้อมูลข้างจอ
+#   prefix       ข้อความหน้าชื่อในแชท
+#   order        เลขมากชนะ ถ้ามีหลาย role พร้อมกัน
+#   discord-role ID ของ role ในดิสคอร์ด เว้นว่าง = ยศพื้นฐาน
+#   permissions  สิทธิ์ที่ได้ เช่น zones.homes.3 = ตั้งบ้านได้ 3 หลัง
+#
+# ยศแรกสุด (order ต่ำสุด) คือยศของคนที่ยังไม่ผูกบัญชี
 
 ranks:
 
@@ -11,6 +23,7 @@ ranks:
     display: "<gray>[ชาวบ้าน]"
     prefix: "<gray>[ชาวบ้าน] "
     order: 0
+    discord-role: ""
     permissions:
       - zones.homes.1
 
@@ -18,8 +31,7 @@ ranks:
     display: "<green>[ชาวเมือง]"
     prefix: "<green>[ชาวเมือง] "
     order: 10
-    require:
-      hours: 2
+    discord-role: ""
     permissions:
       - zones.homes.2
 
@@ -27,9 +39,7 @@ ranks:
     display: "<aqua>[พ่อค้า]"
     prefix: "<aqua>[พ่อค้า] "
     order: 20
-    require:
-      hours: 10
-      money: 100000
+    discord-role: ""
     permissions:
       - zones.homes.3
 
@@ -37,9 +47,7 @@ ranks:
     display: "<light_purple>[ขาประจำ]"
     prefix: "<light_purple>[ขาประจำ] "
     order: 30
-    require:
-      hours: 40
-      missions: 5
+    discord-role: ""
     permissions:
       - zones.homes.5
 
@@ -47,9 +55,7 @@ ranks:
     display: "<gold>[ตำนาน]"
     prefix: "<gold>[ตำนาน] "
     order: 40
-    require:
-      hours: 150
-      missions: 12
+    discord-role: ""
     permissions:
       - zones.homes.8
 
@@ -57,7 +63,7 @@ ranks:
     display: "<yellow>[VIP]"
     prefix: "<yellow>[VIP] "
     order: 25
-    price: 250000
+    discord-role: ""
     permissions:
       - zones.homes.4
 
@@ -65,6 +71,6 @@ ranks:
     display: "<gold>[VIP+]"
     prefix: "<gold>[VIP+] "
     order: 35
-    price: 900000
+    discord-role: ""
     permissions:
       - zones.homes.6

@@ -58,6 +58,8 @@ public class WebPanel {
             server.createContext("/api/economy", secure(this::apiEconomy));
             server.createContext("/api/worlds", secure(this::apiWorlds));
             server.createContext("/api/action", secure(this::apiAction));
+            server.createContext("/api/discord/link", this::apiDiscordLink);
+            server.createContext("/api/discord/roles", this::apiDiscordRoles);
             server.setExecutor(Executors.newFixedThreadPool(4));
             server.start();
             plugin.getLogger().info("Web panel listening on " + bind + ":" + port);
@@ -231,6 +233,50 @@ public class WebPanel {
                         + plugin.getConfig().getLong("web.session-hours", 2) * 3600);
         plugin.getLogger().info("Web panel: " + pending.name() + " signed in from " + ip);
         send(ex, 200, "application/json", "{\"ok\":true,\"name\":\"" + esc(pending.name()) + "\"}");
+    }
+
+    /** The bot's shared secret, so these two need no browser session. */
+    private boolean botAuthorised(HttpExchange ex) {
+        String want = plugin.getConfig().getString("web.bot-token", "");
+        if (want == null || want.isBlank()) return false;
+        String got = ex.getRequestHeaders().getFirst("X-Bot-Token");
+        return want.equals(got);
+    }
+
+    /** POST {code, discordId, discordName} — finishes what /rank started. */
+    private void apiDiscordLink(HttpExchange ex) throws IOException {
+        if (!"POST".equals(ex.getRequestMethod())) { send(ex, 405, "application/json", "{}"); return; }
+        if (!botAuthorised(ex)) { send(ex, 401, "application/json", "{\"error\":\"bad token\"}"); return; }
+        String raw = body(ex);
+        String code = field(raw, "code");
+        String id = field(raw, "discordId");
+        String name = field(raw, "discordName");
+        if (code == null || id == null) { send(ex, 400, "application/json", "{\"error\":\"missing field\"}"); return; }
+        String who = sync(() -> plugin.ranks().completeLink(code, id, name == null ? id : name), null);
+        if (who == null) { send(ex, 403, "application/json", "{\"error\":\"รหัสไม่ถูกต้องหรือหมดอายุ\"}"); return; }
+        send(ex, 200, "application/json", "{\"ok\":true,\"player\":\"" + esc(who) + "\"}");
+    }
+
+    /** POST {discordId, roles:[...]} — the bot tells us what they hold now. */
+    private void apiDiscordRoles(HttpExchange ex) throws IOException {
+        if (!"POST".equals(ex.getRequestMethod())) { send(ex, 405, "application/json", "{}"); return; }
+        if (!botAuthorised(ex)) { send(ex, 401, "application/json", "{\"error\":\"bad token\"}"); return; }
+        String raw = body(ex);
+        String id = field(raw, "discordId");
+        if (id == null) { send(ex, 400, "application/json", "{\"error\":\"missing discordId\"}"); return; }
+        List<String> roles = new ArrayList<>();
+        int at = raw.indexOf("\"roles\"");
+        if (at >= 0) {
+            int open = raw.indexOf('[', at), close = raw.indexOf(']', open);
+            if (open > 0 && close > open)
+                for (String part : raw.substring(open + 1, close).split(",")) {
+                    String v = part.trim().replace("\"", "");
+                    if (!v.isEmpty()) roles.add(v);
+                }
+        }
+        boolean ok = sync(() -> plugin.ranks().setRoles(id, roles), false);
+        send(ex, ok ? 200 : 404, "application/json",
+                ok ? "{\"ok\":true}" : "{\"error\":\"ยังไม่มีใครผูกไอดีนี้\"}");
     }
 
     private void apiStatus(HttpExchange ex) throws IOException {
@@ -415,7 +461,6 @@ public class WebPanel {
                 plugin.missions().save(true);
                 plugin.punishments().save(true);
                 plugin.chat().save(true);
-                plugin.jobs().save(true);
                 for (World world : Bukkit.getWorlds()) world.save();
                 return "บันทึกทุกอย่างแล้ว";
             }

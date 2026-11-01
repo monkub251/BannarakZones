@@ -208,16 +208,36 @@ commands:
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
     description: List worlds, travel between them, set borders
     usage: /world [name|border]
-  job:
-    permission: zones.command.job
-    description: Pick a job and see your progress
-    usage: /job [top <job>]
-    aliases: [jobs, อาชีพ]
   commands:
     description: Show every command you are allowed to use
     usage: /commands
     permission: zones.command.commands
     aliases: [cmds, คำสั่ง, ช่วย]
+  astick:
+    description: Get the staff stick that reaches across the map
+    usage: /astick
+    permission: zones.admin.astick
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  jail:
+    description: Send a player to the cell
+    usage: /jail <player> [30m|2h|perm]
+    permission: zones.admin.jail
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  unjail:
+    description: Let a player out of the cell
+    usage: /unjail <player>
+    permission: zones.admin.unjail
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  setjail:
+    description: Put the cell where you are standing
+    usage: /setjail
+    permission: zones.admin.setjail
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  spectate:
+    description: Watch through a player's eyes
+    usage: /spectate <player>
+    permission: zones.admin.spectate
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
 permissions:
   zones.use:
     description: Base access to the plugin
@@ -254,7 +274,6 @@ permissions:
       zones.command.r: true
       zones.command.ignore: true
       zones.command.rtp: true
-      zones.command.job: true
 
   # ───── คำสั่งทีมงาน ปิดไว้ ให้เฉพาะ op หรือยศที่ตั้งสิทธิ์ ─────
   zones.admin:
@@ -278,6 +297,11 @@ permissions:
       zones.admin.delwarp: true
       zones.admin.chat: true
       zones.admin.world: true
+      zones.admin.astick: true
+      zones.admin.jail: true
+      zones.admin.unjail: true
+      zones.admin.setjail: true
+      zones.admin.spectate: true
 
   # ───── สิทธิ์พิเศษอื่น ─────
   zones.chat.bypass:
