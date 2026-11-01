@@ -38,6 +38,7 @@ public class BannarakZones extends JavaPlugin {
     private WebPanel webPanel;
     private ChatManager chat;
     private WorldManager worlds;
+    private JobManager jobs;
     private ZoneGui gui;
 
     private Material zoneBlock = Material.BEACON;
@@ -175,6 +176,13 @@ public class BannarakZones extends JavaPlugin {
         if (panelCmd != null) panelCmd.setExecutor(adminPanel);
         getServer().getPluginManager().registerEvents(adminPanel, this);
 
+        jobs = new JobManager(this);
+        jobs.load();
+        jobs.loadProgress();
+        var jobCmd = getCommand("job");
+        if (jobCmd != null) jobCmd.setExecutor(jobs);
+        getServer().getPluginManager().registerEvents(jobs, this);
+
         worlds = new WorldManager(this);
         worlds.prepareWorlds();
         worlds.applyBorders();
@@ -195,7 +203,7 @@ public class BannarakZones extends JavaPlugin {
         webPanel = new WebPanel(this);
         webPanel.start();
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); jobs.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
@@ -211,6 +219,7 @@ public class BannarakZones extends JavaPlugin {
         if (market != null) market.save(true);
         if (punishments != null) punishments.save(true);
         if (chat != null) chat.save(true);
+        if (jobs != null) jobs.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -284,6 +293,7 @@ public class BannarakZones extends JavaPlugin {
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
     public WorldManager worlds() { return worlds; }
+    public JobManager jobs() { return jobs; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
     public Material zoneBlock() { return zoneBlock; }

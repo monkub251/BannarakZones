@@ -1,0 +1,231 @@
+# ─────────────────────────────────────────────────────────────
+# อาชีพ — แก้ได้ทุกบรรทัด เพิ่มอาชีพใหม่ได้เลย
+#
+# โครงของแต่ละอาชีพ
+#   display          ชื่อที่โชว์ (ใช้ MiniMessage ใส่สีได้)
+#   icon             บล็อก/ไอเทมที่ใช้เป็นไอคอนในเมนู
+#   max-level        เลเวลสูงสุด
+#   base-xp          xp ที่ต้องใช้ไปเลเวล 2
+#   curve            แต่ละเลเวลถัดไปต้องใช้ xp คูณเท่านี้ (1.18 = +18%)
+#   bonus-per-level  ค่าตอบแทนเพิ่มต่อเลเวล (0.012 = +1.2% ต่อเลเวล)
+#
+#   pay.break.<บล็อก>   ได้เงิน/xp เมื่อขุดบล็อกนั้น
+#   pay.place.<บล็อก>   เมื่อวางบล็อกนั้น
+#   pay.kill.<มอน>      เมื่อฆ่ามอนตัวนั้น
+#   pay.craft.<ไอเทม>   เมื่อคราฟต์ไอเทมนั้น
+#   pay.fish.ANY        เมื่อตกปลาได้ (ใส่ชื่อปลาเจาะจงก็ได้)
+#
+#   rewards.<เลเวล>     รางวัลตอนขึ้นเลเวลนั้น
+#     money / commands / note     (<player> = ชื่อคนเล่น)
+#
+# ชื่อบล็อกกับมอนใช้ชื่อของไมน์คราฟต์ เช่น DIAMOND_ORE, ZOMBIE
+# ขุดบล็อกที่ตัวเองวางเองจะไม่ได้เงิน (กันปั๊ม) ปิดได้ที่ config.yml
+# ─────────────────────────────────────────────────────────────
+
+jobs:
+
+  miner:
+    display: "<aqua>นักขุดเหมือง"
+    icon: IRON_PICKAXE
+    lore:
+      - "ได้เงินจากการขุดหิน แร่ และถ่าน"
+      - "ยิ่งแร่หายาก ยิ่งได้เยอะ"
+    max-level: 60
+    base-xp: 120
+    curve: 1.17
+    bonus-per-level: 0.012
+    pay:
+      break:
+        STONE:          { money: 0.4,  xp: 1 }
+        DEEPSLATE:      { money: 0.6,  xp: 1.5 }
+        COBBLESTONE:    { money: 0.2,  xp: 0.5 }
+        COAL_ORE:       { money: 3,    xp: 5 }
+        DEEPSLATE_COAL_ORE: { money: 3.5, xp: 6 }
+        COPPER_ORE:     { money: 3,    xp: 5 }
+        IRON_ORE:       { money: 5,    xp: 8 }
+        DEEPSLATE_IRON_ORE: { money: 6, xp: 9 }
+        GOLD_ORE:       { money: 9,    xp: 13 }
+        REDSTONE_ORE:   { money: 7,    xp: 10 }
+        LAPIS_ORE:      { money: 10,   xp: 14 }
+        DIAMOND_ORE:    { money: 35,   xp: 45 }
+        DEEPSLATE_DIAMOND_ORE: { money: 40, xp: 50 }
+        EMERALD_ORE:    { money: 45,   xp: 55 }
+        ANCIENT_DEBRIS: { money: 120,  xp: 140 }
+    rewards:
+      10: { money: 2000, note: "โบนัสนักขุดฝึกหัด" }
+      25: { money: 8000, note: "โบนัสนักขุดชำนาญ" }
+      40: { money: 25000, note: "โบนัสนักขุดระดับตำนาน" }
+      60: { money: 80000, note: "เจ้าแห่งเหมือง" }
+
+  lumberjack:
+    display: "<green>คนตัดไม้"
+    icon: IRON_AXE
+    lore:
+      - "ได้เงินจากการตัดไม้และปลูกต้นไม้"
+    max-level: 50
+    base-xp: 110
+    curve: 1.17
+    bonus-per-level: 0.013
+    pay:
+      break:
+        OAK_LOG:        { money: 2.2, xp: 4 }
+        BIRCH_LOG:      { money: 2.2, xp: 4 }
+        SPRUCE_LOG:     { money: 2.2, xp: 4 }
+        JUNGLE_LOG:     { money: 2.6, xp: 5 }
+        ACACIA_LOG:     { money: 2.6, xp: 5 }
+        DARK_OAK_LOG:   { money: 3,   xp: 6 }
+        CHERRY_LOG:     { money: 3.4, xp: 7 }
+        MANGROVE_LOG:   { money: 3,   xp: 6 }
+        CRIMSON_STEM:   { money: 4,   xp: 8 }
+        WARPED_STEM:    { money: 4,   xp: 8 }
+      place:
+        OAK_SAPLING:    { money: 0.6, xp: 2 }
+        BIRCH_SAPLING:  { money: 0.6, xp: 2 }
+        SPRUCE_SAPLING: { money: 0.6, xp: 2 }
+    rewards:
+      10: { money: 1800, note: "โบนัสคนตัดไม้" }
+      25: { money: 7000, note: "โบนัสช่างไม้ชำนาญ" }
+      50: { money: 45000, note: "เจ้าแห่งป่า" }
+
+  farmer:
+    display: "<yellow>ชาวไร่"
+    icon: IRON_HOE
+    lore:
+      - "ได้เงินจากการเก็บเกี่ยวและปลูกพืช"
+    max-level: 50
+    base-xp: 100
+    curve: 1.16
+    bonus-per-level: 0.013
+    pay:
+      break:
+        WHEAT:          { money: 1.6, xp: 3 }
+        CARROTS:        { money: 1.6, xp: 3 }
+        POTATOES:       { money: 1.6, xp: 3 }
+        BEETROOTS:      { money: 1.8, xp: 3.5 }
+        NETHER_WART:    { money: 2.6, xp: 5 }
+        SUGAR_CANE:     { money: 1.2, xp: 2 }
+        PUMPKIN:        { money: 3,   xp: 5 }
+        MELON:          { money: 3,   xp: 5 }
+        COCOA:          { money: 2.4, xp: 4 }
+        SWEET_BERRY_BUSH: { money: 1.4, xp: 2.5 }
+      place:
+        WHEAT_SEEDS:    { money: 0.4, xp: 1 }
+        CARROTS:        { money: 0.4, xp: 1 }
+        POTATOES:       { money: 0.4, xp: 1 }
+    rewards:
+      10: { money: 1500, note: "โบนัสชาวไร่" }
+      25: { money: 6500, note: "โบนัสเจ้าของไร่" }
+      50: { money: 40000, note: "เจ้าแห่งทุ่ง" }
+
+  hunter:
+    display: "<red>นักล่า"
+    icon: IRON_SWORD
+    lore:
+      - "ได้เงินจากการล่ามอนสเตอร์"
+      - "มอนยิ่งโหด ยิ่งได้เยอะ"
+    max-level: 60
+    base-xp: 130
+    curve: 1.18
+    bonus-per-level: 0.012
+    pay:
+      kill:
+        ZOMBIE:         { money: 2.5, xp: 5 }
+        SKELETON:       { money: 2.8, xp: 5.5 }
+        SPIDER:         { money: 2.4, xp: 4.5 }
+        CAVE_SPIDER:    { money: 3,   xp: 6 }
+        CREEPER:        { money: 4,   xp: 8 }
+        ENDERMAN:       { money: 7,   xp: 13 }
+        WITCH:          { money: 9,   xp: 16 }
+        BLAZE:          { money: 8,   xp: 15 }
+        WITHER_SKELETON: { money: 14,  xp: 24 }
+        PIGLIN_BRUTE:   { money: 16,  xp: 28 }
+        GUARDIAN:       { money: 10,  xp: 18 }
+        ELDER_GUARDIAN: { money: 90,  xp: 140 }
+        RAVAGER:        { money: 30,  xp: 50 }
+        WARDEN:         { money: 400, xp: 600 }
+        WITHER:         { money: 500, xp: 800 }
+        ENDER_DRAGON:   { money: 900, xp: 1200 }
+    rewards:
+      10: { money: 2500, note: "โบนัสนักล่าฝึกหัด" }
+      25: { money: 10000, note: "โบนัสนักล่าชำนาญ" }
+      40: { money: 30000, note: "โบนัสพรานล่าตำนาน" }
+      60: { money: 100000, note: "เจ้าแห่งการล่า" }
+
+  fisher:
+    display: "<blue>คนหาปลา"
+    icon: FISHING_ROD
+    lore:
+      - "ได้เงินทุกครั้งที่ตกปลาติด"
+      - "ปลาหายากได้เพิ่ม"
+    max-level: 40
+    base-xp: 90
+    curve: 1.16
+    bonus-per-level: 0.015
+    pay:
+      fish:
+        ANY:            { money: 2.5, xp: 5 }
+        COD:            { money: 1,   xp: 2 }
+        SALMON:         { money: 1.5, xp: 3 }
+        TROPICAL_FISH:  { money: 6,   xp: 10 }
+        PUFFERFISH:     { money: 5,   xp: 9 }
+        NAUTILUS_SHELL: { money: 30,  xp: 45 }
+        ENCHANTED_BOOK: { money: 40,  xp: 60 }
+    rewards:
+      10: { money: 1500, note: "โบนัสคนหาปลา" }
+      25: { money: 7000, note: "โบนัสกัปตันเรือ" }
+      40: { money: 35000, note: "เจ้าแห่งน่านน้ำ" }
+
+  builder:
+    display: "<light_purple>ช่างก่อสร้าง"
+    icon: BRICKS
+    lore:
+      - "ได้เงินจากการวางบล็อกตกแต่ง"
+      - "เหมาะกับคนชอบสร้างบ้าน"
+    max-level: 40
+    base-xp: 100
+    curve: 1.16
+    bonus-per-level: 0.013
+    pay:
+      place:
+        BRICKS:            { money: 0.8, xp: 2 }
+        STONE_BRICKS:      { money: 0.7, xp: 1.8 }
+        DEEPSLATE_BRICKS:  { money: 0.9, xp: 2.2 }
+        QUARTZ_BLOCK:      { money: 1.2, xp: 2.6 }
+        OAK_PLANKS:        { money: 0.4, xp: 1 }
+        GLASS:             { money: 0.6, xp: 1.5 }
+        TERRACOTTA:        { money: 0.7, xp: 1.8 }
+        COPPER_BLOCK:      { money: 1.4, xp: 3 }
+        AMETHYST_BLOCK:    { money: 1.6, xp: 3.4 }
+        LANTERN:           { money: 1.4, xp: 3 }
+    rewards:
+      10: { money: 1500, note: "โบนัสช่างฝึกหัด" }
+      25: { money: 7000, note: "โบนัสสถาปนิก" }
+      40: { money: 35000, note: "เจ้าแห่งการสร้าง" }
+
+  smith:
+    display: "<gold>ช่างตีเหล็ก"
+    icon: ANVIL
+    lore:
+      - "ได้เงินจากการคราฟต์ของ"
+      - "ของยิ่งดี ยิ่งได้เยอะ"
+    max-level: 40
+    base-xp: 120
+    curve: 1.17
+    bonus-per-level: 0.014
+    pay:
+      craft:
+        IRON_INGOT:     { money: 1.2, xp: 2 }
+        IRON_SWORD:     { money: 6,   xp: 10 }
+        IRON_PICKAXE:   { money: 7,   xp: 11 }
+        IRON_CHESTPLATE: { money: 12,  xp: 18 }
+        DIAMOND_SWORD:  { money: 30,  xp: 45 }
+        DIAMOND_PICKAXE: { money: 35,  xp: 50 }
+        DIAMOND_CHESTPLATE: { money: 60, xp: 90 }
+        NETHERITE_INGOT: { money: 120, xp: 160 }
+        NETHERITE_SWORD: { money: 200, xp: 260 }
+        ANVIL:          { money: 25,  xp: 35 }
+        ENCHANTING_TABLE: { money: 40, xp: 55 }
+    rewards:
+      10: { money: 2000, note: "โบนัสช่างตีเหล็ก" }
+      25: { money: 9000, note: "โบนัสช่างมือทอง" }
+      40: { money: 50000, note: "เจ้าแห่งเตาหลอม" }

@@ -149,6 +149,10 @@ commands:
   world:
     description: List worlds, travel between them, set borders
     usage: /world [name|border]
+  job:
+    description: Pick a job and see your progress
+    usage: /job [top <job>]
+    aliases: [jobs, อาชีพ]
 permissions:
   zones.use:
     default: true
