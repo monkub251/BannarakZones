@@ -143,6 +143,7 @@ public class ZoneStore {
                         z.allowPvp = s.getBoolean("allow-pvp", false);
                         z.allowExplosions = s.getBoolean("allow-explosions", false);
                         z.showMessages = s.getBoolean("show-messages", true);
+                        z.admin = s.getBoolean("admin", false);
                         ConfigurationSection mem = s.getConfigurationSection("members");
                         if (mem != null)
                             for (String mk : mem.getKeys(false))
@@ -178,6 +179,7 @@ public class ZoneStore {
             cfg.set(base + ".allow-pvp", z.allowPvp);
             cfg.set(base + ".allow-explosions", z.allowExplosions);
             cfg.set(base + ".show-messages", z.showMessages);
+            cfg.set(base + ".admin", z.admin);
             for (UUID m : z.members) cfg.set(base + ".members." + m, z.memberName(m));
         }
         YamlConfiguration pc = new YamlConfiguration();

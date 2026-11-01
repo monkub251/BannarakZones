@@ -28,9 +28,22 @@ public class ProtectionListener implements Listener {
 
     private boolean denied(Player player, Location loc) {
         if (player != null && plugin.canBypass(player)) return false;
+        // A locked world is staff-only ground, zone or no zone. This is what
+        // keeps the lobby standing.
+        if (loc != null && loc.getWorld() != null
+                && plugin.worldLocked(loc.getWorld().getName())) return true;
         Zone z = plugin.store().zoneAt(loc);
         if (z == null) return false;
         return player == null || !z.isTrusted(player.getUniqueId());
+    }
+
+    /** The label to show for whoever owns the ground here. */
+    private String ownerLabel(Location loc) {
+        if (loc != null && loc.getWorld() != null
+                && plugin.worldLocked(loc.getWorld().getName())) return "ทีมงาน";
+        Zone z = zoneAt(loc);
+        if (z == null) return "?";
+        return z.admin ? "ทีมงาน" : z.ownerName;
     }
 
     private Zone zoneAt(Location loc) {
@@ -43,6 +56,21 @@ public class ProtectionListener implements Listener {
     public void onPlace(BlockPlaceEvent e) {
         Block b = e.getBlock();
         Player p = e.getPlayer();
+
+        if (b.getType() == plugin.adminBlock() && p.hasPermission("zones.admin")) {
+            int radius = plugin.adminRadius();
+            Zone zone = new Zone(UUID.randomUUID(), p.getUniqueId(), p.getName(),
+                    b.getWorld().getName(), b.getX(), b.getY(), b.getZ(), radius);
+            zone.admin = true;
+            zone.showMessages = false;
+            plugin.store().add(zone);
+            plugin.store().save();
+            Notify.popup(p, "<gold>เขตทีมงาน", "<gray>รัศมี " + radius + " บล็อก",
+                    "block.beacon.activate", 0.8f);
+            Notify.chat(p, "<gray>ทุบบล็อกนี้เพื่อลบเขต · <white>/zone <gray>เพื่อตั้งค่า");
+            plugin.showBorder(p, zone);
+            return;
+        }
 
         if (b.getType() == plugin.zoneBlock()) {
             if (!p.hasPermission("zones.use")) return;
@@ -76,8 +104,7 @@ public class ProtectionListener implements Listener {
         }
 
         if (plugin.protect("block-place") && denied(p, b.getLocation())) {
-            Zone z = zoneAt(b.getLocation());
-            plugin.msg(p, "deny-build", BannarakZones.p("owner", z == null ? "?" : z.ownerName));
+            plugin.msg(p, "deny-build", BannarakZones.p("owner", ownerLabel(b.getLocation())));
             e.setCancelled(true);
         }
     }
@@ -89,6 +116,11 @@ public class ProtectionListener implements Listener {
 
         Zone anchor = plugin.store().zoneByBeacon(b.getLocation());
         if (anchor != null) {
+            if (anchor.admin && !p.hasPermission("zones.admin")) {
+                Notify.chat(p, "<red>บล็อกนี้เป็นของทีมงาน");
+                e.setCancelled(true);
+                return;
+            }
             if (!anchor.owner.equals(p.getUniqueId()) && !plugin.canBypass(p)) {
                 plugin.msg(p, "not-owner");
                 e.setCancelled(true);
@@ -102,8 +134,7 @@ public class ProtectionListener implements Listener {
         }
 
         if (plugin.protect("block-break") && denied(p, b.getLocation())) {
-            Zone z = zoneAt(b.getLocation());
-            plugin.msg(p, "deny-build", BannarakZones.p("owner", z == null ? "?" : z.ownerName));
+            plugin.msg(p, "deny-build", BannarakZones.p("owner", ownerLabel(b.getLocation())));
             e.setCancelled(true);
         }
     }
@@ -169,8 +200,9 @@ public class ProtectionListener implements Listener {
     private void filterBlocks(Iterator<Block> it) {
         while (it.hasNext()) {
             Block b = it.next();
+            if (plugin.worldLocked(b.getWorld().getName())) { it.remove(); continue; }
             Zone z = plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ());
-            if (z != null && !z.allowExplosions) it.remove();
+            if (z != null && (z.admin || !z.allowExplosions)) it.remove();
         }
     }
 
@@ -178,10 +210,12 @@ public class ProtectionListener implements Listener {
     public void onIgnite(BlockIgniteEvent e) {
         if (!plugin.protect("fire")) return;
         Block b = e.getBlock();
+        Player p = e.getPlayer();
+        if (p != null && plugin.canBypass(p)) return;
+        if (plugin.worldLocked(b.getWorld().getName())) { e.setCancelled(true); return; }
         Zone z = plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ());
         if (z == null) return;
-        Player p = e.getPlayer();
-        if (p != null && (z.isTrusted(p.getUniqueId()) || plugin.canBypass(p))) return;
+        if (p != null && z.isTrusted(p.getUniqueId())) return;
         e.setCancelled(true);
     }
 
@@ -189,7 +223,9 @@ public class ProtectionListener implements Listener {
     public void onBurn(BlockBurnEvent e) {
         if (!plugin.protect("fire")) return;
         Block b = e.getBlock();
-        if (plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ()) != null) e.setCancelled(true);
+        if (plugin.worldLocked(b.getWorld().getName())
+                || plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ()) != null)
+            e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -197,7 +233,9 @@ public class ProtectionListener implements Listener {
         if (!plugin.protect("fire")) return;
         if (e.getSource().getType() != Material.FIRE) return;
         Block b = e.getBlock();
-        if (plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ()) != null) e.setCancelled(true);
+        if (plugin.worldLocked(b.getWorld().getName())
+                || plugin.store().columnAt(b.getWorld().getName(), b.getX(), b.getZ()) != null)
+            e.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)

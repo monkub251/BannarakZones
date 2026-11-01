@@ -16,6 +16,9 @@ public class Zone {
     public boolean allowExplosions = false;
     public boolean showMessages = true;
 
+    /** A staff zone. Nobody but staff gets through it, members and all. */
+    public boolean admin = false;
+
     public Zone(UUID id, UUID owner, String ownerName, String world, int x, int y, int z, int radius) {
         this.id = id; this.owner = owner; this.ownerName = ownerName;
         this.world = world; this.x = x; this.y = y; this.z = z; this.radius = radius;
@@ -36,6 +39,9 @@ public class Zone {
     }
 
     public boolean isTrusted(UUID uuid) {
+        // A staff zone trusts nobody by name. Staff come through on their
+        // permission instead, so there is no list to keep in sync.
+        if (admin) return false;
         return owner.equals(uuid) || members.contains(uuid);
     }
 

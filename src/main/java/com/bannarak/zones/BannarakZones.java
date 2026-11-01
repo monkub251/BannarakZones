@@ -38,6 +38,9 @@ public class BannarakZones extends JavaPlugin {
     private WebPanel webPanel;
     private ChatManager chat;
     private WorldManager worlds;
+    private Material adminBlock = Material.REINFORCED_DEEPSLATE;
+    private int adminRadius = 64;
+    private final Set<String> lockedWorlds = new HashSet<>();
     private JobManager jobs;
     private ZoneGui gui;
 
@@ -248,6 +251,13 @@ public class BannarakZones extends JavaPlugin {
         var c = getConfig();
         Material m = Material.matchMaterial(c.getString("zone.block", "BEACON"));
         zoneBlock = m == null ? Material.BEACON : m;
+        Material am = Material.matchMaterial(c.getString("zone.admin-block", "REINFORCED_DEEPSLATE"));
+        adminBlock = am == null ? Material.REINFORCED_DEEPSLATE : am;
+        adminRadius = c.getInt("zone.admin-radius", 64);
+        lockedWorlds.clear();
+        for (String w : c.getStringList("protection.locked-worlds"))
+            lockedWorlds.add(w.toLowerCase(Locale.ROOT));
+
         defaultRadius = c.getInt("zone.default-radius", 16);
         maxRadius = c.getInt("zone.max-radius", 48);
         fullHeight = "full".equalsIgnoreCase(c.getString("zone.outsider-vertical", "full"));
@@ -296,6 +306,13 @@ public class BannarakZones extends JavaPlugin {
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
     public WorldManager worlds() { return worlds; }
+    public Material adminBlock() { return adminBlock; }
+    public int adminRadius() { return adminRadius; }
+
+    /** True when ordinary players may not touch anything in this world. */
+    public boolean worldLocked(String world) {
+        return world != null && lockedWorlds.contains(world.toLowerCase(Locale.ROOT));
+    }
     public JobManager jobs() { return jobs; }
     public ZoneGui gui() { return gui; }
     public Economy economy() { return economy; }
@@ -448,6 +465,53 @@ public class BannarakZones extends JavaPlugin {
             return true;
         }
         switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "admin" -> {
+                if (!player.hasPermission("zones.admin")) {
+                    Notify.chat(player, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น");
+                    return true;
+                }
+                Zone here = store.zoneAt(player.getLocation());
+                if (here == null) {
+                    Notify.chat(player, "<red>ยืนในเขตก่อน แล้วค่อยสั่ง");
+                    Notify.chat(player, "<gray>หรือวาง <white>" + adminBlock.name()
+                            + " <gray>เพื่อสร้างเขตทีมงานใหม่ รัศมี " + adminRadius);
+                    return true;
+                }
+                here.admin = !here.admin;
+                here.showMessages = !here.admin;
+                if (args.length > 1) {
+                    try {
+                        int r = Math.max(1, Math.min(512, Integer.parseInt(args[1])));
+                        here.radius = r;
+                    } catch (NumberFormatException ex) {
+                        Notify.chat(player, "<red>รัศมีต้องเป็นตัวเลข");
+                    }
+                }
+                store.save();
+                Notify.popup(player,
+                        here.admin ? "<gold>เป็นเขตทีมงานแล้ว" : "<yellow>กลับเป็นเขตธรรมดา",
+                        "<gray>รัศมี " + here.radius + " บล็อก", "block.beacon.power_select", 1.0f);
+                showBorder(player, here);
+                return true;
+            }
+            case "lockworld" -> {
+                if (!player.hasPermission("zones.admin")) {
+                    Notify.chat(player, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น");
+                    return true;
+                }
+                String w = args.length > 1 ? args[1] : player.getWorld().getName();
+                List<String> locked = new ArrayList<>(getConfig().getStringList("protection.locked-worlds"));
+                boolean on = locked.stream().noneMatch(x -> x.equalsIgnoreCase(w));
+                if (on) locked.add(w);
+                else locked.removeIf(x -> x.equalsIgnoreCase(w));
+                getConfig().set("protection.locked-worlds", locked);
+                saveConfig();
+                readConfig();
+                Notify.chat(player, on
+                        ? "<green>ล็อกโลก <yellow>" + w + " <green>แล้ว คนธรรมดาแตะอะไรไม่ได้เลย"
+                        : "<yellow>ปลดล็อกโลก <white>" + w + " <yellow>แล้ว");
+                return true;
+            }
             case "info" -> {
                 Zone here = store.zoneAt(player.getLocation());
                 if (here == null) {
