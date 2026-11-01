@@ -39,6 +39,7 @@ public class BannarakZones extends JavaPlugin {
     private AdminPanel adminPanel;
     private WebPanel webPanel;
     private ChatManager chat;
+    private NpcManager npcs;
     private WorldManager worlds;
     private Material adminBlock = Material.REINFORCED_DEEPSLATE;
     private int adminRadius = 64;
@@ -210,6 +211,15 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chat, this);
         chat.startTabTimer();
 
+        npcs = new NpcManager(this);
+        npcs.load();
+        var npcCmd = getCommand("npc");
+        if (npcCmd != null) { npcCmd.setExecutor(npcs); npcCmd.setTabCompleter(npcs); }
+        getServer().getPluginManager().registerEvents(npcs, this);
+        // worlds finish loading after onEnable, so put the NPCs out on the next tick
+        getServer().getScheduler().runTask(this, () -> { npcs.load(); npcs.respawnAll(); });
+        getServer().getScheduler().runTaskTimer(this, () -> npcs.heal(), 200L, 200L);
+
         webPanel = new WebPanel(this);
         webPanel.start();
 
@@ -230,6 +240,7 @@ public class BannarakZones extends JavaPlugin {
         if (punishments != null) punishments.save(true);
         if (chat != null) chat.save(true);
         if (adminTools != null) adminTools.save(true);
+        if (npcs != null) npcs.shutdown();
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -312,6 +323,7 @@ public class BannarakZones extends JavaPlugin {
     public AdminPanel adminPanel() { return adminPanel; }
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
+    public NpcManager npcs() { return npcs; }
     public WorldManager worlds() { return worlds; }
     public Material adminBlock() { return adminBlock; }
     public int adminRadius() { return adminRadius; }

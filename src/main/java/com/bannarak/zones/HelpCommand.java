@@ -63,7 +63,8 @@ public class HelpCommand implements CommandExecutor {
             new Line("/eco",       "เพิ่ม-ลด-ตั้งเงินของคนอื่น", "zones.admin.eco"),
             new Line("/citem",     "แจกไอเทมพิเศษของเซิร์ฟ",     "zones.admin.citem"),
             new Line("/backup",    "สำรองข้อมูลเดี๋ยวนี้",       "zones.admin.backup"),
-            new Line("/setspawn",  "ตั้งจุดเกิดของเซิร์ฟ",       "zones.admin.setspawn"),
+            new Line("/npc",       "สร้างคนยืนให้คลิกที่สปอว์น",  "zones.admin.npc"),
+            new Line("/setspawn",  "จุดเกิด / เข้าครั้งแรก / หลังตาย", "zones.admin.setspawn"),
             new Line("/setwarp",   "ตั้งจุดวาร์ป",               "zones.admin.setwarp"),
             new Line("/delwarp",   "ลบจุดวาร์ป",                 "zones.admin.delwarp")
     );
