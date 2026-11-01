@@ -243,6 +243,14 @@ public class AdminPanel implements Listener, CommandExecutor {
                 List.of("<gray>สลับเปิด/ปิด"), t.isInvulnerable()));
         inv.setItem(34, item(Material.CAULDRON, "<red>ล้างกระเป๋า",
                 List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
+        inv.setItem(37, item(Material.IRON_BARS, "<dark_red>ส่งเข้าห้องขัง",
+                List.of("<gray>คลิก = 30 นาที",
+                        "<gray>ชิฟต์+คลิก = ไม่มีกำหนด",
+                        "<gray>คลิกขวา = ปล่อยตัว"), false));
+        inv.setItem(38, item(Material.ENDER_EYE, "<light_purple>ส่องผ่านตาเขา",
+                List.of("<gray>เข้าโหมดผู้ชมติดตามคนนี้",
+                        "<gray>พิมพ์ /spectate อีกครั้งเพื่อออก"), false));
+
         inv.setItem(43, item(Material.LIME_DYE, "<green>ล้างบทลงโทษทั้งหมด",
                 List.of("<gray>ปลดทุกอย่างที่ค้างอยู่ของคนนี้"), false));
 
@@ -329,6 +337,11 @@ public class AdminPanel implements Listener, CommandExecutor {
                 List.of("<gray>ตอนนี้ <white>" + (Bukkit.hasWhitelist() ? "เปิด" : "ปิด"),
                         "<gray>คลิกเพื่อสลับ"), Bukkit.hasWhitelist()));
         inv.setItem(43, item(Material.ENDER_CHEST, "<green>บันทึกทุกอย่าง", List.of(), false));
+        inv.setItem(36, item(Material.STICK, "<gold>รับไม้ทีมงาน",
+                List.of("<gray>ตีได้ไกล " + plugin.getConfig().getInt("admin-tools.stick-reach", 200)
+                        + " บล็อก"), true));
+        inv.setItem(37, item(Material.IRON_BARS, "<dark_red>ตั้งห้องขังตรงนี้",
+                List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
         inv.setItem(44, item(Material.STRUCTURE_BLOCK, "<gold>สำรองข้อมูลเดี๋ยวนี้",
                 List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
         p.openInventory(inv);
@@ -553,6 +566,12 @@ public class AdminPanel implements Listener, CommandExecutor {
                 Notify.bar(p, "<green>ล้างบทลงโทษไป " + n + " รายการ", "block.note_block.pling", 1.3f);
                 playerDetail(p, subject);
             }
+            case 37 -> {
+                p.closeInventory();
+                if (click.isRightClick()) p.performCommand("unjail " + t.getName());
+                else p.performCommand("jail " + t.getName() + (click.isShiftClick() ? " perm" : " 30m"));
+            }
+            case 38 -> { p.closeInventory(); p.performCommand("spectate " + t.getName()); }
             case 45 -> players(p);
             default -> { }
         }
@@ -568,6 +587,12 @@ public class AdminPanel implements Listener, CommandExecutor {
             case 30 -> { p.closeInventory(); Notify.chat(p, "<gray>ใช้ <white>/setwarp <ชื่อ> [ICON]"); }
             case 31 -> { p.closeInventory(); p.performCommand("setspawn"); }
             case 32 -> { p.closeInventory(); p.performCommand("market"); }
+            case 36 -> { p.closeInventory(); p.performCommand("astick"); }
+            case 37 -> {
+                if (!shift) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                p.closeInventory();
+                p.performCommand("setjail");
+            }
             case 38 -> {
                 if (!shift) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
                 int n = 0;
