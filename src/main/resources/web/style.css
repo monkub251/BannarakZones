@@ -19,6 +19,9 @@
   --num:"Rajdhani","Noto Sans Thai",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
+/* The hidden attribute must win over the display rules below, or panels
+   that start hidden (the app shell, the player sheet) show up anyway. */
+[hidden]{display:none !important}
 html,body{margin:0;height:100%}
 body{
   background:var(--ink);color:var(--text);font-family:var(--thai);font-size:15px;
