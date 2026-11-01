@@ -83,10 +83,33 @@ public class AdminPanel implements Listener, CommandExecutor {
         return it;
     }
 
+    /** The key we stamp a head with, so a click knows exactly who it meant. */
+    private org.bukkit.NamespacedKey targetKey() {
+        return new org.bukkit.NamespacedKey(plugin, "target");
+    }
+
+    /** Reads the id off a clicked head. Falls back to the skull profile. */
+    private UUID targetOf(ItemStack it) {
+        if (it == null || it.getItemMeta() == null) return null;
+        String raw = it.getItemMeta().getPersistentDataContainer()
+                .get(targetKey(), org.bukkit.persistence.PersistentDataType.STRING);
+        if (raw != null) {
+            try { return UUID.fromString(raw); } catch (IllegalArgumentException ignored) { }
+        }
+        if (!(it.getItemMeta() instanceof SkullMeta sm)) return null;
+        OfflinePlayer owner = sm.getOwningPlayer();
+        return owner == null ? null : owner.getUniqueId();
+    }
+
     private ItemStack head(OfflinePlayer who, String name, List<String> lore, boolean glow) {
         ItemStack it = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) it.getItemMeta();
         meta.setOwningPlayer(who);
+        // A Bedrock player's head has no profile to resolve, so the skull can
+        // come back ownerless and the click would quietly do nothing.
+        if (who != null) meta.getPersistentDataContainer()
+                .set(targetKey(), org.bukkit.persistence.PersistentDataType.STRING,
+                        who.getUniqueId().toString());
         meta.displayName(MM.deserialize(name).decoration(TextDecoration.ITALIC, false));
         List<Component> l = new ArrayList<>();
         for (String s : lore) l.add(MM.deserialize(s).decoration(TextDecoration.ITALIC, false));
@@ -210,6 +233,19 @@ public class AdminPanel implements Listener, CommandExecutor {
                 List.of("<gray>คลิกขวา = ปลดปิดปาก"), false));
         inv.setItem(42, item(Material.BARRIER, "<dark_red>แบน 1 วัน",
                 List.of("<gray>ชิฟต์+คลิก = แบนถาวร"), false));
+        inv.setItem(18, item(Material.COOKED_BEEF, "<green>เติมความอิ่ม", List.of(), false));
+        inv.setItem(26, item(Material.WOODEN_SWORD, "<red>ฆ่า",
+                List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
+        inv.setItem(27, item(Material.COMPASS, "<aqua>ส่งกลับจุดเกิด", List.of(), false));
+        inv.setItem(32, item(Material.FEATHER, "<aqua>บิน",
+                List.of("<gray>สลับเปิด/ปิด"), t.getAllowFlight()));
+        inv.setItem(33, item(Material.TOTEM_OF_UNDYING, "<gold>อมตะ",
+                List.of("<gray>สลับเปิด/ปิด"), t.isInvulnerable()));
+        inv.setItem(34, item(Material.CAULDRON, "<red>ล้างกระเป๋า",
+                List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
+        inv.setItem(43, item(Material.LIME_DYE, "<green>ล้างบทลงโทษทั้งหมด",
+                List.of("<gray>ปลดทุกอย่างที่ค้างอยู่ของคนนี้"), false));
+
         inv.setItem(45, item(Material.ARROW, "<white>กลับไปรายชื่อ", List.of(), false));
         viewer.openInventory(inv);
     }
@@ -274,6 +310,27 @@ public class AdminPanel implements Listener, CommandExecutor {
         inv.setItem(31, item(Material.COMPASS, "<yellow>ตั้งจุดเกิดตรงนี้", List.of(), false));
         inv.setItem(32, item(Material.VILLAGER_SPAWN_EGG, "<green>ตลาดกลาง",
                 List.of("<gray>ของวางขาย <white>" + plugin.market().listingCount()), false));
+        int drops = 0, mobs = 0;
+        for (World w : Bukkit.getWorlds())
+            for (var en : w.getEntities()) {
+                if (en instanceof org.bukkit.entity.Item) drops++;
+                else if (en instanceof org.bukkit.entity.Monster) mobs++;
+            }
+
+        inv.setItem(38, item(Material.HOPPER, "<yellow>เก็บของที่ตกอยู่",
+                List.of("<gray>ตอนนี้มี <white>" + drops + " <gray>ชิ้น",
+                        "<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
+        inv.setItem(39, item(Material.ZOMBIE_HEAD, "<red>ล้างมอนสเตอร์",
+                List.of("<gray>ตอนนี้มี <white>" + mobs + " <gray>ตัว",
+                        "<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
+        inv.setItem(40, item(Material.WRITABLE_BOOK, "<aqua>ล้างแชต", List.of(), false));
+        inv.setItem(41, item(Material.IRON_BARS, "<gold>ล็อก / ปลดล็อกแชต", List.of(), false));
+        inv.setItem(42, item(Material.PAPER, "<yellow>ไวต์ลิสต์",
+                List.of("<gray>ตอนนี้ <white>" + (Bukkit.hasWhitelist() ? "เปิด" : "ปิด"),
+                        "<gray>คลิกเพื่อสลับ"), Bukkit.hasWhitelist()));
+        inv.setItem(43, item(Material.ENDER_CHEST, "<green>บันทึกทุกอย่าง", List.of(), false));
+        inv.setItem(44, item(Material.STRUCTURE_BLOCK, "<gold>สำรองข้อมูลเดี๋ยวนี้",
+                List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
         p.openInventory(inv);
     }
 
@@ -317,10 +374,8 @@ public class AdminPanel implements Listener, CommandExecutor {
         switch (holder.tab) {
             case DASHBOARD -> dashboardClick(p, slot);
             case PLAYERS -> {
-                ItemStack it = e.getCurrentItem();
-                if (it == null || it.getType() != Material.PLAYER_HEAD) return;
-                var owner = ((SkullMeta) it.getItemMeta()).getOwningPlayer();
-                if (owner != null) playerDetail(p, owner.getUniqueId());
+                UUID who = targetOf(e.getCurrentItem());
+                if (who != null) playerDetail(p, who);
             }
             case PLAYER_DETAIL -> detailClick(p, holder.subject, slot, e.getClick());
             case WORLD -> {
@@ -334,15 +389,16 @@ public class AdminPanel implements Listener, CommandExecutor {
                     Notify.bar(p, "<green>วาร์ปไปโลก " + name, "entity.enderman.teleport", 1.3f);
                 }
             }
-            case SYSTEMS -> systemsClick(p, slot);
+            case SYSTEMS -> systemsClick(p, slot, e.getClick().isShiftClick());
             case BANS -> {
-                ItemStack it = e.getCurrentItem();
-                if (it == null || it.getType() != Material.PLAYER_HEAD) return;
-                var owner = ((SkullMeta) it.getItemMeta()).getOwningPlayer();
-                if (owner == null) return;
-                boolean done = plugin.punishments().lift(owner.getUniqueId(), Punishments.Type.BAN)
-                        || plugin.punishments().lift(owner.getUniqueId(), Punishments.Type.MUTE);
-                Notify.bar(p, done ? "<green>ปลดแล้ว" : "<gray>ไม่มีอะไรให้ปลด", null, 1f);
+                UUID who = targetOf(e.getCurrentItem());
+                if (who == null) return;
+                boolean done = plugin.punishments().lift(who, Punishments.Type.BAN);
+                done |= plugin.punishments().lift(who, Punishments.Type.MUTE);
+                String name = plugin.punishments().nameOf(who);
+                Notify.bar(p, done
+                        ? "<green>ปลด " + (name == null ? "" : name) + " แล้ว"
+                        : "<gray>ไม่มีอะไรให้ปลด", "block.note_block.pling", 1.3f);
                 bans(p);
             }
             default -> { }
@@ -457,12 +513,52 @@ public class AdminPanel implements Listener, CommandExecutor {
                         "ทีมงานแบน", p.getName(), dur);
                 players(p);
             }
+            case 18 -> { t.setFoodLevel(20); t.setSaturation(20f);
+                         Notify.bar(p, "<green>เติมความอิ่มแล้ว", null, 1f); }
+            case 26 -> {
+                if (!click.isShiftClick()) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                t.setHealth(0);
+                Notify.bar(p, "<red>ฆ่า " + t.getName() + " แล้ว", null, 1f);
+                players(p);
+            }
+            case 27 -> {
+                Location spawn = plugin.locations().spawn();
+                if (spawn == null) spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
+                t.teleportAsync(spawn);
+                Notify.bar(p, "<green>ส่งกลับจุดเกิดแล้ว", null, 1f);
+            }
+            case 32 -> {
+                boolean on = !t.getAllowFlight();
+                t.setAllowFlight(on);
+                if (!on) t.setFlying(false);
+                Notify.bar(t, on ? "<aqua>เปิดโหมดบินให้แล้ว" : "<gray>ปิดโหมดบินแล้ว", null, 1f);
+                playerDetail(p, subject);
+            }
+            case 33 -> {
+                t.setInvulnerable(!t.isInvulnerable());
+                Notify.bar(t, t.isInvulnerable() ? "<gold>อมตะแล้ว" : "<gray>เลิกอมตะ", null, 1f);
+                playerDetail(p, subject);
+            }
+            case 34 -> {
+                if (!click.isShiftClick()) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                t.getInventory().clear();
+                Notify.chat(t, "<red>ทีมงานล้างกระเป๋าของคุณ");
+                Notify.bar(p, "<green>ล้างกระเป๋าแล้ว", null, 1f);
+            }
+            case 43 -> {
+                int n = 0;
+                for (Punishments.Entry pe : plugin.punishments().history())
+                    if (pe.target.equals(subject) && !pe.lifted) { pe.lifted = true; n++; }
+                plugin.punishments().save(true);
+                Notify.bar(p, "<green>ล้างบทลงโทษไป " + n + " รายการ", "block.note_block.pling", 1.3f);
+                playerDetail(p, subject);
+            }
             case 45 -> players(p);
             default -> { }
         }
     }
 
-    private void systemsClick(Player p, int slot) {
+    private void systemsClick(Player p, int slot, boolean shift) {
         switch (slot) {
             case 20 -> { p.closeInventory(); p.performCommand("zone list"); }
             case 21 -> { p.closeInventory(); p.performCommand("mission"); }
@@ -472,6 +568,48 @@ public class AdminPanel implements Listener, CommandExecutor {
             case 30 -> { p.closeInventory(); Notify.chat(p, "<gray>ใช้ <white>/setwarp <ชื่อ> [ICON]"); }
             case 31 -> { p.closeInventory(); p.performCommand("setspawn"); }
             case 32 -> { p.closeInventory(); p.performCommand("market"); }
+            case 38 -> {
+                if (!shift) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                int n = 0;
+                for (World w : Bukkit.getWorlds())
+                    for (var en : w.getEntities())
+                        if (en instanceof org.bukkit.entity.Item) { en.remove(); n++; }
+                Notify.bar(p, "<green>เก็บของตกพื้น " + n + " ชิ้น", "entity.item.pickup", 1.2f);
+                systems(p);
+            }
+            case 39 -> {
+                if (!shift) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                int n = 0;
+                for (World w : Bukkit.getWorlds())
+                    for (var en : w.getEntities())
+                        if (en instanceof org.bukkit.entity.Monster) { en.remove(); n++; }
+                Notify.bar(p, "<green>ล้างมอนสเตอร์ " + n + " ตัว", null, 1f);
+                systems(p);
+            }
+            case 40 -> { p.closeInventory(); p.performCommand("chat clear"); }
+            case 41 -> { p.closeInventory(); p.performCommand("chat lock"); }
+            case 42 -> {
+                boolean on = !Bukkit.hasWhitelist();
+                Bukkit.setWhitelist(on);
+                Bukkit.setWhitelistEnforced(on);
+                Notify.bar(p, on ? "<green>เปิดไวต์ลิสต์แล้ว" : "<yellow>ปิดไวต์ลิสต์แล้ว", null, 1f);
+                systems(p);
+            }
+            case 43 -> {
+                plugin.store().save();
+                plugin.money().save(true);
+                plugin.missions().save(true);
+                plugin.punishments().save(true);
+                plugin.chat().save(true);
+                plugin.jobs().save(true);
+                for (World w : Bukkit.getWorlds()) w.save();
+                Notify.bar(p, "<green>บันทึกทุกอย่างแล้ว", "block.note_block.pling", 1.4f);
+            }
+            case 44 -> {
+                if (!shift) { Notify.bar(p, "<yellow>ชิฟต์+คลิกเพื่อยืนยัน", null, 1f); return; }
+                p.closeInventory();
+                plugin.backups().run(p, true);
+            }
             default -> { }
         }
     }
