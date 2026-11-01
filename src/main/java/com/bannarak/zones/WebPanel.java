@@ -61,6 +61,8 @@ public class WebPanel {
             server.createContext("/api/discord/link", this::apiDiscordLink);
             server.createContext("/api/discord/roles", this::apiDiscordRoles);
             server.createContext("/api/points/add", this::apiPointsAdd);
+            server.createContext("/api/points/get", this::apiPointsGet);
+            server.createContext("/api/points/catalog", this::apiPointsCatalog);
             server.setExecutor(Executors.newFixedThreadPool(4));
             server.start();
             plugin.getLogger().info("Web panel listening on " + bind + ":" + port);
@@ -324,6 +326,57 @@ public class WebPanel {
         plugin.getLogger().info("Points: credited " + points + " P to " + name + " ref " + reference);
         send(ex, 200, "application/json",
                 "{\"ok\":true,\"player\":\"" + esc(name) + "\",\"balance\":" + result + "}");
+    }
+
+    /** GET ?player=NAME - what the bot shows when someone asks for their balance. */
+    private void apiPointsGet(HttpExchange ex) throws IOException {
+        if (!botAuthorised(ex)) { send(ex, 401, "application/json", "{\"error\":\"bad token\"}"); return; }
+        String q = ex.getRequestURI().getQuery();
+        String name = null;
+        if (q != null) for (String part : q.split("&")) {
+            String[] kv = part.split("=", 2);
+            if (kv.length == 2 && kv[0].equals("player"))
+                name = java.net.URLDecoder.decode(kv[1], java.nio.charset.StandardCharsets.UTF_8);
+        }
+        if (name == null) { send(ex, 400, "application/json", "{\"error\":\"missing player\"}"); return; }
+        final String who = name;
+        String json = sync(() -> {
+            var off = Bukkit.getOfflinePlayer(who);
+            if (off.getUniqueId() == null) return null;
+            return "{\"ok\":true,\"player\":\"" + esc(who) + "\",\"points\":"
+                    + plugin.points().get(off.getUniqueId())
+                    + ",\"money\":" + Math.round(plugin.money().get(off.getUniqueId()))
+                    + ",\"online\":" + (Bukkit.getPlayer(off.getUniqueId()) != null) + "}";
+        }, null);
+        if (json == null) { send(ex, 404, "application/json", "{\"error\":\"ไม่พบผู้เล่น\"}"); return; }
+        send(ex, 200, "application/json", json);
+    }
+
+    /** GET - the points shop, so the bot can list it without duplicating the config. */
+    private void apiPointsCatalog(HttpExchange ex) throws IOException {
+        if (!botAuthorised(ex)) { send(ex, 401, "application/json", "{\"error\":\"bad token\"}"); return; }
+        String json = sync(() -> {
+            StringBuilder sb = new StringBuilder("{");
+            String[] groups = {"colours", "pets", "extras"};
+            for (int g = 0; g < groups.length; g++) {
+                if (g > 0) sb.append(",");
+                sb.append("\"").append(groups[g]).append("\":[");
+                var root = plugin.getConfig().getConfigurationSection("cosmetics." + groups[g]);
+                boolean first = true;
+                if (root != null) for (String key : root.getKeys(false)) {
+                    var sec = root.getConfigurationSection(key);
+                    if (sec == null) continue;
+                    if (!first) sb.append(",");
+                    first = false;
+                    sb.append("{\"key\":\"").append(esc(key))
+                      .append("\",\"display\":\"").append(esc(sec.getString("display", key)))
+                      .append("\",\"price\":").append(sec.getLong("price", 0)).append("}");
+                }
+                sb.append("]");
+            }
+            return sb.append("}").toString();
+        }, "{}");
+        send(ex, 200, "application/json", json);
     }
 
     private void apiStatus(HttpExchange ex) throws IOException {
