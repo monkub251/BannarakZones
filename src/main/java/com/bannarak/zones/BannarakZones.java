@@ -40,6 +40,8 @@ public class BannarakZones extends JavaPlugin {
     private WebPanel webPanel;
     private ChatManager chat;
     private NpcManager npcs;
+    private StaffTools staff;
+    private MiningWatch mining;
     private WorldManager worlds;
     private Material adminBlock = Material.REINFORCED_DEEPSLATE;
     private int adminRadius = 64;
@@ -211,6 +213,19 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(chat, this);
         chat.startTabTimer();
 
+        staff = new StaffTools(this);
+        for (String n : new String[]{"vanish", "god", "speed", "nv", "invsee", "ec", "head"}) {
+            var c8 = getCommand(n);
+            if (c8 != null) { c8.setExecutor(staff); c8.setTabCompleter(staff); }
+        }
+        getServer().getPluginManager().registerEvents(staff, this);
+
+        mining = new MiningWatch(this);
+        mining.load();
+        var miningCmd = getCommand("mining");
+        if (miningCmd != null) { miningCmd.setExecutor(mining); miningCmd.setTabCompleter(mining); }
+        getServer().getPluginManager().registerEvents(mining, this);
+
         npcs = new NpcManager(this);
         npcs.load();
         var npcCmd = getCommand("npc");
@@ -223,7 +238,7 @@ public class BannarakZones extends JavaPlugin {
         webPanel = new WebPanel(this);
         webPanel.start();
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); }, 6000L, 6000L);
+        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); mining.save(false); }, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
     }
 
@@ -241,6 +256,7 @@ public class BannarakZones extends JavaPlugin {
         if (chat != null) chat.save(true);
         if (adminTools != null) adminTools.save(true);
         if (npcs != null) npcs.shutdown();
+        if (mining != null) mining.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -324,6 +340,8 @@ public class BannarakZones extends JavaPlugin {
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
     public NpcManager npcs() { return npcs; }
+    public StaffTools staff() { return staff; }
+    public MiningWatch mining() { return mining; }
     public WorldManager worlds() { return worlds; }
     public Material adminBlock() { return adminBlock; }
     public int adminRadius() { return adminRadius; }

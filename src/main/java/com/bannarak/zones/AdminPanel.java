@@ -30,7 +30,7 @@ public class AdminPanel implements Listener, CommandExecutor {
 
     public AdminPanel(BannarakZones plugin) { this.plugin = plugin; }
 
-    public enum Tab { DASHBOARD, PLAYERS, WORLD, ECONOMY, SYSTEMS, BANS, PLAYER_DETAIL }
+    public enum Tab { DASHBOARD, PLAYERS, WORLD, ECONOMY, SYSTEMS, BANS, STAFF, PLAYER_DETAIL }
 
     public class Holder implements InventoryHolder {
         public final Tab tab;
@@ -59,6 +59,7 @@ public class AdminPanel implements Listener, CommandExecutor {
         tabButton(inv, 3, Material.GOLD_INGOT, "เศรษฐกิจ", tab == Tab.ECONOMY);
         tabButton(inv, 4, Material.BEACON, "ระบบ", tab == Tab.SYSTEMS);
         tabButton(inv, 5, Material.BARRIER, "รายชื่อลงโทษ", tab == Tab.BANS);
+        tabButton(inv, 6, Material.NETHER_STAR, "เมนูทีมงาน", tab == Tab.STAFF);
         inv.setItem(8, item(Material.CLOCK, "<gray>รีเฟรช", List.of("<dark_gray>กดเพื่อโหลดใหม่"), false));
         return inv;
     }
@@ -132,6 +133,7 @@ public class AdminPanel implements Listener, CommandExecutor {
             case ECONOMY -> economy(p);
             case SYSTEMS -> systems(p);
             case BANS -> bans(p);
+            case STAFF -> staff(p);
             case PLAYER_DETAIL -> playerDetail(p, subject);
         }
     }
@@ -168,6 +170,78 @@ public class AdminPanel implements Listener, CommandExecutor {
         inv.setItem(33, item(Material.SUNFLOWER, "<yellow>ฟ้าใส", List.of(), false));
         inv.setItem(34, item(Material.WATER_BUCKET, "<aqua>ฝนตก", List.of(), false));
         p.openInventory(inv);
+    }
+
+    /** The staff toolkit on one page - vanish, god, fly, speed, night vision, x-ray report. */
+    private void staff(Player p) {
+        Inventory inv = shell(p, Tab.STAFF, null, "<dark_gray>แผงแอดมิน <gray>· เมนูทีมงาน");
+        StaffTools st = plugin.staff();
+        boolean van = st.isVanished(p.getUniqueId());
+
+        inv.setItem(22, item(Material.NETHER_STAR, "<gold>เครื่องมือทีมงาน", List.of(
+                "<gray>ทุกอย่างในหน้านี้มีผลกับตัวคุณเอง",
+                "<gray>ยกเว้นช่องตรวจจับด้านล่าง"), true));
+
+        inv.setItem(19, item(van ? Material.GLASS : Material.GLASS_BOTTLE,
+                van ? "<aqua>ล่องหนอยู่" : "<gray>ล่องหน", List.of(
+                "<gray>คนอื่นมองไม่เห็นและไม่เห็นในรายชื่อ",
+                "<gray>มอนไม่สนใจ เก็บของไม่ได้",
+                van ? "<aqua>กำลังเปิดอยู่" : "<dark_gray>ปิดอยู่"), van));
+        inv.setItem(20, item(Material.TOTEM_OF_UNDYING, "<gold>อมตะ",
+                List.of("<gray>สลับเปิด/ปิด"), st.isGod(p.getUniqueId())));
+        inv.setItem(21, item(Material.FEATHER, "<white>บิน",
+                List.of("<gray>สลับเปิด/ปิด"), p.getAllowFlight()));
+        inv.setItem(23, item(Material.GOLDEN_CARROT, "<yellow>มองกลางคืน",
+                List.of("<gray>สลับเปิด/ปิด"), p.hasPotionEffect(org.bukkit.potion.PotionEffectType.NIGHT_VISION)));
+        inv.setItem(24, item(Material.SUGAR, "<aqua>ความเร็ว", List.of(
+                "<gray>คลิก = เพิ่มทีละขั้น",
+                "<gray>คลิกขวา = กลับเป็นปกติ"), false));
+        inv.setItem(25, item(Material.STICK, "<light_purple>ไม้ตีไกล",
+                List.of("<gray>เปิด /astick"), false));
+
+        inv.setItem(28, item(Material.DIAMOND_PICKAXE, "<dark_red>ตรวจจับการขุด", List.of(
+                "<gray>อันดับคนที่สถิติผิดปกติ",
+                "<dark_gray>ไม่ใช่คำตัดสิน เป็นเหตุผลให้ไปดูเขาขุดจริง"), false));
+        inv.setItem(29, item(Material.IRON_BARS, "<dark_red>ห้องขัง",
+                List.of("<gray>ตั้งจุดด้วย /setjail"), false));
+        inv.setItem(30, item(Material.VILLAGER_SPAWN_EGG, "<green>จัดการ NPC",
+                List.of("<gray>เปิดรายการ NPC ที่สปอว์น"), false));
+        inv.setItem(31, item(Material.COMPASS, "<aqua>จุดเกิดทั้งสาม",
+                List.of("<gray>หลัก / เข้าครั้งแรก / หลังตาย"), false));
+        inv.setItem(32, item(Material.BOOK, "<yellow>รายการคำสั่ง",
+                List.of("<gray>เปิด /commands"), false));
+        inv.setItem(33, item(Material.ITEM_FRAME, "<aqua>แผงข้างจอแอดมิน",
+                List.of("<gray>สลับเปิด/ปิด"), false));
+        inv.setItem(34, item(Material.REDSTONE_TORCH, "<gold>รหัสเข้าหน้าเว็บ",
+                List.of("<gray>ออกรหัส 6 หลัก ใช้ได้ครั้งเดียว"), false));
+        p.openInventory(inv);
+    }
+
+    private void staffClick(Player p, int slot, ClickType click) {
+        StaffTools st = plugin.staff();
+        switch (slot) {
+            case 19 -> { st.setVanished(p, !st.isVanished(p.getUniqueId()), true); staff(p); }
+            case 20 -> { st.toggleGod(p); staff(p); }
+            case 21 -> { st.toggleFly(p); staff(p); }
+            case 23 -> { st.toggleNightVision(p); staff(p); }
+            case 24 -> {
+                if (click.isRightClick()) { st.setSpeed(p, 2, p.isFlying()); }
+                else {
+                    int now = Math.round((p.isFlying() ? p.getFlySpeed() : p.getWalkSpeed()) * 10f);
+                    st.setSpeed(p, Math.min(10, now + 2), p.isFlying());
+                }
+                staff(p);
+            }
+            case 25 -> { p.closeInventory(); p.performCommand("astick"); }
+            case 28 -> { p.closeInventory(); p.performCommand("mining"); }
+            case 29 -> { p.closeInventory(); Notify.chat(p, "<gray>ใช้ <white>/setjail <gray>ตั้งจุด แล้ว <white>/jail <ชื่อ> [30m|perm]"); }
+            case 30 -> { p.closeInventory(); p.performCommand("npc list"); }
+            case 31 -> { p.closeInventory(); p.performCommand("setspawn list"); }
+            case 32 -> { p.closeInventory(); p.performCommand("commands"); }
+            case 33 -> { p.closeInventory(); p.performCommand("adminhud"); }
+            case 34 -> { p.closeInventory(); p.performCommand("admin web"); }
+            default -> { }
+        }
     }
 
     private void players(Player p) {
@@ -254,6 +328,13 @@ public class AdminPanel implements Listener, CommandExecutor {
         inv.setItem(43, item(Material.LIME_DYE, "<green>ล้างบทลงโทษทั้งหมด",
                 List.of("<gray>ปลดทุกอย่างที่ค้างอยู่ของคนนี้"), false));
 
+        inv.setItem(35, item(Material.ENDER_CHEST, "<light_purple>ดูหีบเอนเดอร์", List.of(), false));
+        inv.setItem(36, item(Material.PLAYER_HEAD, "<yellow>เอาหัวเขา", List.of(
+                "<gray>คลิก = ใส่หัวเขาเลย",
+                "<gray>คลิกขวา = เอาใส่กระเป๋า"), false));
+        inv.setItem(44, item(Material.DIAMOND_PICKAXE, "<dark_red>สถิติการขุด", List.of(
+                "<gray>ดูว่าขุดหินกี่ก้อนต่อเพชร 1 เม็ด",
+                "<dark_gray>แสดงในแชท"), false));
         inv.setItem(45, item(Material.ARROW, "<white>กลับไปรายชื่อ", List.of(), false));
         viewer.openInventory(inv);
     }
@@ -402,6 +483,7 @@ public class AdminPanel implements Listener, CommandExecutor {
                     Notify.bar(p, "<green>วาร์ปไปโลก " + name, "entity.enderman.teleport", 1.3f);
                 }
             }
+            case STAFF -> staffClick(p, slot, e.getClick());
             case SYSTEMS -> systemsClick(p, slot, e.getClick().isShiftClick());
             case BANS -> {
                 UUID who = targetOf(e.getCurrentItem());
@@ -526,6 +608,12 @@ public class AdminPanel implements Listener, CommandExecutor {
                         "ทีมงานแบน", p.getName(), dur);
                 players(p);
             }
+            case 35 -> p.openInventory(t.getEnderChest());
+            case 36 -> {
+                if (click.isRightClick()) plugin.staff().giveHead(p, t);
+                else plugin.staff().wearHead(p, t);
+            }
+            case 44 -> { p.closeInventory(); p.performCommand("mining " + t.getName()); }
             case 18 -> { t.setFoodLevel(20); t.setSaturation(20f);
                          Notify.bar(p, "<green>เติมความอิ่มแล้ว", null, 1f); }
             case 26 -> {
