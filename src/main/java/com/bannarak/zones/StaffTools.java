@@ -87,16 +87,34 @@ public class StaffTools implements CommandExecutor, TabCompleter, Listener {
             Player v = Bukkit.getPlayer(id);
             if (v != null && !canSeeVanished(joined)) joined.hidePlayer(plugin, v);
         }
-        // staff who log in vanished stay vanished
+        // staff who log in vanished stay vanished, but say so - a forgotten vanish
+        // looks exactly like "mobs are broken"
         if (vanished.contains(joined.getUniqueId())) {
-            plugin.getServer().getScheduler().runTask(plugin, () -> setVanished(joined, true, false));
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                setVanished(joined, true, false);
+                Notify.chat(joined, "<aqua>คุณยังล่องหนอยู่ <gray>มอนจะไม่สนใจคุณ และตีคุณไม่เข้า");
+                Notify.chat(joined, "<gray>พิมพ์ <white>/vanish <gray>เพื่อเลิกล่องหน");
+            });
+        }
+
+        // repair a stale god flag: it is saved with the player, so anyone who
+        // logged out before this fix comes back invulnerable with no way to tell
+        if (!godded.contains(joined.getUniqueId()) && joined.isInvulnerable()
+                && joined.getGameMode() != org.bukkit.GameMode.CREATIVE
+                && joined.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+            joined.setInvulnerable(false);
+            plugin.getLogger().info("Cleared a leftover god flag on " + joined.getName());
         }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        // keep the vanish flag so a reconnect comes back vanished, but drop god
-        godded.remove(e.getPlayer().getUniqueId());
+        // keep the vanish flag so a reconnect comes back vanished, but drop god.
+        // the invulnerable flag lives in the player's saved data, so clearing the
+        // set is not enough - leave it set and they come back permanently
+        // unkillable with the menu still showing god as off.
+        Player p = e.getPlayer();
+        if (godded.remove(p.getUniqueId())) p.setInvulnerable(false);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -151,10 +169,19 @@ public class StaffTools implements CommandExecutor, TabCompleter, Listener {
     // ---------------- toggles ----------------
 
     public void toggleGod(Player p) {
-        boolean on = !godded.remove(p.getUniqueId());
-        if (on) godded.add(p.getUniqueId());
+        setGod(p, !godded.contains(p.getUniqueId()));
+    }
+
+    /**
+     * The only place god is turned on or off. Everything else - the admin panel,
+     * the web panel, the staff menu - goes through here, so the live set and the
+     * flag saved with the player can never drift apart.
+     */
+    public void setGod(Player p, boolean on) {
+        if (on) godded.add(p.getUniqueId()); else godded.remove(p.getUniqueId());
         p.setInvulnerable(on);
-        Notify.bar(p, on ? "<gold>เปิดอมตะแล้ว" : "<gray>ปิดอมตะแล้ว", "block.note_block.pling", on ? 1.6f : 0.8f);
+        Notify.bar(p, on ? "<gold>เปิดอมตะแล้ว" : "<gray>ปิดอมตะแล้ว",
+                "block.note_block.pling", on ? 1.6f : 0.8f);
     }
 
     public void setSpeed(Player p, int level, boolean flying) {

@@ -160,7 +160,7 @@ public class AdminPanel implements Listener, CommandExecutor {
         inv.setItem(23, item(Material.ICE, "<aqua>แช่แข็งทุกคน", List.of("<gray>สลับเปิด/ปิด ขยับไม่ได้"), false));
         inv.setItem(24, item(Material.FEATHER, "<white>บินให้ตัวเอง", List.of("<gray>สลับเปิด/ปิด"), p.getAllowFlight()));
         inv.setItem(25, item(Material.TOTEM_OF_UNDYING, "<gold>อมตะให้ตัวเอง",
-                List.of("<gray>สลับเปิด/ปิด"), p.isInvulnerable()));
+                List.of("<gray>สลับเปิด/ปิด"), plugin.staff().isGod(p.getUniqueId())));
 
         inv.setItem(28, item(Material.ENDER_CHEST, "<green>สำรองข้อมูลเดี๋ยวนี้", List.of(), false));
         inv.setItem(29, item(Material.PAPER, "<yellow>โหลดค่าใหม่", List.of("<gray>อ่านไฟล์ตั้งค่าทุกไฟล์ใหม่"), false));
@@ -314,7 +314,7 @@ public class AdminPanel implements Listener, CommandExecutor {
         inv.setItem(32, item(Material.FEATHER, "<aqua>บิน",
                 List.of("<gray>สลับเปิด/ปิด"), t.getAllowFlight()));
         inv.setItem(33, item(Material.TOTEM_OF_UNDYING, "<gold>อมตะ",
-                List.of("<gray>สลับเปิด/ปิด"), t.isInvulnerable()));
+                List.of("<gray>สลับเปิด/ปิด"), plugin.staff().isGod(t.getUniqueId())));
         inv.setItem(34, item(Material.CAULDRON, "<red>ล้างกระเป๋า",
                 List.of("<gray>ชิฟต์+คลิกเพื่อยืนยัน"), false));
         inv.setItem(37, item(Material.IRON_BARS, "<dark_red>ส่งเข้าห้องขัง",
@@ -533,7 +533,7 @@ public class AdminPanel implements Listener, CommandExecutor {
                 p.setFlying(p.getAllowFlight());
                 dashboard(p);
             }
-            case 25 -> { p.setInvulnerable(!p.isInvulnerable()); dashboard(p); }
+            case 25 -> { plugin.staff().toggleGod(p); dashboard(p); }
             case 28 -> { p.closeInventory(); plugin.backups().run(p, true); }
             case 29 -> {
                 plugin.readConfig();
@@ -636,7 +636,7 @@ public class AdminPanel implements Listener, CommandExecutor {
                 playerDetail(p, subject);
             }
             case 33 -> {
-                t.setInvulnerable(!t.isInvulnerable());
+                plugin.staff().toggleGod(t);
                 Notify.bar(t, t.isInvulnerable() ? "<gold>อมตะแล้ว" : "<gray>เลิกอมตะ", null, 1f);
                 playerDetail(p, subject);
             }

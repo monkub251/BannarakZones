@@ -703,7 +703,7 @@ public class WebPanel {
             case "god" -> {
                 if (t == null) return "คนนี้ไม่ได้ออนไลน์";
                 boolean on = !t.isInvulnerable();
-                t.setInvulnerable(on);
+                plugin.staff().setGod(t, on);
                 Notify.bar(t, on ? "<gold>อมตะแล้ว" : "<gray>เลิกอมตะ", null, 1f);
                 return (on ? "เปิด" : "ปิด") + "อมตะของ " + name + " แล้ว";
             }
