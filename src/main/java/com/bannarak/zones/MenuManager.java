@@ -199,13 +199,109 @@ public class MenuManager implements Listener, CommandExecutor {
         }
     }
 
-    // ---------------- hotbar compass ----------------
+    // ---------------- the menu item in the hotbar ----------------
+
+    /**
+     * Everyone carries one item that opens the menu on right-click, so a new
+     * player never has to know a single command. It is stamped in the item's
+     * own data rather than matched by material, so a normal item of the same
+     * kind still behaves normally.
+     */
+    private org.bukkit.NamespacedKey menuKey() {
+        return new org.bukkit.NamespacedKey(plugin, "menu_item");
+    }
+
+    private boolean isMenuItem(ItemStack it) {
+        if (it == null || it.getItemMeta() == null) return false;
+        return it.getItemMeta().getPersistentDataContainer()
+                .has(menuKey(), org.bukkit.persistence.PersistentDataType.BYTE);
+    }
+
+    public ItemStack menuItem() {
+        Material mat = Material.matchMaterial(
+                plugin.getConfig().getString("menu.item", "NETHER_STAR"));
+        if (mat == null) mat = Material.NETHER_STAR;
+        ItemStack it = new ItemStack(mat);
+        ItemMeta meta = it.getItemMeta();
+        meta.displayName(MM.deserialize(plugin.getConfig().getString("menu.item-name",
+                "<gold><bold>เมนูเซิร์ฟ")).decoration(TextDecoration.ITALIC, false));
+        List<Component> lore = new ArrayList<>();
+        for (String line : plugin.getConfig().getStringList("menu.item-lore"))
+            lore.add(MM.deserialize(line).decoration(TextDecoration.ITALIC, false));
+        if (lore.isEmpty())
+            lore.add(MM.deserialize("<yellow>คลิกขวาเพื่อเปิด").decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        meta.getPersistentDataContainer()
+                .set(menuKey(), org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+        it.setItemMeta(meta);
+        return it;
+    }
+
+    private boolean itemEnabled() {
+        return plugin.getConfig().getBoolean("menu.give-item", true);
+    }
+
+    private int slot() {
+        return Math.max(0, Math.min(8, plugin.getConfig().getInt("menu.item-slot", 8)));
+    }
+
+    /** Puts it in its slot if it is missing, without disturbing anything else. */
+    public void giveItem(Player p) {
+        if (!itemEnabled()) return;
+        for (ItemStack it : p.getInventory().getContents())
+            if (isMenuItem(it)) return;
+        int want = slot();
+        ItemStack there = p.getInventory().getItem(want);
+        p.getInventory().setItem(want, menuItem());
+        if (there != null && there.getType() != Material.AIR) {
+            for (ItemStack left : p.getInventory().addItem(there).values())
+                p.getWorld().dropItemNaturally(p.getLocation(), left);
+        }
+    }
+
+    @EventHandler
+    public void onJoin(org.bukkit.event.player.PlayerJoinEvent e) {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (e.getPlayer().isOnline()) giveItem(e.getPlayer());
+        }, 20L);
+    }
+
+    @EventHandler
+    public void onRespawn(org.bukkit.event.player.PlayerRespawnEvent e) {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (e.getPlayer().isOnline()) giveItem(e.getPlayer());
+        }, 10L);
+    }
+
+    /** It is a key, not loot: it cannot be dropped, stored or lost on death. */
+    @EventHandler
+    public void onDrop(org.bukkit.event.player.PlayerDropItemEvent e) {
+        if (isMenuItem(e.getItemDrop().getItemStack())) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onDeath(org.bukkit.event.entity.PlayerDeathEvent e) {
+        e.getDrops().removeIf(this::isMenuItem);
+    }
+
+    @EventHandler
+    public void onMoveToChest(org.bukkit.event.inventory.InventoryClickEvent e) {
+        // only block it leaving the player's own inventory, not clicks inside it
+        if (e.getInventory().getType() == org.bukkit.event.inventory.InventoryType.CRAFTING) return;
+        if (isMenuItem(e.getCurrentItem()) || isMenuItem(e.getCursor())) e.setCancelled(true);
+    }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        if (!plugin.getConfig().getBoolean("menu.compass-item", true)) return;
         ItemStack it = e.getItem();
-        if (it == null || it.getType() != Material.COMPASS) return;
+        if (it == null) return;
+
+        boolean menu = isMenuItem(it);
+        // the old compass behaviour still works for anyone who set it up that way
+        boolean compass = plugin.getConfig().getBoolean("menu.compass-item", false)
+                && it.getType() == Material.COMPASS;
+        if (!menu && !compass) return;
+
         if (e.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR
                 && e.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
         e.setCancelled(true);
