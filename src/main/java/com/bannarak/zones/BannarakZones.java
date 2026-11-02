@@ -40,6 +40,7 @@ public class BannarakZones extends JavaPlugin {
     private WebPanel webPanel;
     private ChatManager chat;
     private NpcManager npcs;
+    private Holograms holos;
     private StaffTools staff;
     private MiningWatch mining;
     private PointsManager points;
@@ -246,6 +247,14 @@ public class BannarakZones extends JavaPlugin {
         if (miningCmd != null) { miningCmd.setExecutor(mining); miningCmd.setTabCompleter(mining); }
         getServer().getPluginManager().registerEvents(mining, this);
 
+        holos = new Holograms(this);
+        holos.load();
+        var holoCmd = getCommand("holo");
+        if (holoCmd != null) { holoCmd.setExecutor(holos); holoCmd.setTabCompleter(holos); }
+        getServer().getPluginManager().registerEvents(holos, this);
+        getServer().getScheduler().runTask(this, () -> { holos.load(); holos.respawnAll(); });
+        getServer().getScheduler().runTaskTimer(this, () -> holos.heal(), 220L, 200L);
+
         npcs = new NpcManager(this);
         npcs.load();
         var npcCmd = getCommand("npc");
@@ -276,6 +285,7 @@ public class BannarakZones extends JavaPlugin {
         if (chat != null) chat.save(true);
         if (adminTools != null) adminTools.save(true);
         if (npcs != null) npcs.shutdown();
+        if (holos != null) holos.shutdown();
         if (mining != null) mining.save(true);
         if (points != null) points.save(true);
         if (cosmetics != null) cosmetics.shutdown();
@@ -362,6 +372,7 @@ public class BannarakZones extends JavaPlugin {
     public WebPanel webPanel() { return webPanel; }
     public ChatManager chat() { return chat; }
     public NpcManager npcs() { return npcs; }
+    public Holograms holos() { return holos; }
     public StaffTools staff() { return staff; }
     public MiningWatch mining() { return mining; }
     public PointsManager points() { return points; }

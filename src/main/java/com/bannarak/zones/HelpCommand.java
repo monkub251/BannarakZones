@@ -74,6 +74,7 @@ public class HelpCommand implements CommandExecutor {
             new Line("/ec",        "ดูหีบเอนเดอร์คนอื่น",        "zones.admin.invsee"),
             new Line("/head",      "ใส่หัวผู้เล่น",              "zones.admin.head"),
             new Line("/mining",    "สถิติการขุด จับ x-ray",      "zones.admin.mining"),
+            new Line("/holo",      "ป้ายลอย และตัวหนังสือใหญ่",   "zones.admin.holo"),
             new Line("/npc",       "สร้างคนยืนให้คลิกที่สปอว์น",  "zones.admin.npc"),
             new Line("/setspawn",  "จุดเกิด / เข้าครั้งแรก / หลังตาย", "zones.admin.setspawn"),
             new Line("/setwarp",   "ตั้งจุดวาร์ป",               "zones.admin.setwarp"),

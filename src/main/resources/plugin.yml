@@ -183,6 +183,12 @@ commands:
     description: Mining statistics used to spot x-ray
     aliases: [xray, ขุด]
     usage: /mining [player|reset <player>]
+  holo:
+    permission: zones.admin.holo
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+    description: Floating text and big 3D titles
+    aliases: [hologram, holograms, ป้าย, ป้ายลอย]
+    usage: /holo <create|title|addline|setline|delline|size|bg|billboard|move|tp|list|delete|reload>
   npc:
     permission: zones.admin.npc
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
@@ -366,6 +372,7 @@ permissions:
       zones.admin.head: true
       zones.admin.mining: true
       zones.admin.points: true
+      zones.admin.holo: true
       zones.admin.npc: true
       zones.admin.setspawn: true
       zones.admin.setwarp: true
