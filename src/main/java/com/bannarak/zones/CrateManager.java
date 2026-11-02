@@ -60,6 +60,9 @@ public class CrateManager implements Listener, CommandExecutor {
         Material icon = Material.ENDER_CHEST;
         final List<Reward> rewards = new ArrayList<>();
         int totalWeight = 0;
+        /** 0 means this crate's key is not for sale with points */
+        long pointPrice = 0;
+        final List<String> blurb = new ArrayList<>();
     }
 
     public class Holder implements InventoryHolder {
@@ -89,6 +92,8 @@ public class CrateManager implements Listener, CommandExecutor {
             c.keyName = s.getString("key-name", "<yellow>กุญแจ " + c.display);
             Material ic = Material.matchMaterial(s.getString("icon", "ENDER_CHEST"));
             if (ic != null) c.icon = ic;
+            c.pointPrice = s.getLong("point-price", 0);
+            c.blurb.addAll(s.getStringList("blurb"));
             ConfigurationSection rs = s.getConfigurationSection("rewards");
             if (rs != null) for (String rk : rs.getKeys(false)) {
                 Reward r = new Reward();
@@ -166,6 +171,32 @@ public class CrateManager implements Listener, CommandExecutor {
                 block.clone().add(0.5, 1.6, 0.5),
                 java.util.List.of(c.display, "<gray>คลิกขวาด้วยกุญแจ"),
                 1f);
+    }
+
+    // ---------------- for the points shop ----------------
+
+    /** Crates whose keys can be bought with points, in config order. */
+    public List<Crate> forSale() {
+        List<Crate> out = new ArrayList<>();
+        for (Crate c : crates.values()) if (c.pointPrice > 0) out.add(c);
+        return out;
+    }
+
+    public Crate byId(String id) {
+        return id == null ? null : crates.get(id.toLowerCase(Locale.ROOT));
+    }
+
+    public String displayOf(Crate c) { return c.display; }
+    public Material iconOf(Crate c) { return c.icon; }
+    public long priceOf(Crate c) { return c.pointPrice; }
+    public List<String> blurbOf(Crate c) { return c.blurb; }
+    public String idOf(Crate c) { return c.id; }
+    public int rewardCount(Crate c) { return c.rewards.size(); }
+
+    /** Hands over keys, dropping any that will not fit. */
+    public void giveKey(Player p, Crate c, int amount) {
+        for (ItemStack rest : p.getInventory().addItem(makeKey(c, amount)).values())
+            p.getWorld().dropItemNaturally(p.getLocation(), rest);
     }
 
     // ---------------- interaction ----------------

@@ -34,7 +34,7 @@ public class PointsShop implements CommandExecutor, Listener {
 
     public PointsShop(BannarakZones plugin) { this.plugin = plugin; }
 
-    public enum Page { MAIN, COLOURS, PETS, EXTRAS }
+    public enum Page { MAIN, COLOURS, PETS, CRATES, EXTRAS }
 
     public static class Holder implements InventoryHolder {
         public final Page page;
@@ -75,7 +75,9 @@ public class PointsShop implements CommandExecutor, Listener {
                 List.of("<gray>เปลี่ยนสีชื่อในแชทและข้างจอ", "", "<green>คลิกเพื่อเปิด"), false));
         inv.setItem(13, item(Material.BONE, "<yellow>สัตว์เลี้ยง",
                 List.of("<gray>เดินตามคุณไปทุกที่", "<dark_gray>ตกแต่งอย่างเดียว ตีไม่ได้", "", "<green>คลิกเพื่อเปิด"), false));
-        inv.setItem(15, item(Material.CHEST, "<aqua>อื่น ๆ",
+        inv.setItem(15, item(Material.ENDER_CHEST, "<gold>กล่องสุ่ม",
+                List.of("<gray>ซื้อกุญแจด้วยพ้อย", "", "<green>คลิกเพื่อเปิด"), false));
+        inv.setItem(16, item(Material.CHEST, "<aqua>อื่น ๆ",
                 List.of("<gray>สกินและของตกแต่งอื่น", "", "<green>คลิกเพื่อเปิด"), false));
 
         balance(inv, p, 26);
@@ -156,6 +158,67 @@ public class PointsShop implements CommandExecutor, Listener {
         p.openInventory(inv);
     }
 
+    public void openCrates(Player p) {
+        Holder h = new Holder(Page.CRATES);
+        Inventory inv = Bukkit.createInventory(h, 54, MM.deserialize("<dark_gray>ร้านพ้อย <gray>· กล่องสุ่ม"));
+        h.setInventory(inv);
+
+        var list = plugin.crates().forSale();
+        int slot = 0;
+        for (var c : list) {
+            if (slot > 44) break;
+            long price = plugin.crates().priceOf(c);
+            int rewards = plugin.crates().rewardCount(c);
+            List<String> lore = new ArrayList<>(plugin.crates().blurbOf(c));
+            lore.add("");
+            if (rewards == 0) {
+                lore.add("<dark_gray>กล่องนี้ยังไม่ได้ใส่ของ");
+                lore.add("<dark_gray>ทีมงานกำลังเตรียมอยู่");
+            } else {
+                lore.add("<gray>มีของ <white>" + rewards + " <gray>อย่าง");
+                lore.add("<gray>ราคา <yellow>" + plugin.points().format(price) + " P");
+                lore.add("");
+                lore.add("<yellow>คลิกซ้าย <gray>ซื้อกุญแจ 1 ดอก");
+                lore.add("<yellow>คลิกขวา <gray>ดูว่าออกอะไรบ้าง");
+            }
+            inv.setItem(slot++, item(plugin.crates().iconOf(c), c.display, lore, rewards > 0));
+        }
+        if (list.isEmpty()) inv.setItem(22, item(Material.BARRIER, "<gray>ยังไม่มีกล่องวางขาย",
+                List.of("<dark_gray>ใส่ point-price ใน crates.yml"), false));
+
+        inv.setItem(45, item(Material.ARROW, "<white>กลับ", List.of(), false));
+        inv.setItem(49, item(Material.TRIPWIRE_HOOK, "<gray>กุญแจใช้ยังไง", List.of(
+                "<gray>ถือกุญแจไปคลิกขวาที่กล่องสุ่มในโลก",
+                "<gray>กล่องจะมีป้ายลอยบอกชื่ออยู่เหนือหัว"), false));
+        balance(inv, p, 53);
+        p.openInventory(inv);
+    }
+
+    private void buyKey(Player p, int slot, boolean preview) {
+        var list = plugin.crates().forSale();
+        if (slot < 0 || slot >= list.size()) return;
+        var c = list.get(slot);
+
+        if (plugin.crates().rewardCount(c) == 0) {
+            Notify.bar(p, "<gray>กล่องนี้ยังไม่ได้ใส่ของ ซื้อไม่ได้", "block.note_block.bass", 0.8f);
+            return;
+        }
+        if (preview) { plugin.crates().preview(p, c); return; }
+
+        long price = plugin.crates().priceOf(c);
+        if (!plugin.points().take(p.getUniqueId(), price)) {
+            Notify.bar(p, "<red>พ้อยไม่พอ <gray>ต้องมี <yellow>" + plugin.points().format(price) + " P",
+                    "block.note_block.bass", 0.7f);
+            return;
+        }
+        plugin.points().record(p.getName() + " ซื้อกุญแจ " + plugin.crates().idOf(c)
+                + " ราคา " + plugin.points().format(price) + " P");
+        plugin.points().save(false);
+        plugin.crates().giveKey(p, c, 1);
+        Notify.bar(p, "<green>ได้กุญแจ " + c.display + " <green>แล้ว", "entity.player.levelup", 1.3f);
+        openCrates(p);
+    }
+
     public void openExtras(Player p) {
         Holder h = new Holder(Page.EXTRAS);
         Inventory inv = Bukkit.createInventory(h, 54, MM.deserialize("<dark_gray>ร้านพ้อย <gray>· อื่น ๆ"));
@@ -195,7 +258,8 @@ public class PointsShop implements CommandExecutor, Listener {
                 switch (slot) {
                     case 11 -> openColours(p);
                     case 13 -> openPets(p);
-                    case 15 -> openExtras(p);
+                    case 15 -> openCrates(p);
+                    case 16 -> openExtras(p);
                     case 22 -> { p.closeInventory(); p.performCommand("topup"); }
                     default -> { }
                 }
@@ -209,6 +273,10 @@ public class PointsShop implements CommandExecutor, Listener {
                 if (slot == 45) { openMain(p); return; }
                 if (slot == 49) { plugin.cosmetics().setPet(p, null); openPets(p); return; }
                 pick(p, "cosmetics.pets", slot, false);
+            }
+            case CRATES -> {
+                if (slot == 45 || slot == 49) { if (slot == 45) openMain(p); return; }
+                buyKey(p, slot, e.getClick().isRightClick());
             }
             case EXTRAS -> {
                 if (slot == 45) { openMain(p); return; }
