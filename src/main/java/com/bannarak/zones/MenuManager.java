@@ -176,7 +176,16 @@ public class MenuManager implements Listener, CommandExecutor {
         for (String raw : actions) {
             String action = raw.trim();
             String lower = action.toLowerCase(Locale.ROOT);
-            if (lower.startsWith("open:")) {
+            if (lower.startsWith("panel:")) {
+                String which = action.substring(6).trim().toLowerCase(Locale.ROOT);
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    switch (which) {
+                        case "blocks" -> plugin.blocks().open(p);
+                        case "pshop" -> plugin.pointsShop().openMain(p);
+                        default -> Notify.chat(p, "<red>ไม่รู้จักหน้า " + which);
+                    }
+                });
+            } else if (lower.startsWith("open:")) {
                 String target = action.substring(5).trim();
                 plugin.getServer().getScheduler().runTask(plugin, () -> open(p, target));
             } else if (lower.startsWith("console:")) {

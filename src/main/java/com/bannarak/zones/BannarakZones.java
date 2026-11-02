@@ -249,8 +249,6 @@ public class BannarakZones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(mining, this);
 
         blocks = new ServerBlocks(this);
-        var blocksCmd = getCommand("blocks");
-        if (blocksCmd != null) { blocksCmd.setExecutor(blocks); blocksCmd.setTabCompleter(blocks); }
         getServer().getPluginManager().registerEvents(blocks, this);
 
         holos = new Holograms(this);

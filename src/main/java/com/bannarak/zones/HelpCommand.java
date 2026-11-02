@@ -29,7 +29,6 @@ public class HelpCommand implements CommandExecutor {
             new Line("/pay",     "โอนเงินให้เพื่อน",            "zones.command.pay"),
             new Line("/baltop",  "อันดับคนรวย",                 "zones.command.baltop"),
             new Line("/shop",    "ร้านค้าของเซิร์ฟ",            "zones.command.shop"),
-            new Line("/blocks",    "ดูบล็อกพิเศษของเซิร์ฟ",       "zones.command.blocks"),
             new Line("/pshop",     "ร้านพ้อย ซื้อของตกแต่ง",      "zones.command.pshop"),
             new Line("/points",    "ดูพ้อยของคุณ",               "zones.command.points"),
             new Line("/topup",     "วิธีเติมพ้อย",               "zones.command.topup"),

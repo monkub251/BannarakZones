@@ -6,10 +6,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +26,7 @@ import java.util.*;
  * tag in its own data, so a player can tell at a glance, and an ordinary
  * beacon they bought or crafted stays an ordinary beacon.
  */
-public class ServerBlocks implements CommandExecutor, TabCompleter, Listener {
+public class ServerBlocks implements Listener {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
@@ -179,50 +175,4 @@ public class ServerBlocks implements CommandExecutor, TabCompleter, Listener {
         Notify.bar(p, "<green>ได้ " + k.display + " <green>แล้ว", "entity.item.pickup", 1.2f);
     }
 
-    // ---------------- command ----------------
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player p)) { sender.sendMessage("Players only."); return true; }
-
-        if (args.length >= 2 && args[0].equalsIgnoreCase("give")) {
-            if (!p.hasPermission("zones.admin.blocks")) {
-                Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงานเท่านั้น");
-                return true;
-            }
-            Kind k = null;
-            for (Kind c : Kind.values()) if (c.id.equalsIgnoreCase(args[1])) k = c;
-            if (k == null) { Notify.chat(p, "<red>มีแค่ <yellow>zone <red>กับ <yellow>admin"); return true; }
-            Player target = args.length > 3 ? Bukkit.getPlayerExact(args[3]) : p;
-            if (target == null) { Notify.chat(p, "<red>ไม่เจอผู้เล่นคนนั้น"); return true; }
-            int amount = 1;
-            if (args.length > 2) {
-                try { amount = Math.max(1, Math.min(64, Integer.parseInt(args[2]))); }
-                catch (NumberFormatException ignored) { }
-            }
-            give(target, k, amount);
-            Notify.chat(p, "<green>ให้ <yellow>" + k.id + " x" + amount + " <green>กับ <white>" + target.getName());
-            return true;
-        }
-
-        open(p);
-        return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        List<String> out = new ArrayList<>();
-        if (!sender.hasPermission("zones.admin.blocks")) return out;
-        if (args.length == 1) {
-            if ("give".startsWith(args[0].toLowerCase(Locale.ROOT))) out.add("give");
-        } else if (args.length == 2) {
-            for (Kind k : Kind.values())
-                if (k.id.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(k.id);
-        } else if (args.length == 4) {
-            for (Player t : Bukkit.getOnlinePlayers())
-                if (t.getName().toLowerCase(Locale.ROOT).startsWith(args[3].toLowerCase(Locale.ROOT)))
-                    out.add(t.getName());
-        }
-        return out;
-    }
 }

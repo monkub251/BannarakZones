@@ -183,11 +183,6 @@ commands:
     description: Mining statistics used to spot x-ray
     aliases: [xray, ขุด]
     usage: /mining [player|reset <player>]
-  blocks:
-    permission: zones.command.blocks
-    description: What every special block does, and where to get one
-    aliases: [block, บล็อค, บล็อก]
-    usage: /blocks | /blocks give <zone|admin> [amount] [player]
   holo:
     permission: zones.admin.holo
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
@@ -335,7 +330,6 @@ permissions:
       zones.command.dungeon: true
       zones.command.rank: true
       zones.command.shop: true
-      zones.command.blocks: true
       zones.command.points: true
       zones.command.pshop: true
       zones.command.topup: true

@@ -6,6 +6,8 @@
 #   <คำสั่ง>          สั่งในนามผู้เล่น เช่น  spawn
 #   console:<คำสั่ง>   สั่งในนามเซิร์ฟ เช่น  console:give <player> bread 1
 #   open:<ชื่อเมนู>    เปิดอีกเมนู
+#   panel:blocks      เปิดหน้าบล็อกพิเศษ
+#   panel:pshop       เปิดร้านพ้อย
 #   message:<ข้อความ>  ส่งข้อความ
 #   sound:<ชื่อเสียง>  เล่นเสียง
 #   close             ปิดเมนู
@@ -75,6 +77,17 @@ menus:
           - "<green>▸ ขอรหัสผูกบัญชี"
         actions:
           - "rank"
+
+      14:
+        icon: BEACON
+        name: "<aqua>บล็อกพิเศษ"
+        lore:
+          - "<gray>บล็อกที่ทำงานต่างจากของธรรมดา"
+          - "<gray>เช่น บล็อกจับจองที่ดิน"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions:
+          - "panel:blocks"
 
       19:
         icon: EMERALD
