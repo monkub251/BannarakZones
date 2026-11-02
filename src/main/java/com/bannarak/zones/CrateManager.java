@@ -151,6 +151,23 @@ public class CrateManager implements Listener, CommandExecutor {
         return it.getItemMeta().getPersistentDataContainer().get(keyTag, PersistentDataType.STRING);
     }
 
+    /** One hologram id per crate block, so setting it twice replaces the label. */
+    private String holoId(org.bukkit.Location l) {
+        return "crate_" + l.getWorld().getName() + "_" + l.getBlockX()
+                + "_" + l.getBlockY() + "_" + l.getBlockZ();
+    }
+
+    /** Hangs the crate's name over the block, so nobody has to guess which one it is. */
+    private void label(org.bukkit.Location block, String crateId) {
+        if (plugin.holos() == null) return;
+        Crate c = crates.get(crateId.toLowerCase(Locale.ROOT));
+        if (c == null) return;
+        plugin.holos().put(holoId(block),
+                block.clone().add(0.5, 1.6, 0.5),
+                java.util.List.of(c.display, "<gray>คลิกขวาด้วยกุญแจ"),
+                1f);
+    }
+
     // ---------------- interaction ----------------
 
     @EventHandler
@@ -304,9 +321,12 @@ public class CrateManager implements Listener, CommandExecutor {
                 var target = p.getTargetBlockExact(6);
                 if (target == null) { Notify.chat(p, "<red>มองไปที่บล็อกก่อน"); return true; }
                 if (!crates.containsKey(args[1].toLowerCase(Locale.ROOT))) { Notify.chat(p, "<red>ไม่พบกล่องนี้"); return true; }
-                blocks.put(keyOf(target.getLocation()), args[1].toLowerCase(Locale.ROOT));
+                String cid = args[1].toLowerCase(Locale.ROOT);
+                blocks.put(keyOf(target.getLocation()), cid);
                 saveBlocks();
+                label(target.getLocation(), cid);
                 Notify.chat(p, "<green>ตั้งบล็อกนี้เป็นกล่อง <yellow>" + args[1] + " <green>แล้ว");
+                Notify.chat(p, "<gray>ใส่ป้ายลอยให้แล้ว คนเล่นจะเห็นว่าบล็อกนี้ไม่ธรรมดา");
             }
             case "unset" -> {
                 if (!(sender instanceof Player p)) return true;
@@ -315,6 +335,7 @@ public class CrateManager implements Listener, CommandExecutor {
                 if (target == null) return true;
                 if (blocks.remove(keyOf(target.getLocation())) != null) {
                     saveBlocks();
+                    if (plugin.holos() != null) plugin.holos().drop(holoId(target.getLocation()));
                     Notify.chat(p, "<yellow>เอาบล็อกนี้ออกจากระบบกล่องแล้ว");
                 } else Notify.chat(p, "<gray>บล็อกนี้ไม่ใช่กล่อง");
             }

@@ -17,10 +17,7 @@
 menus:
 
   # ───────────────────────────────────────────────────────────
-  # หน้าหลัก — จัดเป็น 3 แถว แถวละเรื่อง
-  #   แถวบน  : ตัวเรา   (บ้าน เขต เงิน)
-  #   แถวกลาง: หาเงิน   (ร้าน ตลาด ภารกิจ รางวัล กล่องสุ่ม)
-  #   แถวล่าง: เดินทาง + ของอื่น
+  # หน้าหลัก — 6 หมวด ไม่ต้องจำคำสั่งอะไรเลย
   # ───────────────────────────────────────────────────────────
   main:
     title: "<dark_gray>ᴍᴇɴᴜ <gray>· <gold>BANNARAKX"
@@ -35,9 +32,8 @@ menus:
           - "<gray>เงิน <gold><money>"
           - "<gray>เขตที่มี <white><zones><dark_gray>/<gray><slots>"
           - "<gray>บ้านที่ตั้งไว้ <white><homes>"
-          - ""
-          - "<dark_gray>พิมพ์ /commands ดูคำสั่งทั้งหมด"
 
+      # ── แถวบน: ตัวเรา ──
       10:
         icon: RED_BED
         name: "<yellow>บ้านของฉัน"
@@ -45,40 +41,315 @@ menus:
           - "<gray>กลับบ้าน · ตั้งบ้าน · ลบบ้าน"
           - ""
           - "<green>▸ คลิกเพื่อเปิด"
-        actions:
-          - "open:homes"
+        actions: [ "open:homes" ]
+
       11:
         icon: BEACON
         name: "<light_purple>เขตป้องกันของฉัน"
         lore:
-          - "<gray>ดูเขตทั้งหมดที่จองไว้"
-          - "<dark_gray>วางบีคอนเพื่อสร้างเขตใหม่"
+          - "<gray>ดูเขตที่จับจองไว้"
           - ""
-          - "<green>▸ คลิกเพื่อดู"
-        actions:
-          - "zone list"
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "open:land" ]
+
       12:
         icon: GOLD_INGOT
-        name: "<gold>กระเป๋าเงิน"
+        name: "<gold>เงินและพ้อย"
         lore:
-          - "<gray>ตอนนี้มี <gold><money>"
-          - "<dark_gray>/pay <ชื่อ> <จำนวน> เพื่อโอน"
+          - "<gray>เงิน <gold><money>"
+          - "<gray>โอนเงิน · อันดับคนรวย · พ้อย"
           - ""
-          - "<green>▸ ดูอันดับคนรวย"
-        actions:
-          - "baltop"
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "open:wallet" ]
+
       13:
         icon: NAME_TAG
         name: "<light_purple>ยศของฉัน"
         lore:
-          - "<gray>ยศมาจาก role ในดิสคอร์ด"
-          - "<gray>ผูกบัญชีครั้งเดียว ใช้ได้ตลอด"
+          - "<gray>ดูยศ และผูกบัญชีดิสคอร์ด"
           - ""
-          - "<green>▸ ขอรหัสผูกบัญชี"
-        actions:
-          - "rank"
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "rank" ]
 
       14:
+        icon: NETHER_STAR
+        name: "<aqua>ของพิเศษของเซิร์ฟ"
+        lore:
+          - "<gray>บล็อกและไอเทมที่ทำงานต่างจากของธรรมดา"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "open:special" ]
+
+      # ── แถวกลาง: หาเงิน ──
+      19:
+        icon: EMERALD
+        name: "<green>ร้านรับซื้อ"
+        lore:
+          - "<gray>เอาของมาขายให้เซิร์ฟ"
+          - "<dark_gray>เซิร์ฟไม่ขายของ ซื้อกันเองที่ตลาด"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "shop" ]
+
+      20:
+        icon: CHEST_MINECART
+        name: "<aqua>ตลาดกลาง"
+        lore:
+          - "<gray>ซื้อของจากผู้เล่นคนอื่น"
+          - "<gray>ของทุกชิ้นในเซิร์ฟมาจากตรงนี้"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "market" ]
+
+      21:
+        icon: WRITTEN_BOOK
+        name: "<gold>ภารกิจ"
+        lore:
+          - "<gray>ทำภารกิจรับเงิน 16 อย่าง"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "mission" ]
+
+      22:
+        icon: SUNFLOWER
+        name: "<green>รางวัลรายวัน"
+        lore:
+          - "<gray>เข้ามาทุกวันรับเงินเพิ่มขึ้นเรื่อย ๆ"
+          - ""
+          - "<green>▸ คลิกเพื่อรับ"
+        actions: [ "daily" ]
+
+      23:
+        icon: ENDER_CHEST
+        name: "<yellow>กล่องสุ่ม"
+        lore:
+          - "<gray>ดูว่ากล่องไหนออกอะไรบ้าง"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "crate list" ]
+
+      24:
+        icon: WITHER_SKELETON_SKULL
+        name: "<dark_red>ดันเจียน"
+        lore:
+          - "<gray>50 เวฟ บอส 2 ตัว เล่น 3-5 คน"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "dungeon" ]
+
+      # ── แถวล่าง: เดินทาง ──
+      28:
+        icon: RECOVERY_COMPASS
+        name: "<white>จุดเกิด"
+        lore:
+          - "<gray>กลับไปที่สปอว์น"
+          - ""
+          - "<green>▸ คลิกเพื่อไป"
+        actions: [ "spawn" ]
+
+      29:
+        icon: ENDER_PEARL
+        name: "<aqua>วาร์ป"
+        lore:
+          - "<gray>ไปจุดที่ทีมงานตั้งไว้"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "warp" ]
+
+      30:
+        icon: COMPASS
+        name: "<gold>ออกสำรวจ"
+        lore:
+          - "<gray>สุ่มวาร์ปไปที่ไกล ๆ หาที่สร้างบ้าน"
+          - ""
+          - "<green>▸ คลิกเพื่อไป"
+        actions: [ "rtp" ]
+
+      31:
+        icon: LEAD
+        name: "<green>ขอวาร์ปหาเพื่อน"
+        lore:
+          - "<gray>ส่งคำขอไปหาคนที่ออนไลน์อยู่"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "tpa" ]
+
+      32:
+        icon: PAPER
+        name: "<aqua>แชตและเพื่อน"
+        lore:
+          - "<gray>ส่งข้อความส่วนตัว · ปิดแชตคนกวน"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "open:social" ]
+
+      # ── ล่างสุด ──
+      48:
+        icon: SUNFLOWER
+        name: "<gold>ร้านพ้อย"
+        lore:
+          - "<gray>สีชื่อ · สัตว์เลี้ยง · ของตกแต่ง"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "panel:pshop" ]
+
+      49:
+        icon: BOOK
+        name: "<yellow>คำสั่งทั้งหมด"
+        lore:
+          - "<gray>สำหรับคนที่ชอบพิมพ์คำสั่ง"
+          - ""
+          - "<green>▸ คลิกเพื่อดู"
+        actions: [ "commands", "close" ]
+
+      50:
+        icon: CLOCK
+        name: "<white>สถานะเซิร์ฟ"
+        lore:
+          - "<gray>ดูว่ามีใครออนไลน์บ้าง"
+          - ""
+          - "<green>▸ คลิกเพื่อดู"
+        actions: [ "baltop" ]
+
+      53:
+        icon: COMMAND_BLOCK
+        name: "<red>แผงทีมงาน"
+        lore:
+          - "<dark_gray>ทีมงานเท่านั้น"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "open:admin" ]
+
+  # ───────────────────────────────────────────────────────────
+  land:
+    title: "<dark_gray>เขตป้องกัน"
+    rows: 3
+    filler: BLACK_STAINED_GLASS_PANE
+    items:
+      11:
+        icon: BEACON
+        name: "<light_purple>เขตของฉัน"
+        lore:
+          - "<gray>มีอยู่ <white><zones><dark_gray>/<gray><slots> <gray>เขต"
+          - ""
+          - "<green>▸ คลิกเพื่อดู"
+        actions: [ "zone list" ]
+
+      13:
+        icon: BEACON
+        name: "<aqua>รับบล็อกจับจอง"
+        lore:
+          - "<gray>วางลงพื้นเพื่อจับจองที่ดิน"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "panel:blocks" ]
+
+      15:
+        icon: WRITTEN_BOOK
+        name: "<yellow>วิธีใช้"
+        lore:
+          - "<gray>วางบล็อกจับจอง แล้วคลิกขวาที่บล็อกนั้น"
+          - "<gray>เพื่อเพิ่มเพื่อน ขยายเขต หรือลบเขต"
+        actions: [ "zone", "close" ]
+
+      22:
+        icon: ARROW
+        name: "<white>กลับหน้าหลัก"
+        actions: [ "open:main" ]
+
+  # ───────────────────────────────────────────────────────────
+  wallet:
+    title: "<dark_gray>เงินและพ้อย"
+    rows: 3
+    filler: BLACK_STAINED_GLASS_PANE
+    items:
+      10:
+        icon: GOLD_INGOT
+        name: "<gold>เงินของฉัน"
+        lore:
+          - "<gold><money>"
+        actions: [ "money", "close" ]
+
+      11:
+        icon: PAPER
+        name: "<green>โอนเงินให้เพื่อน"
+        lore:
+          - "<gray>ใช้คำสั่ง <white>/pay <ชื่อ> <จำนวน>"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/pay <ชื่อ> <จำนวน>", "close" ]
+
+      12:
+        icon: DIAMOND
+        name: "<aqua>อันดับคนรวย"
+        actions: [ "baltop", "close" ]
+
+      14:
+        icon: SUNFLOWER
+        name: "<gold>พ้อยของฉัน"
+        lore:
+          - "<gray>พ้อยใช้ซื้อของตกแต่ง"
+          - "<dark_gray>ซื้อเงินหรือไอเทมไม่ได้"
+        actions: [ "points", "close" ]
+
+      15:
+        icon: NETHER_STAR
+        name: "<light_purple>ร้านพ้อย"
+        lore:
+          - "<gray>สีชื่อ · สัตว์เลี้ยง · ของตกแต่ง"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิด"
+        actions: [ "panel:pshop" ]
+
+      16:
+        icon: EMERALD
+        name: "<green>เติมพ้อย"
+        lore:
+          - "<gray>ดูวิธีเติม"
+        actions: [ "topup", "close" ]
+
+      22:
+        icon: ARROW
+        name: "<white>กลับหน้าหลัก"
+        actions: [ "open:main" ]
+
+  # ───────────────────────────────────────────────────────────
+  social:
+    title: "<dark_gray>แชตและเพื่อน"
+    rows: 3
+    filler: BLACK_STAINED_GLASS_PANE
+    items:
+      11:
+        icon: PAPER
+        name: "<aqua>ส่งข้อความส่วนตัว"
+        lore:
+          - "<gray>ใช้คำสั่ง <white>/msg <ชื่อ> <ข้อความ>"
+          - "<gray>ตอบกลับด้วย <white>/r <ข้อความ>"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/msg <ชื่อ> <ข้อความ> <gray>· ตอบด้วย <white>/r", "close" ]
+
+      13:
+        icon: BARRIER
+        name: "<red>ปิดแชตคนกวน"
+        lore:
+          - "<gray>ใช้คำสั่ง <white>/ignore <ชื่อ>"
+          - "<gray>พิมพ์อีกครั้งเพื่อเปิดกลับ"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/ignore <ชื่อ>", "close" ]
+
+      15:
+        icon: LEAD
+        name: "<green>ขอวาร์ปหาเพื่อน"
+        actions: [ "tpa" ]
+
+      22:
+        icon: ARROW
+        name: "<white>กลับหน้าหลัก"
+        actions: [ "open:main" ]
+
+  # ───────────────────────────────────────────────────────────
+  special:
+    title: "<dark_gray>ของพิเศษของเซิร์ฟ"
+    rows: 3
+    filler: BLACK_STAINED_GLASS_PANE
+    items:
+      11:
         icon: BEACON
         name: "<aqua>บล็อกพิเศษ"
         lore:
@@ -86,129 +357,35 @@ menus:
           - "<gray>เช่น บล็อกจับจองที่ดิน"
           - ""
           - "<green>▸ คลิกเพื่อเปิด"
-        actions:
-          - "panel:blocks"
+        actions: [ "panel:blocks" ]
 
-      19:
-        icon: EMERALD
-        name: "<green>ร้านค้าของเซิร์ฟ"
+      13:
+        icon: NETHERITE_SWORD
+        name: "<gold>ไอเทมของเซิร์ฟ"
         lore:
-          - "<gray>ซื้อขายกับเซิร์ฟ ราคาคงที่"
-          - ""
-          - "<green>▸ คลิกเพื่อเปิด"
-        actions:
-          - "shop"
-      20:
-        icon: CHEST_MINECART
-        name: "<aqua>ตลาดกลาง"
-        lore:
-          - "<gray>ซื้อขายกับผู้เล่นคนอื่น"
-          - "<dark_gray>/sell <ราคา> เพื่อลงขายของในมือ"
-          - ""
-          - "<green>▸ คลิกเพื่อเปิด"
-        actions:
-          - "market"
-      21:
-        icon: WRITTEN_BOOK
-        name: "<gold>ภารกิจ"
-        lore:
-          - "<gray>ทำครบรับรางวัล มีหลายขั้น"
+          - "<gray>ไอเทมพิเศษที่ทีมงานแจก"
           - ""
           - "<green>▸ คลิกเพื่อดู"
-        actions:
-          - "mission"
+        actions: [ "citem list", "close" ]
+
+      15:
+        icon: TRIPWIRE_HOOK
+        name: "<yellow>กุญแจกล่องสุ่ม"
+        lore:
+          - "<gray>ได้จากรางวัลรายวันและภารกิจ"
+          - "<gray>เอาไปคลิกขวาที่กล่องสุ่ม"
+          - ""
+          - "<green>▸ ดูกล่องทั้งหมด"
+        actions: [ "crate list" ]
+
       22:
-        icon: SUNFLOWER
-        name: "<green>รางวัลรายวัน"
-        lore:
-          - "<gray>เข้าเซิร์ฟทุกวันรับของ 7 วันวน"
-          - ""
-          - "<green>▸ คลิกเพื่อรับ"
-        actions:
-          - "daily"
-      23:
-        icon: ENDER_CHEST
-        name: "<yellow>กล่องสุ่ม"
-        lore:
-          - "<gray>ใช้กุญแจเปิดกล่อง ลุ้นของหายาก"
-          - ""
-          - "<green>▸ คลิกเพื่อดู"
-        actions:
-          - "crate list"
-
-      28:
-        icon: RECOVERY_COMPASS
-        name: "<white>จุดเกิด"
-        lore:
-          - "<gray>กลับไปจุดเริ่มต้นของเซิร์ฟ"
-          - ""
-          - "<green>▸ คลิกเพื่อไป"
-        actions:
-          - "spawn"
-      29:
-        icon: ENDER_PEARL
-        name: "<aqua>วาร์ป"
-        lore:
-          - "<gray>จุดสำคัญที่ทีมงานตั้งไว้"
-          - ""
-          - "<green>▸ คลิกเพื่อดู"
-        actions:
-          - "warp"
-      30:
-        icon: COMPASS
-        name: "<gold>ออกสำรวจ"
-        lore:
-          - "<gray>สุ่มส่งไปที่ไกล ๆ ในโลกหลัก"
-          - "<dark_gray>หาที่ลงที่ปลอดภัยให้อัตโนมัติ"
-          - ""
-          - "<green>▸ คลิกเพื่อไป"
-        actions:
-          - "rtp"
-      31:
-        icon: LEAD
-        name: "<green>ขอวาร์ปหาเพื่อน"
-        lore:
-          - "<dark_gray>/tpa <ชื่อ> เพื่อส่งคำขอ"
-          - ""
-          - "<green>▸ ดูวิธีใช้"
-        actions:
-          - "tpa"
-      32:
-        icon: WITHER_SKELETON_SKULL
-        name: "<dark_red>ดันเจียน"
-        lore:
-          - "<gray>50 เวฟ บอสรองเวฟ 49 บอสใหญ่เวฟ 50"
-          - "<gray>ลงได้ 3-5 คน · คูลดาวน์ 10 ชั่วโมง"
-          - "<red>เตรียมของได้รอบเดียว ตายคือจบ"
-          - ""
-          - "<green>▸ คลิกเพื่อเข้า"
-        actions:
-          - "dungeon"
-
-      49:
-        icon: BOOK
-        name: "<yellow>คำสั่งทั้งหมด"
-        lore:
-          - "<gray>ดูทุกคำสั่งที่คุณใช้ได้"
-          - "<dark_gray>กดที่คำสั่งเพื่อพิมพ์ลงแชต"
-          - ""
-          - "<green>▸ คลิกเพื่อดู"
-        actions:
-          - "commands"
-          - "close"
-      53:
-        icon: COMMAND_BLOCK
-        name: "<red>แผงทีมงาน"
-        lore:
-          - "<dark_gray>เฉพาะทีมงานเท่านั้น"
-          - ""
-          - "<green>▸ คลิกเพื่อเปิด"
-        actions:
-          - "admin"
+        icon: ARROW
+        name: "<white>กลับหน้าหลัก"
+        actions: [ "open:main" ]
 
   # ───────────────────────────────────────────────────────────
   homes:
-    title: "<dark_gray>ʜᴏᴍᴇ <gray>· บ้านของฉัน"
+    title: "<dark_gray>บ้านของฉัน"
     rows: 3
     filler: BLACK_STAINED_GLASS_PANE
     items:
@@ -217,124 +394,145 @@ menus:
         name: "<yellow>ไปบ้าน"
         lore:
           - "<gray>ตั้งไว้ <white><homes> <gray>หลัง"
-          - "<dark_gray>/home <ชื่อ> ถ้ามีหลายหลัง"
-          - ""
-          - "<green>▸ คลิกเพื่อไป"
-        actions:
-          - "home"
+        actions: [ "home" ]
+
       13:
         icon: OAK_DOOR
         name: "<green>ตั้งบ้านตรงนี้"
-        lore:
-          - "<gray>จำตำแหน่งที่ยืนอยู่เป็นบ้าน"
-          - "<dark_gray>/sethome <ชื่อ> เพื่อตั้งชื่อเอง"
-          - ""
-          - "<green>▸ คลิกเพื่อตั้ง"
-        actions:
-          - "sethome"
+        actions: [ "sethome" ]
+
       15:
         icon: BARRIER
         name: "<red>ลบบ้าน"
         lore:
-          - "<dark_gray>/delhome <ชื่อบ้าน>"
-        actions:
-          - "message:<gray>ใช้คำสั่ง <white>/delhome <ชื่อบ้าน>"
-          - "close"
+          - "<gray>ใช้คำสั่ง <white>/delhome <ชื่อบ้าน>"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/delhome <ชื่อบ้าน>", "close" ]
+
       22:
         icon: ARROW
         name: "<white>กลับหน้าหลัก"
-        actions:
-          - "open:main"
+        actions: [ "open:main" ]
 
   # ───────────────────────────────────────────────────────────
-  # ทางลัดของทีมงาน — ของที่เคยหลงไปอยู่ในหน้าบ้าน ย้ายมาที่นี่
-  # ───────────────────────────────────────────────────────────
   admin:
-    title: "<dark_gray>sᴛᴀғғ <gray>· ทางลัดทีมงาน"
-    rows: 4
+    title: "<dark_gray>แผงทีมงาน"
+    rows: 5
     filler: BLACK_STAINED_GLASS_PANE
     items:
       10:
         icon: COMPASS
         name: "<yellow>ตั้งจุดเกิดตรงนี้"
-        actions:
-          - "setspawn"
+        lore:
+          - "<gray>/setspawn first = จุดคนเข้าครั้งแรก"
+          - "<gray>/setspawn death = จุดเกิดหลังตาย"
+        actions: [ "setspawn" ]
+
       11:
         icon: ENDER_PEARL
         name: "<aqua>ตั้งวาร์ปตรงนี้"
-        lore:
-          - "<dark_gray>/setwarp <ชื่อ> [ICON]"
-        actions:
-          - "message:<gray>ใช้คำสั่ง <white>/setwarp <ชื่อ> [ICON]"
-          - "close"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/setwarp <ชื่อ> [ICON]", "close" ]
+
       12:
         icon: IRON_BARS
         name: "<dark_red>ตั้งห้องขังตรงนี้"
-        actions:
-          - "setjail"
+        actions: [ "setjail" ]
+
       13:
         icon: STICK
         name: "<gold>รับไม้ทีมงาน"
-        lore:
-          - "<gray>ตีได้ไกลมาก · วาร์ปตามที่เล็ง"
-        actions:
-          - "astick"
+        actions: [ "astick" ]
+
       14:
-        icon: BEACON
+        icon: ITEM_FRAME
         name: "<light_purple>แผงข้างจอ"
+        actions: [ "adminhud" ]
+
+      15:
+        icon: VILLAGER_SPAWN_EGG
+        name: "<green>จัดการ NPC"
         lore:
-          - "<gray>เปิด-ปิดแถบสถานะเซิร์ฟ"
-        actions:
-          - "adminhud"
+          - "<gray>/npc create <ชื่อ> แล้ว /npc cmd <ชื่อ> shop"
+        actions: [ "npc list", "close" ]
+
+      16:
+        icon: OAK_SIGN
+        name: "<aqua>ป้ายลอย"
+        lore:
+          - "<gray>/holo create <ชื่อ> <ข้อความ>"
+          - "<gray>/holo title <ชื่อ> <ข้อความ> = ตัวใหญ่"
+        actions: [ "holo list", "close" ]
 
       19:
         icon: NETHERITE_SWORD
         name: "<gold>ไอเทมของเซิร์ฟ"
-        actions:
-          - "citem list"
+        actions: [ "citem list", "close" ]
+
       20:
         icon: TRIPWIRE_HOOK
         name: "<aqua>แจกกุญแจกล่อง"
-        lore:
-          - "<dark_gray>/crate key <กล่อง> <ผู้เล่น> [จำนวน]"
-        actions:
-          - "message:<gray>ใช้คำสั่ง <white>/crate key <ชื่อกล่อง> <ผู้เล่น> [จำนวน]"
-          - "close"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/crate key <ชื่อกล่อง> <ผู้เล่น> [จำนวน]", "close" ]
+
       21:
         icon: WITHER_SKELETON_SKULL
         name: "<dark_red>ตั้งจุดเริ่มดันเจียน"
-        actions:
-          - "dungeon setspawn"
+        actions: [ "dungeon setspawn" ]
+
       22:
         icon: GOLD_INGOT
         name: "<gold>จัดการเงิน"
-        lore:
-          - "<dark_gray>/eco give|take|set <ชื่อ> <จำนวน>"
-        actions:
-          - "message:<gray>ใช้คำสั่ง <white>/eco give|take|set <ชื่อ> <จำนวน>"
-          - "close"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/eco give|take|set <ชื่อ> <จำนวน>", "close" ]
+
       23:
+        icon: SUNFLOWER
+        name: "<light_purple>จัดการพ้อย"
+        actions: [ "message:<gray>ใช้คำสั่ง <white>/points give|take|set <ชื่อ> <จำนวน> <gray>· ประวัติ <white>/points log", "close" ]
+
+      24:
+        icon: DIAMOND_PICKAXE
+        name: "<dark_red>ตรวจจับ x-ray"
+        lore:
+          - "<gray>อันดับคนที่สถิติการขุดผิดปกติ"
+          - "<dark_gray>ไม่ใช่คำตัดสิน ไปส่องเขาขุดจริงก่อนแบน"
+        actions: [ "mining", "close" ]
+
+      28:
+        icon: GLASS
+        name: "<aqua>ล่องหน"
+        actions: [ "vanish" ]
+
+      29:
+        icon: TOTEM_OF_UNDYING
+        name: "<gold>อมตะ"
+        actions: [ "god" ]
+
+      30:
+        icon: GOLDEN_CARROT
+        name: "<yellow>มองกลางคืน"
+        actions: [ "nv" ]
+
+      31:
         icon: STRUCTURE_BLOCK
         name: "<green>สำรองข้อมูลเดี๋ยวนี้"
-        actions:
-          - "backup"
-      24:
+        actions: [ "backup" ]
+
+      32:
+        icon: REDSTONE_TORCH
+        name: "<gold>รหัสเข้าหน้าเว็บ"
+        actions: [ "admin web", "close" ]
+
+      33:
         icon: COMMAND_BLOCK
         name: "<red>แผงควบคุมเต็ม"
         lore:
-          - "<gray>6 แท็บ จัดการได้ทุกอย่าง"
-        actions:
-          - "admin"
+          - "<gray>7 แท็บ จัดการได้ทุกอย่าง"
+        actions: [ "admin" ]
 
-      30:
+      39:
         icon: REPEATER
         name: "<green>โหลดค่าใหม่"
-        lore:
-          - "<gray>อ่านไฟล์ตั้งค่าทั้งหมดใหม่"
-        actions:
-          - "zone reload"
-      31:
+        actions: [ "zone reload" ]
+
+      41:
         icon: ARROW
         name: "<white>กลับหน้าหลัก"
-        actions:
-          - "open:main"
+        actions: [ "open:main" ]

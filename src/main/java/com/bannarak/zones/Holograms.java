@@ -237,6 +237,40 @@ public class Holograms implements CommandExecutor, TabCompleter, Listener {
         }
     }
 
+    // ---------------- for other systems ----------------
+
+    /**
+     * A label another system owns, keyed by id. Calling it again with the same
+     * id edits the sign in place rather than stacking a second one.
+     */
+    public void put(String id, Location at, List<String> lines, float size) {
+        id = id.toLowerCase(Locale.ROOT);
+        Holo h = defs.get(id);
+        if (h == null) {
+            h = new Holo();
+            h.id = id;
+            defs.put(id, h);
+        }
+        h.loc = at;
+        h.lines.clear();
+        h.lines.addAll(lines);
+        h.size = size;
+        dirty = true;
+        save(true);
+        UUID u = live.remove(h.id);
+        if (u != null) { Entity e = Bukkit.getEntity(u); if (e != null) e.remove(); }
+        spawn(h);
+    }
+
+    public void drop(String id) {
+        id = id.toLowerCase(Locale.ROOT);
+        if (defs.remove(id) == null) return;
+        UUID u = live.remove(id);
+        if (u != null) { Entity e = Bukkit.getEntity(u); if (e != null) e.remove(); }
+        dirty = true;
+        save(true);
+    }
+
     // ---------------- command ----------------
 
     @Override
