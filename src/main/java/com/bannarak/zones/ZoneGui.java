@@ -264,7 +264,7 @@ public class ZoneGui implements Listener {
             org.bukkit.block.Block b = w.getBlockAt(z.x, z.y, z.z);
             if (b.getType() == plugin.zoneBlock()) {
                 b.setType(Material.AIR);
-                ItemStack give = new ItemStack(plugin.zoneBlock());
+                ItemStack give = plugin.blocks().make(ServerBlocks.Kind.ZONE, 1);
                 java.util.Map<Integer, ItemStack> left = p.getInventory().addItem(give);
                 for (ItemStack rest : left.values())
                     w.dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), rest);

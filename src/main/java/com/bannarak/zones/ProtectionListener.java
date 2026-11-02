@@ -75,7 +75,9 @@ public class ProtectionListener implements Listener {
         Block b = e.getBlock();
         Player p = e.getPlayer();
 
-        if (b.getType() == plugin.adminBlock() && p.hasPermission("zones.admin")) {
+        var held = e.getItemInHand();
+        if (b.getType() == plugin.adminBlock() && p.hasPermission("zones.admin")
+                && plugin.blocks().triggers(held, ServerBlocks.Kind.ADMIN)) {
             int radius = plugin.adminRadius();
             Zone zone = new Zone(UUID.randomUUID(), p.getUniqueId(), p.getName(),
                     b.getWorld().getName(), b.getX(), b.getY(), b.getZ(), radius);
@@ -90,7 +92,8 @@ public class ProtectionListener implements Listener {
             return;
         }
 
-        if (b.getType() == plugin.zoneBlock()) {
+        if (b.getType() == plugin.zoneBlock()
+                && plugin.blocks().triggers(held, ServerBlocks.Kind.ZONE)) {
             if (!p.hasPermission("zones.use")) return;
             if (plugin.worldBlocked(b.getWorld().getName())) {
                 plugin.msg(p, "blocked-world");
@@ -146,6 +149,13 @@ public class ProtectionListener implements Listener {
             }
             plugin.store().remove(anchor);
             plugin.store().save();
+            // hand back the tagged block, not the plain one vanilla would drop
+            if (p.getGameMode() == org.bukkit.GameMode.SURVIVAL) {
+                e.setDropItems(false);
+                b.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5),
+                        plugin.blocks().make(anchor.admin
+                                ? ServerBlocks.Kind.ADMIN : ServerBlocks.Kind.ZONE, 1));
+            }
             plugin.msg(p, "removed");
             plugin.playSound(p, "block.beacon.deactivate", 0.8f);
             return;

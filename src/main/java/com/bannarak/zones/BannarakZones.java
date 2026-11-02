@@ -41,6 +41,7 @@ public class BannarakZones extends JavaPlugin {
     private ChatManager chat;
     private NpcManager npcs;
     private Holograms holos;
+    private ServerBlocks blocks;
     private StaffTools staff;
     private MiningWatch mining;
     private PointsManager points;
@@ -247,6 +248,11 @@ public class BannarakZones extends JavaPlugin {
         if (miningCmd != null) { miningCmd.setExecutor(mining); miningCmd.setTabCompleter(mining); }
         getServer().getPluginManager().registerEvents(mining, this);
 
+        blocks = new ServerBlocks(this);
+        var blocksCmd = getCommand("blocks");
+        if (blocksCmd != null) { blocksCmd.setExecutor(blocks); blocksCmd.setTabCompleter(blocks); }
+        getServer().getPluginManager().registerEvents(blocks, this);
+
         holos = new Holograms(this);
         holos.load();
         var holoCmd = getCommand("holo");
@@ -373,6 +379,7 @@ public class BannarakZones extends JavaPlugin {
     public ChatManager chat() { return chat; }
     public NpcManager npcs() { return npcs; }
     public Holograms holos() { return holos; }
+    public ServerBlocks blocks() { return blocks; }
     public StaffTools staff() { return staff; }
     public MiningWatch mining() { return mining; }
     public PointsManager points() { return points; }
@@ -618,8 +625,10 @@ public class BannarakZones extends JavaPlugin {
 
     private void sendHelp(Player p) {
         p.sendMessage(MM.deserialize("<gold>=== เขตป้องกัน ==="));
-        p.sendMessage(MM.deserialize("<white>วาง <yellow>" + zoneBlock.name().toLowerCase(Locale.ROOT)
-                + " <white>เพื่อสร้างเขต"));
+        p.sendMessage(MM.deserialize(blocks != null && blocks.requireTag()
+                ? "<white>วาง <aqua>บล็อกจับจอง <white>เพื่อสร้างเขต <dark_gray>(/blocks)"
+                : "<white>วาง <yellow>" + zoneBlock.name().toLowerCase(Locale.ROOT)
+                  + " <white>เพื่อสร้างเขต"));
         p.sendMessage(MM.deserialize("<white>คลิกขวาที่บล็อกนั้นเพื่อเปิดเมนูตั้งค่า"));
         p.sendMessage(MM.deserialize("<gray>/zone info <white>- ดูว่าตรงนี้เป็นเขตของใคร"));
         p.sendMessage(MM.deserialize("<gray>/zone list <white>- ดูเขตทั้งหมดของคุณ"));
