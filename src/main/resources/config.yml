@@ -373,13 +373,14 @@ worlds:
       platform-x: 0
       platform-y: 99
       platform-z: 0
+      # ชื่อ gamerule ของ 26.x — ชื่อเก่า (doDaylightCycle ฯลฯ) ก็ยังใส่ได้ ปลั๊กอินแปลงให้เอง
       gamerules:
-        - "doMobSpawning=false"
-        - "doDaylightCycle=false"
-        - "doWeatherCycle=false"
-        - "keepInventory=true"
-        - "fallDamage=false"
-        - "doFireTick=false"
+        - "SPAWN_MOBS=false"
+        - "ADVANCE_TIME=false"
+        - "ADVANCE_WEATHER=false"
+        - "KEEP_INVENTORY=true"
+        - "FALL_DAMAGE=false"
+        - "FIRE_SPREAD_RADIUS_AROUND_PLAYER=0"
 
   # ขอบโลก — รัศมีเป็นบล็อกจากจุดกลาง, 0 = ไม่จำกัด
   # ตั้งในเกมได้ด้วย /world border <ชื่อ> <รัศมี>

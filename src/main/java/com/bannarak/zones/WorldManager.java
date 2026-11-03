@@ -67,12 +67,7 @@ public class WorldManager implements CommandExecutor, TabCompleter {
             for (String rule : section.getStringList(name + ".gamerules")) {
                 String[] parts = rule.split("=", 2);
                 if (parts.length != 2) continue;
-                GameRule<?> gr = GameRule.getByName(parts[0].trim());
-                if (gr == null) {
-                    plugin.getLogger().warning("ไม่รู้จัก gamerule " + parts[0] + " ในโลก " + name);
-                    continue;
-                }
-                applyRule(world, gr, parts[1].trim());
+                applyNamedRule(world, name, parts[0].trim(), parts[1].trim());
             }
 
             // a small pad so whoever arrives first does not fall through the sky
@@ -90,6 +85,82 @@ public class WorldManager implements CommandExecutor, TabCompleter {
                 plugin.getLogger().info("วางแท่นชั่วคราวที่ " + name + " " + cx + "," + cy + "," + cz);
             }
         }
+    }
+
+    /**
+     * Minecraft 26.x renamed most game rules: doDaylightCycle became ADVANCE_TIME,
+     * doMobSpawning became SPAWN_MOBS, and so on. Configs written before that still
+     * use the old spellings, so both are accepted here.
+     *
+     * The lookup walks the GameRules class with reflection instead of naming its
+     * fields directly, so a server on an older Paper - where that class does not
+     * exist yet - still works through the legacy path.
+     */
+    private static final Map<String, String> RENAMED = Map.of(
+            "domobspawning",    "SPAWN_MOBS",
+            "dodaylightcycle",  "ADVANCE_TIME",
+            "doweathercycle",   "ADVANCE_WEATHER",
+            "announceadvancements", "SHOW_ADVANCEMENT_MESSAGES",
+            "showdeathmessages",    "SHOW_DEATH_MESSAGES",
+            "domobloot",        "MOB_DROPS",
+            "dotiledrops",      "BLOCK_DROPS",
+            "doentitydrops",    "ENTITY_DROPS",
+            "naturalregeneration",  "NATURAL_HEALTH_REGENERATION");
+
+    private GameRule<?> resolveRule(String wanted) {
+        // 1. the name exactly as the server knows it today
+        GameRule<?> direct = fromGameRulesClass(wanted);
+        if (direct != null) return direct;
+
+        // 2. the old spelling, if this server still answers to it
+        try {
+            @SuppressWarnings("deprecation")
+            GameRule<?> legacy = GameRule.getByName(wanted);
+            if (legacy != null) return legacy;
+        } catch (Throwable ignored) { }
+
+        // 3. the old spelling, translated to the new constant
+        String mapped = RENAMED.get(wanted.toLowerCase(Locale.ROOT));
+        return mapped == null ? null : fromGameRulesClass(mapped);
+    }
+
+    /** Reads a constant off org.bukkit.GameRules by name, matching loosely. */
+    private GameRule<?> fromGameRulesClass(String wanted) {
+        try {
+            Class<?> rules = Class.forName("org.bukkit.GameRules");
+            String flat = wanted.replace("_", "").toLowerCase(Locale.ROOT);
+            for (java.lang.reflect.Field f : rules.getFields()) {
+                if (!GameRule.class.isAssignableFrom(f.getType())) continue;
+                if (f.getName().replace("_", "").toLowerCase(Locale.ROOT).equals(flat))
+                    return (GameRule<?>) f.get(null);
+            }
+        } catch (ClassNotFoundException ignored) {
+            // older Paper: the legacy lookup above is the only route
+        } catch (Throwable t) {
+            plugin.getLogger().warning("อ่านรายชื่อ gamerule ไม่ได้: " + t.getMessage());
+        }
+        return null;
+    }
+
+    private void applyNamedRule(World world, String worldName, String ruleName, String value) {
+        // doFireTick was removed outright; the nearest modern control is the radius
+        // in which fire spreads around a player, so "false" becomes a radius of 0.
+        if (ruleName.equalsIgnoreCase("doFireTick")) {
+            GameRule<?> radius = fromGameRulesClass("FIRE_SPREAD_RADIUS_AROUND_PLAYER");
+            if (radius != null && !Boolean.parseBoolean(value)) {
+                applyRule(world, radius, "0");
+                plugin.getLogger().info("doFireTick ไม่มีแล้วใน 26.x - ใช้ FIRE_SPREAD_RADIUS_AROUND_PLAYER=0 แทน ในโลก " + worldName);
+                return;
+            }
+            if (radius != null) return;   // true is the default, nothing to do
+        }
+
+        GameRule<?> gr = resolveRule(ruleName);
+        if (gr == null) {
+            plugin.getLogger().warning("ไม่รู้จัก gamerule " + ruleName + " ในโลก " + worldName);
+            return;
+        }
+        applyRule(world, gr, value);
     }
 
     @SuppressWarnings("unchecked")
