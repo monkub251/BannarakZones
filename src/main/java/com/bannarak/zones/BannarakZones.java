@@ -271,8 +271,29 @@ public class BannarakZones extends JavaPlugin {
         webPanel = new WebPanel(this);
         webPanel.start();
 
-        getServer().getScheduler().runTaskTimer(this, () -> { store.save(); money.save(false); missions.save(false); locations.save(false); mining.save(false); points.save(false); cosmetics.save(false); }, 6000L, 6000L);
+        // Every 5 minutes, write everything that holds player data. A crash or a
+        // power cut then costs at most five minutes, not the whole session.
+        getServer().getScheduler().runTaskTimer(this, this::saveAll, 6000L, 6000L);
         getLogger().info("BannarakZones enabled.");
+    }
+
+    /** Writes every store that holds player data. Called on a timer and at shutdown. */
+    private void saveAll() {
+        if (store != null) store.save();
+        if (money != null) money.save(false);
+        if (missions != null) missions.save(false);
+        if (locations != null) locations.save(false);
+        if (mining != null) mining.save(false);
+        if (points != null) points.save(false);
+        if (cosmetics != null) cosmetics.save(false);
+        if (ranks != null) ranks.save(false);
+        if (daily != null) daily.save(false);
+        if (market != null) market.save(false);
+        if (punishments != null) punishments.save(false);
+        if (chat != null) chat.save(false);
+        if (adminTools != null) adminTools.save(false);
+        if (npcs != null) npcs.save(false);
+        if (holos != null) holos.save(false);
     }
 
     @Override
