@@ -162,9 +162,13 @@ say "Paper พร้อม ($(du -h "$MC_DIR/paper.jar" | cut -f1))"
 
 # ---------------------------------------------------------------- ปลั๊กอินของเรา
 say "โหลดปลั๊กอิน BannarakZones ตัวล่าสุด"
+# เรียงตามเลขเวอร์ชัน ไม่ใช่เวลาอัปโหลด: ถ้าบังเอิญรันตอนไฟล์ตัวใหม่กำลังถูก
+# อัปโหลดทับ เวลาจะหลอกให้ได้ตัวเก่ากลับมา
 PLUGIN_URL=$(curl -fsSL "https://api.github.com/repos/${PLUGIN_REPO}/releases/tags/latest" \
   | jq -r '[.assets[] | select(.name|test("^BannarakZones-[0-9.]+\\.jar$"))]
-           | sort_by(.updated_at) | last | .browser_download_url // empty') || true
+           | map(. + {v: (.name | capture("-(?<a>[0-9]+)\\.(?<b>[0-9]+)\\.(?<c>[0-9]+)\\.jar$")
+                               | [(.a|tonumber),(.b|tonumber),(.c|tonumber)])})
+           | sort_by(.v) | last | .browser_download_url // empty') || true
 if [[ -n ${PLUGIN_URL:-} ]]; then
   curl -fSL --retry 3 -o "$MC_DIR/plugins/BannarakZones.jar" "$PLUGIN_URL"
   say "ได้ปลั๊กอินแล้ว: $(basename "$PLUGIN_URL")"
