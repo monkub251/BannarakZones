@@ -66,23 +66,26 @@ public class PlayerHud implements Listener {
             p.setScoreboard(board);
         }
 
+        Component title = MM.deserialize(plugin.getConfig().getString("hud.title",
+                "<gradient:#f0cf8a:#b8863a><bold>BANNARAKX</bold></gradient>"));
         Objective obj = board.getObjective("bzhud");
         if (obj == null) {
-            obj = board.registerNewObjective("bzhud", Criteria.DUMMY,
-                    MM.deserialize(plugin.getConfig().getString("hud.title",
-                            "<gradient:#f0cf8a:#b8863a><bold>BANNARAKX</bold></gradient>")));
-            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+            obj = board.registerNewObjective("bzhud", Criteria.DUMMY, title);
+        } else {
+            obj.displayName(title);
         }
+        // Only one objective can hold the sidebar, and another plugin claiming
+        // it used to push ours out for good: the slot was set once, at
+        // creation, and never asked for again. Take it back on every refresh.
+        if (obj.getDisplaySlot() != DisplaySlot.SIDEBAR) obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         List<String> template = plugin.getConfig().getStringList("hud.lines");
         if (template.isEmpty()) template = List.of(
-                "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬",
-                "<gray>ชื่อ <white><player>",
                 "<gray>ยศ <yellow><rank>",
                 "<gray>เงิน <gold><money>",
-                "",
-                "<gray>ออนไลน์ <white><online>",
-                "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬");
+                "<gray>พ้อย <yellow><points>",
+                "<gray>ที่นี่ <white><here>",
+                "<gray>ออนไลน์ <white><online>");
 
         // Entries must be unique, so pad shorter repeats with hidden colour codes.
         for (int i = 0; i < template.size(); i++) {
@@ -115,6 +118,18 @@ public class PlayerHud implements Listener {
         return tips.get(i);
     }
 
+    /**
+     * Whose land you are standing on — the one thing a sidebar can tell you
+     * that you cannot work out by looking around.
+     */
+    private String here(Player p) {
+        Zone z = plugin.store().zoneAt(p.getLocation());
+        if (z == null) return "<green>ที่โล่ง";
+        if (p.getUniqueId().equals(z.owner)) return "<aqua>เขตของคุณ";
+        if (z.members.contains(p.getUniqueId())) return "<aqua>เขตที่คุณเข้าได้";
+        return "<red>เขตของ " + (z.ownerName == null ? "?" : z.ownerName);
+    }
+
     private String fill(String s, Player p) {
         var rank = plugin.ranks() == null ? null : plugin.ranks().rankOf(p.getUniqueId());
         return s.replace("<player>", p.getName())
@@ -126,6 +141,7 @@ public class PlayerHud implements Listener {
                 .replace("<online>", String.valueOf(Bukkit.getOnlinePlayers().size()))
                 .replace("<max>", String.valueOf(Bukkit.getMaxPlayers()))
                 .replace("<world>", p.getWorld().getName())
-                .replace("<zones>", String.valueOf(plugin.store().zonesOf(p.getUniqueId()).size()));
+                .replace("<zones>", String.valueOf(plugin.store().zonesOf(p.getUniqueId()).size()))
+                .replace("<here>", here(p));
     }
 }

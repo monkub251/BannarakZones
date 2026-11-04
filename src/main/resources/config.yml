@@ -410,19 +410,17 @@ worlds:
 # ─────────────────────────────────────────────────────────────
 hud:
   enabled: true
-  refresh-ticks: 20          # อัปเดตทุกกี่ติก (20 = 1 วินาที)
+  refresh-ticks: 20
   title: "<gradient:#f0cf8a:#b8863a><bold>BANNARAKX</bold></gradient>"
+  # เอาแต่ข้อมูลสำคัญ ไม่มีเส้นคั่น ไม่มีชื่อตัวเอง (ผู้เล่นรู้อยู่แล้ว)
+  # ตัวแปรที่ใช้ได้: <player> <rank> <money> <points> <here> <online> <max> <world> <zones> <tip>
   lines:
-    - "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬"
-    - "<gray>ชื่อ <white><player>"
     - "<gray>ยศ <yellow><rank>"
     - "<gray>เงิน <gold><money>"
     - "<gray>พ้อย <yellow><points> P"
-    - ""
+    - "<gray>ที่นี่ <white><here>"
     - "<gray>ออนไลน์ <white><online><dark_gray>/<gray><max>"
-    - "<tip>"
-    - "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬"
-  # บรรทัด <tip> จะสลับไปเรื่อย ๆ สอนคำสั่งให้คนเล่นเอง
+  # ถ้าอยากให้สอนคำสั่งไปด้วย เพิ่ม "<tip>" เข้าไปใน lines
   tip-seconds: 6
   tips:
     - "<yellow>/menu <gray>เมนูคำสั่ง"
