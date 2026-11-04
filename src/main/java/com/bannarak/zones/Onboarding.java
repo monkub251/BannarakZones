@@ -62,7 +62,11 @@ public class Onboarding implements Listener, CommandExecutor {
         dirty = true;
 
         ConfigurationSection sec = plugin.getConfig().getConfigurationSection("starter-kit.items");
-        if (sec == null) return;
+        if (sec == null) {
+            plugin.getLogger().warning("starter-kit.items ไม่มีใน config.yml — ไม่ได้แจกชุดเริ่มต้นให้ "
+                    + p.getName());
+            return;
+        }
         List<ItemStack> give = new ArrayList<>();
         for (String key : sec.getKeys(false)) {
             ConfigurationSection it = sec.getConfigurationSection(key);

@@ -1,3 +1,6 @@
+# ไฟล์นี้มีเลขเวอร์ชัน ถ้าปลั๊กอินมีเมนูใหม่กว่า มันจะสำรองของเดิมเป็น .bak แล้ววางของใหม่ให้
+version: 3
+
 # ===== เมนูของเซิร์ฟ =====
 # แก้ไฟล์นี้แล้วพิมพ์ /zone reload
 #
@@ -261,14 +264,6 @@ menus:
           - "<green>▸ คลิกเพื่อเปลี่ยน"
         actions: [ "prompt:password" ]
 
-      53:
-        icon: COMMAND_BLOCK
-        name: "<red>แผงทีมงาน"
-        lore:
-          - "<dark_gray>ทีมงานเท่านั้น"
-          - ""
-          - "<green>▸ คลิกเพื่อเปิด"
-        actions: [ "open:admin" ]
 
   # ───────────────────────────────────────────────────────────
   land:
@@ -424,126 +419,3 @@ menus:
         name: "<white>กลับหน้าหลัก"
         actions: [ "open:main" ]
 
-  # ───────────────────────────────────────────────────────────
-  admin:
-    title: "<dark_gray>แผงทีมงาน"
-    rows: 5
-    filler: BLACK_STAINED_GLASS_PANE
-    items:
-      10:
-        icon: COMPASS
-        name: "<yellow>ตั้งจุดเกิดตรงนี้"
-        lore:
-          - "<gray>/setspawn first = จุดคนเข้าครั้งแรก"
-          - "<gray>/setspawn death = จุดเกิดหลังตาย"
-        actions: [ "setspawn" ]
-
-      11:
-        icon: ENDER_PEARL
-        name: "<aqua>ตั้งวาร์ปตรงนี้"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/setwarp <ชื่อ> [ICON]", "close" ]
-
-      12:
-        icon: IRON_BARS
-        name: "<dark_red>ตั้งห้องขังตรงนี้"
-        actions: [ "setjail" ]
-
-      13:
-        icon: STICK
-        name: "<gold>รับไม้ทีมงาน"
-        actions: [ "astick" ]
-
-      14:
-        icon: ITEM_FRAME
-        name: "<light_purple>แผงข้างจอ"
-        actions: [ "adminhud" ]
-
-      15:
-        icon: VILLAGER_SPAWN_EGG
-        name: "<green>จัดการ NPC"
-        lore:
-          - "<gray>/npc create <ชื่อ> แล้ว /npc cmd <ชื่อ> shop"
-        actions: [ "npc list", "close" ]
-
-      16:
-        icon: OAK_SIGN
-        name: "<aqua>ป้ายลอย"
-        lore:
-          - "<gray>/holo create <ชื่อ> <ข้อความ>"
-          - "<gray>/holo title <ชื่อ> <ข้อความ> = ตัวใหญ่"
-        actions: [ "holo list", "close" ]
-
-      19:
-        icon: NETHERITE_SWORD
-        name: "<gold>ไอเทมของเซิร์ฟ"
-        actions: [ "citem list", "close" ]
-
-      20:
-        icon: TRIPWIRE_HOOK
-        name: "<aqua>แจกกุญแจกล่อง"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/crate key <ชื่อกล่อง> <ผู้เล่น> [จำนวน]", "close" ]
-
-      21:
-        icon: WITHER_SKELETON_SKULL
-        name: "<dark_red>ตั้งจุดเริ่มดันเจียน"
-        actions: [ "dungeon setspawn" ]
-
-      22:
-        icon: GOLD_INGOT
-        name: "<gold>จัดการเงิน"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/eco give|take|set <ชื่อ> <จำนวน>", "close" ]
-
-      23:
-        icon: SUNFLOWER
-        name: "<light_purple>จัดการพ้อย"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/points give|take|set <ชื่อ> <จำนวน> <gray>· ประวัติ <white>/points log", "close" ]
-
-      24:
-        icon: DIAMOND_PICKAXE
-        name: "<dark_red>ตรวจจับ x-ray"
-        lore:
-          - "<gray>อันดับคนที่สถิติการขุดผิดปกติ"
-          - "<dark_gray>ไม่ใช่คำตัดสิน ไปส่องเขาขุดจริงก่อนแบน"
-        actions: [ "mining", "close" ]
-
-      28:
-        icon: GLASS
-        name: "<aqua>ล่องหน"
-        actions: [ "vanish" ]
-
-      29:
-        icon: TOTEM_OF_UNDYING
-        name: "<gold>อมตะ"
-        actions: [ "god" ]
-
-      30:
-        icon: GOLDEN_CARROT
-        name: "<yellow>มองกลางคืน"
-        actions: [ "nv" ]
-
-      31:
-        icon: STRUCTURE_BLOCK
-        name: "<green>สำรองข้อมูลเดี๋ยวนี้"
-        actions: [ "backup" ]
-
-      32:
-        icon: REDSTONE_TORCH
-        name: "<gold>รหัสเข้าหน้าเว็บ"
-        actions: [ "admin web", "close" ]
-
-      33:
-        icon: COMMAND_BLOCK
-        name: "<red>แผงควบคุมเต็ม"
-        lore:
-          - "<gray>7 แท็บ จัดการได้ทุกอย่าง"
-        actions: [ "admin" ]
-
-      39:
-        icon: REPEATER
-        name: "<green>โหลดค่าใหม่"
-        actions: [ "zone reload" ]
-
-      41:
-        icon: ARROW
-        name: "<white>กลับหน้าหลัก"
-        actions: [ "open:main" ]

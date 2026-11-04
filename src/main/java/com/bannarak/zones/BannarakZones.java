@@ -72,6 +72,12 @@ public class BannarakZones extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        // Sections added in a newer version are carried into the live file,
+        // comments and all. Without this they are simply missing on a server
+        // that already has a config, and the features that read them do
+        // nothing without saying why.
+        var addedKeys = ConfigMerge.run(this, new java.io.File(getDataFolder(), "config.yml"), "config.yml");
+        if (!addedKeys.isEmpty()) reloadConfig();
         Notify.init(this);
         store = new ZoneStore(this);
         money = new EconomyManager(this);

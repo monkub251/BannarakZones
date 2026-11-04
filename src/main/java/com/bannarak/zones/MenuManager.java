@@ -65,10 +65,46 @@ public class MenuManager implements Listener, CommandExecutor {
 
     // ---------------- loading ----------------
 
+    /**
+     * Replaces menu.yml when the plugin ships a newer one.
+     *
+     * <p>Menus are not settings: a new version adds buttons for features that
+     * did not exist before, and a file left from an older version simply does
+     * not have them — the feature ships, nobody can reach it, and nothing says
+     * why. The old file is kept beside it, so a server that did customise its
+     * menus can put the changes back.
+     */
+    private void refreshIfStale(File f) {
+        int shipped = 0;
+        try (var in = plugin.getResource("menu.yml")) {
+            if (in == null) return;
+            YamlConfiguration def = new YamlConfiguration();
+            def.loadFromString(new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
+            shipped = def.getInt("version", 0);
+        } catch (Exception ignored) {
+            return;
+        }
+        int have = YamlConfiguration.loadConfiguration(f).getInt("version", 0);
+        if (shipped <= have) return;
+
+        File backup = new File(f.getParentFile(), "menu.yml.bak" + (have == 0 ? "" : "-v" + have));
+        try {
+            java.nio.file.Files.copy(f.toPath(), backup.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            if (!f.delete()) throw new java.io.IOException("ลบไฟล์เดิมไม่ได้");
+            plugin.saveResource("menu.yml", false);
+            plugin.getLogger().info("menu.yml เป็นของเวอร์ชันเก่า (v" + have + ") เปลี่ยนเป็น v"
+                    + shipped + " แล้ว ของเดิมเก็บไว้ที่ " + backup.getName());
+        } catch (Exception ex) {
+            plugin.getLogger().warning("อัปเดต menu.yml ไม่สำเร็จ: " + ex.getMessage());
+        }
+    }
+
     public void load() {
         menus.clear();
         File f = new File(plugin.getDataFolder(), "menu.yml");
         if (!f.exists()) plugin.saveResource("menu.yml", false);
+        refreshIfStale(f);
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
         ConfigurationSection root = cfg.getConfigurationSection("menus");
         if (root == null) return;
