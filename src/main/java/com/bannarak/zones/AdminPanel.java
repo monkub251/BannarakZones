@@ -41,6 +41,11 @@ public class AdminPanel implements Listener, CommandExecutor {
         @Override public Inventory getInventory() { return inv; }
     }
 
+    /** Which tab each slot along the top row opens. Must match shell(). */
+    private static final Tab[] TAB_BAR = {
+            Tab.DASHBOARD, Tab.PLAYERS, Tab.WORLD, Tab.ECONOMY,
+            Tab.SYSTEMS, Tab.BANS, Tab.STAFF, Tab.FUN };
+
     public Set<UUID> frozen() { return frozen; }
 
     // ---------------- shell ----------------
@@ -605,8 +610,11 @@ public class AdminPanel implements Listener, CommandExecutor {
         if (!(e.getWhoClicked() instanceof Player p) || !p.hasPermission("zones.admin")) return;
         int slot = e.getRawSlot();
 
-        if (slot >= 0 && slot <= 5) {
-            open(p, Tab.values()[slot], null);
+        // The tab bar, spelled out. This used to read Tab.values()[slot], which
+        // quietly stopped working the moment a tab was added: the staff tab sat
+        // there looking clickable and did nothing.
+        if (slot >= 0 && slot < TAB_BAR.length) {
+            open(p, TAB_BAR[slot], null);
             return;
         }
         if (slot == 8) { open(p, holder.tab, holder.subject); return; }

@@ -522,7 +522,8 @@ public class FunTools implements CommandExecutor, TabCompleter {
     private void heal(Player p, String[] a) {
         Player t = a.length == 0 ? p : target(p, a, 0);
         if (t == null) return;
-        var max = t.getAttribute(lookup(org.bukkit.attribute.Attribute.class, "MAX_HEALTH", "GENERIC_MAX_HEALTH"));
+        var attr = lookup(org.bukkit.attribute.Attribute.class, "MAX_HEALTH", "GENERIC_MAX_HEALTH");
+        var max = attr == null ? null : t.getAttribute(attr);
         t.setHealth(max == null ? 20 : max.getValue());
         t.setFireTicks(0);
         t.setFoodLevel(20);
