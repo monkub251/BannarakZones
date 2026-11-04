@@ -74,3 +74,18 @@ ranks:
     discord-role: ""
     permissions:
       - zones.homes.6
+
+  # ───── ยศทีมงาน ตั้งให้กันเองจากแผงเว็บ ไม่มีทางได้มาด้วยการเล่น ─────
+  staff:
+    display: "<aqua>[ทีมงาน]"
+    prefix: "<aqua>[ทีมงาน] "
+    order: 90
+    discord-role: ""
+    permissions: ["zones.homes.10"]
+
+  owner:
+    display: "<gradient:#f0cf8a:#b8863a><bold>[เจ้าของ]</bold></gradient>"
+    prefix: "<gradient:#f0cf8a:#b8863a><bold>[เจ้าของ]</bold></gradient> "
+    order: 100
+    discord-role: ""
+    permissions: ["zones.homes.20"]

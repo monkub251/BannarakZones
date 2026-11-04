@@ -78,6 +78,10 @@ public class BannarakZones extends JavaPlugin {
         // nothing without saying why.
         var addedKeys = ConfigMerge.run(this, new java.io.File(getDataFolder(), "config.yml"), "config.yml");
         if (!addedKeys.isEmpty()) reloadConfig();
+        // Ranks and crates are the same story: entries added in a new version
+        // would otherwise never appear on a server that already has the file.
+        ConfigMerge.run(this, new java.io.File(getDataFolder(), "ranks.yml"), "ranks.yml");
+        ConfigMerge.run(this, new java.io.File(getDataFolder(), "crates.yml"), "crates.yml");
         Notify.init(this);
         store = new ZoneStore(this);
         money = new EconomyManager(this);

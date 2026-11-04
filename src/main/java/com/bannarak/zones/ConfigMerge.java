@@ -99,43 +99,44 @@ final class ConfigMerge {
     private static String childBlock(String sectionText, String child) {
         if (sectionText == null) return null;
         String[] lines = sectionText.split("\n", -1);
-        int indent = -1, start = -1;
-        List<Integer> comments = new ArrayList<>();
 
-        for (int i = 0; i < lines.length; i++) {
+        int indent = -1, key = -1;
+        for (int i = 0; i < lines.length && key < 0; i++) {
             String l = lines[i];
             if (l.isBlank()) continue;
             int lead = l.length() - l.stripLeading().length();
             if (lead == 0) continue;                       // the section's own line
             String t = l.strip();
-            if (t.startsWith("#")) { comments.add(i); continue; }
+            if (t.startsWith("#")) continue;
             if (indent < 0) indent = lead;
-            if (lead == indent) {
-                String name = t.contains(":") ? t.substring(0, t.indexOf(':')).trim() : t;
-                if (name.equals(child)) {
-                    start = i;
-                    // Take the comment run directly above, if it sits at this depth.
-                    for (int j = comments.size() - 1; j >= 0; j--) {
-                        int c = comments.get(j);
-                        int clead = lines[c].length() - lines[c].stripLeading().length();
-                        if (c == start - (start - c) && clead == indent && c == start - 1 - (comments.size() - 1 - j))
-                            start = c;
-                        else break;
-                    }
-                    break;
-                }
-                comments.clear();
-            }
+            if (lead != indent) continue;
+            String name = t.contains(":") ? t.substring(0, t.indexOf(':')).trim() : t;
+            if (name.equals(child)) key = i;
         }
-        if (start < 0) return null;
+        if (key < 0) return null;
 
+        // Take the comment lines written directly above it, at the same depth.
+        int start = key;
+        while (start > 0) {
+            String prev = lines[start - 1];
+            if (prev.isBlank()) break;
+            int lead = prev.length() - prev.stripLeading().length();
+            if (!prev.strip().startsWith("#") || lead != indent) break;
+            start--;
+        }
+
+        // It ends where the next thing at this depth begins — a key or the
+        // comment introducing one.
         int end = lines.length;
-        for (int j = start + 1; j < lines.length; j++) {
+        for (int j = key + 1; j < lines.length; j++) {
             String l = lines[j];
             if (l.isBlank()) continue;
             int lead = l.length() - l.stripLeading().length();
             if (lead <= indent) { end = j; break; }
         }
+        // Give back any trailing comment run: it belongs to whatever comes next.
+        while (end - 1 > key && lines[end - 1].strip().startsWith("#")) end--;
+
         return String.join("\n", java.util.Arrays.copyOfRange(lines, start, end)).stripTrailing();
     }
 
