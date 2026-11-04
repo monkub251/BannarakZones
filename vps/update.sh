@@ -22,8 +22,8 @@ say "ตอนนี้ใช้ $now"
 
 # เรียงตามเลขเวอร์ชัน ไม่ใช่เวลาอัปโหลด
 URL=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/tags/latest" \
-  | jq -r '[.assets[] | select(.name|test("^BannarakZones-[0-9.]+\.jar$"))]
-           | map(. + {v: (.name | capture("-(?<a>[0-9]+)\.(?<b>[0-9]+)\.(?<c>[0-9]+)\.jar$")
+  | jq -r '[.assets[] | select(.name|test("^BannarakZones-[0-9.]+\\.jar$"))]
+           | map(. + {v: (.name | capture("-(?<a>[0-9]+)\\.(?<b>[0-9]+)\\.(?<c>[0-9]+)\\.jar$")
                                | [(.a|tonumber),(.b|tonumber),(.c|tonumber)])})
            | sort_by(.v) | last | .browser_download_url // empty')
 [[ -n $URL ]] || die "หาไฟล์ปลั๊กอินบน GitHub ไม่เจอ"
