@@ -100,13 +100,18 @@ jar_url_from() {
 
 fetch_paper_v3() {
   local api="https://fill.papermc.io/v3/projects/paper/versions/${MC_VERSION}/builds"
-  local json obj url
+  local json url build
   json=$(curl -fsSL --retry 2 --max-time 30 -A "$UA" "$api" 2>/dev/null) || return 1
   [[ -n $json ]] || return 1
-  obj=$(echo "$json" | jq -c 'if type=="array" then (sort_by(.build // 0) | last) else . end' 2>/dev/null) || return 1
-  url=$(echo "$obj" | jar_url_from)
+  # ไม่เดาว่าคำตอบมีฟิลด์ชื่ออะไร: กวาดหาลิงก์ .jar ทั้งหมด แล้วเลือกตัวที่เลข
+  # build ท้ายชื่อไฟล์สูงสุด (paper-26.3-239.jar → 239)
+  url=$(echo "$json" \
+        | jq -r '[.. | strings | select(test("^https?://.*\\.jar([?#]|$)"))] | unique | .[]' \
+        | awk -F'-' '{n=$NF; sub(/\.jar.*/,"",n); if (n ~ /^[0-9]+$/) print n, $0}' \
+        | sort -k1,1nr | head -1 | cut -d' ' -f2-)
   [[ -n $url ]] || return 1
-  say "เจอ Paper ${MC_VERSION} build $(echo "$obj" | jq -r '.build // "?"') (v3)"
+  build=$(echo "$url" | sed 's/.*-\([0-9]\{1,\}\)\.jar.*/\1/')
+  say "เจอ Paper ${MC_VERSION} build ${build} (v3)"
   curl -fSL --retry 3 -A "$UA" -o "$MC_DIR/paper.jar" "$url"
 }
 
