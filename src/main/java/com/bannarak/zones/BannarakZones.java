@@ -43,6 +43,7 @@ public class BannarakZones extends JavaPlugin {
     private Holograms holos;
     private ServerBlocks blocks;
     private StaffTools staff;
+    private FunTools fun;
     private MiningWatch mining;
     private PointsManager points;
     private Cosmetics cosmetics;
@@ -242,6 +243,17 @@ public class BannarakZones extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(staff, this);
 
+        fun = new FunTools(this);
+        for (String n : new String[]{
+                "fun", "bring", "goto", "tpall", "swap", "scatter", "launch", "freeze",
+                "smite", "burn", "shuffle", "spin", "size", "potion", "playsound", "prank",
+                "mobs", "ride", "heal", "feed", "fakeban", "fakeop", "fakejoin", "fakeleave",
+                "jumpscare", "party", "firework", "confetti", "countdown", "roll", "pick",
+                "announce", "disco"}) {
+            var cf = getCommand(n);
+            if (cf != null) { cf.setExecutor(fun); cf.setTabCompleter(fun); }
+        }
+
         mining = new MiningWatch(this);
         mining.load();
         var miningCmd = getCommand("mining");
@@ -274,7 +286,55 @@ public class BannarakZones extends JavaPlugin {
         // Every 5 minutes, write everything that holds player data. A crash or a
         // power cut then costs at most five minutes, not the whole session.
         getServer().getScheduler().runTaskTimer(this, this::saveAll, 6000L, 6000L);
+        startRestartClock();
         getLogger().info("BannarakZones enabled.");
+    }
+
+    /**
+     * Daily restart. Paper's heap creeps up over a long uptime, so a server
+     * that is meant to hold a hundred people is better off restarting once a
+     * night than being left to crawl.
+     *
+     * <p>We warn, save, and then stop. systemd (or the start script) brings it
+     * back. If nothing restarts the process this would just stop the server,
+     * so it stays off until someone sets {@code restart.enabled}.
+     */
+    private void startRestartClock() {
+        if (!getConfig().getBoolean("restart.enabled", false)) return;
+        String at = getConfig().getString("restart.at", "04:00");
+        java.time.LocalTime when;
+        try {
+            when = java.time.LocalTime.parse(at);
+        } catch (RuntimeException e) {
+            getLogger().warning("restart.at อ่านไม่ออก (" + at + ") ต้องเป็นแบบ 04:00 — ปิดรีสตาร์ตอัตโนมัติ");
+            return;
+        }
+        List<Integer> warnAt = getConfig().getIntegerList("restart.warn-seconds");
+        if (warnAt.isEmpty()) warnAt = List.of(300, 120, 60, 30, 10, 5, 4, 3, 2, 1);
+        final Set<Integer> warned = new HashSet<>();
+        final java.time.LocalTime target = when;
+        final List<Integer> warns = warnAt;
+
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            java.time.LocalTime now = java.time.LocalTime.now();
+            long secs = java.time.Duration.between(now, target).getSeconds();
+            if (secs < 0) secs += 86400;                 // target is tomorrow
+            if (secs > 600) { warned.clear(); return; }   // nowhere near it yet
+
+            for (int mark : warns) {
+                if (secs <= mark && secs > mark - 1 && warned.add(mark)) {
+                    String left = mark >= 60 ? (mark / 60) + " นาที" : mark + " วินาที";
+                    getServer().broadcast(Notify.of(
+                            "<gold>เซิร์ฟจะรีสตาร์ตในอีก <bold>" + left + "</bold> <gray>· เก็บของให้เรียบร้อย"));
+                }
+            }
+            if (secs <= 1) {
+                getServer().broadcast(Notify.of("<gold>กำลังรีสตาร์ต เจอกันอีกไม่กี่นาที"));
+                saveAll();
+                getServer().getScheduler().runTaskLater(this, () -> getServer().shutdown(), 40L);
+            }
+        }, 20L, 20L);
+        getLogger().info("ตั้งรีสตาร์ตอัตโนมัติไว้ " + at + " ทุกวัน");
     }
 
     /** Writes every store that holds player data. Called on a timer and at shutdown. */
@@ -400,6 +460,8 @@ public class BannarakZones extends JavaPlugin {
     public Holograms holos() { return holos; }
     public ServerBlocks blocks() { return blocks; }
     public StaffTools staff() { return staff; }
+
+    public FunTools fun() { return fun; }
     public MiningWatch mining() { return mining; }
     public PointsManager points() { return points; }
     public Cosmetics cosmetics() { return cosmetics; }

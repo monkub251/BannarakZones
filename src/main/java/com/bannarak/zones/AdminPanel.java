@@ -30,7 +30,7 @@ public class AdminPanel implements Listener, CommandExecutor {
 
     public AdminPanel(BannarakZones plugin) { this.plugin = plugin; }
 
-    public enum Tab { DASHBOARD, PLAYERS, WORLD, ECONOMY, SYSTEMS, BANS, STAFF, PLAYER_DETAIL }
+    public enum Tab { DASHBOARD, PLAYERS, WORLD, ECONOMY, SYSTEMS, BANS, STAFF, FUN, FUN_PLAYER, PLAYER_DETAIL }
 
     public class Holder implements InventoryHolder {
         public final Tab tab;
@@ -60,6 +60,7 @@ public class AdminPanel implements Listener, CommandExecutor {
         tabButton(inv, 4, Material.BEACON, "ระบบ", tab == Tab.SYSTEMS);
         tabButton(inv, 5, Material.BARRIER, "รายชื่อลงโทษ", tab == Tab.BANS);
         tabButton(inv, 6, Material.NETHER_STAR, "เมนูทีมงาน", tab == Tab.STAFF);
+        tabButton(inv, 7, Material.FIREWORK_ROCKET, "สันทนาการ", tab == Tab.FUN || tab == Tab.FUN_PLAYER);
         inv.setItem(8, item(Material.CLOCK, "<gray>รีเฟรช", List.of("<dark_gray>กดเพื่อโหลดใหม่"), false));
         return inv;
     }
@@ -134,6 +135,8 @@ public class AdminPanel implements Listener, CommandExecutor {
             case SYSTEMS -> systems(p);
             case BANS -> bans(p);
             case STAFF -> staff(p);
+            case FUN -> fun(p);
+            case FUN_PLAYER -> funPlayer(p, subject);
             case PLAYER_DETAIL -> playerDetail(p, subject);
         }
     }
@@ -242,6 +245,149 @@ public class AdminPanel implements Listener, CommandExecutor {
             case 34 -> { p.closeInventory(); p.performCommand("admin web"); }
             default -> { }
         }
+    }
+
+    // ---------------- สันทนาการ ----------------
+
+    /** The fun tab: things that land on the whole server, then who to aim at. */
+    private void fun(Player p) {
+        Inventory inv = shell(p, Tab.FUN, null, "<dark_gray>ᴀᴅᴍɪɴ <gray>· <light_purple>สันทนาการ");
+
+        inv.setItem(19, item(Material.FIREWORK_ROCKET, "<gold>ปาร์ตี้",
+                List.of("<gray>พลุ เสียง และประกาศทั่วเซิร์ฟ"), false));
+        inv.setItem(20, item(Material.CLOCK, "<yellow>นับถอยหลัง 10 วิ",
+                List.of("<gray>ใช้เริ่มกิจกรรม", "<dark_gray>พิมพ์ /countdown <วิ> <ข้อความ> ได้"), false));
+        inv.setItem(21, item(Material.SUNFLOWER, "<yellow>สุ่มเลข 1–100",
+                List.of("<gray>ประกาศผลให้ทุกคนเห็น"), false));
+        inv.setItem(22, item(Material.CHEST, "<gold>สุ่มผู้โชคดี 1 คน",
+                List.of("<gray>จับรางวัลจากคนที่ออนไลน์", "<dark_gray>/pick <จำนวน> สุ่มได้หลายคน"), false));
+        inv.setItem(23, item(Material.JUKEBOX, "<light_purple>ดิสโก้ 10 วิ",
+                List.of("<gray>ไฟกระพริบและเสียงดนตรี"), false));
+        inv.setItem(24, item(Material.FIREWORK_STAR, "<gold>จุดพลุที่ตัวเอง", List.of(), false));
+        inv.setItem(25, item(Material.SNOWBALL, "<aqua>โปรยกระดาษ", List.of(), false));
+        inv.setItem(26, item(Material.ENDER_PEARL, "<green>ดึงทุกคนมาหาเรา",
+                List.of("<gray>ใช้ตอนรวมคนทำกิจกรรม"), false));
+
+        inv.setItem(28, item(Material.ENDER_EYE, "<yellow>กระจายทุกคน 30 บล็อก",
+                List.of("<gray>ใช้เริ่มเกมซ่อนหา"), false));
+        inv.setItem(29, item(Material.GOLDEN_APPLE, "<green>รักษาตัวเอง", List.of(), false));
+        inv.setItem(30, item(Material.BREAD, "<green>เติมอาหารตัวเอง", List.of(), false));
+        inv.setItem(31, item(Material.PAPER, "<yellow>ประกาศกลางจอ",
+                List.of("<gray>พิมพ์ <white>/announce <ข้อความ>"), false));
+        inv.setItem(32, item(Material.OAK_SIGN, "<gray>ประกาศเข้า/ออกปลอม",
+                List.of("<gray>พิมพ์ <white>/fakejoin <ชื่อ>", "<gray>หรือ <white>/fakeleave <ชื่อ>"), false));
+        inv.setItem(33, item(Material.WRITABLE_BOOK, "<aqua>คำสั่งสันทนาการทั้งหมด",
+                List.of("<gray>แสดงรายการในแชต"), false));
+
+        inv.setItem(34, item(Material.NAME_TAG, "<gray>เลือกคนด้านล่าง",
+                List.of("<gray>คลิกหัวใครก็ได้ เพื่อเปิดเมนูแกล้งคนนั้น"), false));
+
+        int slot = 36;
+        for (Player t : Bukkit.getOnlinePlayers()) {
+            if (slot > 53) break;
+            inv.setItem(slot++, head(t, "<white>" + t.getName(),
+                    List.of("<gray>คลิกเพื่อเปิดเมนูแกล้ง"), false));
+        }
+        p.openInventory(inv);
+    }
+
+    private void funClick(Player p, int slot, ItemStack clicked) {
+        switch (slot) {
+            case 19 -> { p.closeInventory(); p.performCommand("party"); }
+            case 20 -> { p.closeInventory(); p.performCommand("countdown 10"); }
+            case 21 -> p.performCommand("roll 100");
+            case 22 -> p.performCommand("pick 1");
+            case 23 -> { p.closeInventory(); p.performCommand("disco 10"); }
+            case 24 -> { p.closeInventory(); p.performCommand("firework"); }
+            case 25 -> { p.closeInventory(); p.performCommand("confetti"); }
+            case 26 -> { p.closeInventory(); p.performCommand("tpall"); }
+            case 28 -> { p.closeInventory(); p.performCommand("scatter 30"); }
+            case 29 -> p.performCommand("heal");
+            case 30 -> p.performCommand("feed");
+            case 31 -> { p.closeInventory(); Notify.chat(p, "<gray>พิมพ์ <white>/announce <ข้อความ>"); }
+            case 32 -> { p.closeInventory(); Notify.chat(p, "<gray>พิมพ์ <white>/fakejoin <ชื่อ> <gray>หรือ <white>/fakeleave <ชื่อ>"); }
+            case 33 -> { p.closeInventory(); funHelp(p); }
+            default -> {
+                UUID id = targetOf(clicked);
+                if (id != null) open(p, Tab.FUN_PLAYER, id);
+            }
+        }
+    }
+
+    /** Everything that can be aimed at one person, on one page. */
+    private void funPlayer(Player viewer, UUID subject) {
+        OfflinePlayer who = subject == null ? null : Bukkit.getOfflinePlayer(subject);
+        Player t = subject == null ? null : Bukkit.getPlayer(subject);
+        String nm = who == null || who.getName() == null ? "?" : who.getName();
+
+        Inventory inv = shell(viewer, Tab.FUN_PLAYER, subject,
+                "<dark_gray>ᴀᴅᴍɪɴ <gray>· <light_purple>แกล้ง <white>" + nm);
+
+        inv.setItem(9, item(Material.ARROW, "<gray>‹ กลับ", List.of("<dark_gray>กลับไปหน้าสันทนาการ"), false));
+        inv.setItem(13, head(who, "<light_purple><bold>" + nm,
+                List.of(t == null ? "<red>ออฟไลน์อยู่" : "<green>ออนไลน์"), true));
+
+        inv.setItem(19, item(Material.FISHING_ROD, "<green>ดึงมาหาเรา", List.of(), false));
+        inv.setItem(20, item(Material.ENDER_PEARL, "<green>ไปหาเขา", List.of(), false));
+        inv.setItem(21, item(Material.ENDER_EYE, "<yellow>สลับที่กับเรา", List.of(), false));
+        inv.setItem(22, item(Material.PACKED_ICE, "<aqua>แช่แข็ง / ปลด",
+                List.of(frozen.contains(subject) ? "<aqua>กำลังถูกแช่แข็ง" : "<gray>ขยับได้ปกติ"), false));
+        inv.setItem(23, item(Material.SADDLE, "<yellow>ขี่หัวเขา", List.of("<dark_gray>กดอีกครั้งเพื่อลง"), false));
+        inv.setItem(24, item(Material.GOLDEN_APPLE, "<green>รักษา", List.of(), false));
+        inv.setItem(25, item(Material.BREAD, "<green>เติมอาหาร", List.of(), false));
+
+        // One icon per preset, in the same order as FunTools.PRESETS.
+        Material[] icons = {
+                Material.BLACK_WOOL, Material.BLACK_CONCRETE, Material.FERMENTED_SPIDER_EYE,
+                Material.FEATHER, Material.SOUL_SAND, Material.SUGAR, Material.GLASS,
+                Material.GLOW_INK_SAC, Material.SLIME_BLOCK, Material.BAMBOO,
+                Material.IRON_BLOCK, Material.COMPASS, Material.TNT, Material.SKELETON_SKULL,
+                Material.LIGHTNING_ROD, Material.FLINT_AND_STEEL, Material.SHULKER_BOX,
+                Material.FIREWORK_ROCKET, Material.EGG, Material.BARRIER, Material.COMMAND_BLOCK,
+                Material.NOTE_BLOCK, Material.FIREWORK_STAR, Material.POPPY, Material.WHEAT
+        };
+
+        int slot = 27;
+        for (int i = 0; i < FunTools.PRESETS.size() && slot <= 53; i++) {
+            Material icon = i < icons.length && icons[i] != null ? icons[i] : Material.PAPER;
+            inv.setItem(slot++, item(icon, "<light_purple>" + FunTools.PRESETS.get(i),
+                    List.of("<gray>คลิกเพื่อแกล้ง <white>" + nm), false));
+        }
+        viewer.openInventory(inv);
+    }
+
+    private void funPlayerClick(Player p, UUID subject, int slot) {
+        Player t = subject == null ? null : Bukkit.getPlayer(subject);
+        if (slot == 9) { open(p, Tab.FUN, null); return; }
+        if (t == null) {
+            Notify.chat(p, "<red>คนนี้ออฟไลน์ไปแล้ว");
+            return;
+        }
+        String nm = t.getName();
+        switch (slot) {
+            case 19 -> { p.performCommand("bring " + nm); funPlayer(p, subject); }
+            case 20 -> { p.closeInventory(); p.performCommand("goto " + nm); }
+            case 21 -> { p.closeInventory(); p.performCommand("swap " + nm); }
+            case 22 -> { p.performCommand("freeze " + nm); funPlayer(p, subject); }
+            case 23 -> { p.closeInventory(); p.performCommand("ride " + nm); }
+            case 24 -> { p.performCommand("heal " + nm); funPlayer(p, subject); }
+            case 25 -> { p.performCommand("feed " + nm); funPlayer(p, subject); }
+            default -> {
+                int i = slot - 27;
+                if (i < 0 || i >= FunTools.PRESETS.size()) return;
+                plugin.fun().prank(p, t, FunTools.PRESETS.get(i));
+            }
+        }
+    }
+
+    private void funHelp(Player p) {
+        Notify.chat(p, "<light_purple><bold>สันทนาการ — คำสั่งทั้งหมด");
+        Notify.chat(p, "<gray>ย้ายตัว <white>/bring /goto /tpall /swap /scatter /ride /freeze");
+        Notify.chat(p, "<gray>แกล้ง <white>/prank /smite /burn /launch /shuffle /spin /size /potion /mobs /jumpscare");
+        Notify.chat(p, "<gray>ปลอม <white>/fakeban /fakeop /fakejoin /fakeleave");
+        Notify.chat(p, "<gray>กิจกรรม <white>/party /disco /firework /confetti /countdown /roll /pick /announce");
+        Notify.chat(p, "<gray>ดูแล <white>/heal /feed /playsound");
+        Notify.chat(p, "<gray>แบบแกล้งที่มี <white>" + String.join(" ", FunTools.PRESETS));
     }
 
     private void players(Player p) {
@@ -484,6 +630,8 @@ public class AdminPanel implements Listener, CommandExecutor {
                 }
             }
             case STAFF -> staffClick(p, slot, e.getClick());
+            case FUN -> funClick(p, slot, e.getCurrentItem());
+            case FUN_PLAYER -> funPlayerClick(p, holder.subject, slot);
             case SYSTEMS -> systemsClick(p, slot, e.getClick().isShiftClick());
             case BANS -> {
                 UUID who = targetOf(e.getCurrentItem());

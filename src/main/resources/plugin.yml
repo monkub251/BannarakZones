@@ -306,6 +306,174 @@ commands:
     usage: /spectate <player>
     permission: zones.admin.spectate
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+
+  # ───── สันทนาการ ─────
+  fun:
+    description: เปิดเมนูสันทนาการ
+    usage: /fun
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  bring:
+    description: ดึงผู้เล่นมาหาเรา
+    usage: /bring <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  goto:
+    description: ไปหาผู้เล่น
+    usage: /goto <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  tpall:
+    description: ดึงทุกคนมาหาเรา
+    usage: /tpall
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  swap:
+    description: สลับที่สองคน
+    usage: /swap <ชื่อ> [ชื่อ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  scatter:
+    description: กระจายทุกคนรอบตัวเรา
+    usage: /scatter [รัศมี]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  launch:
+    description: ยิงผู้เล่นขึ้นฟ้า
+    usage: /launch <ชื่อ> [แรง]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  freeze:
+    description: แช่แข็งผู้เล่น ขยับไม่ได้
+    usage: /freeze <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  smite:
+    description: ฟ้าผ่าแบบไม่โดนดาเมจ
+    usage: /smite <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  burn:
+    description: จุดไฟที่ตัวผู้เล่น
+    usage: /burn <ชื่อ> [วินาที]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  shuffle:
+    description: สลับของในกระเป๋า
+    usage: /shuffle <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  spin:
+    description: หมุนตัวผู้เล่น
+    usage: /spin <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  size:
+    description: ย่อหรือขยายตัวผู้เล่น
+    usage: /size <ชื่อ> <0.25-3>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  potion:
+    description: ใส่สถานะให้ผู้เล่น
+    usage: /potion <ชื่อ> <effect> [วินาที] [ระดับ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  playsound:
+    description: เล่นเสียงที่ตัวผู้เล่น
+    usage: /playsound <ชื่อ> <เสียง> [pitch]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  prank:
+    description: แกล้งตามแบบที่เลือก
+    usage: /prank <ชื่อ> <แบบ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  mobs:
+    description: ปล่อยมอบรอบตัวผู้เล่น
+    usage: /mobs <ชื่อ> [มอบ] [จำนวน]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  ride:
+    description: ขี่หัวผู้เล่น
+    usage: /ride <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  heal:
+    description: รักษาเต็มหลอด ดับไฟ ล้างสถานะ
+    usage: /heal [ชื่อ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  feed:
+    description: เติมอาหารเต็ม
+    usage: /feed [ชื่อ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  fakeban:
+    description: ข้อความแบนปลอม ไม่แบนจริง
+    usage: /fakeban <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  fakeop:
+    description: ข้อความให้ op ปลอม
+    usage: /fakeop <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  fakejoin:
+    description: ประกาศว่ามีคนเข้าเซิร์ฟ ปลอม
+    usage: /fakejoin <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  fakeleave:
+    description: ประกาศว่ามีคนออกเซิร์ฟ ปลอม
+    usage: /fakeleave <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  jumpscare:
+    description: เสียงผีและจอมืดสั้น ๆ
+    usage: /jumpscare <ชื่อ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  party:
+    description: พลุ เสียง และประกาศทั่วเซิร์ฟ
+    usage: /party
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  firework:
+    description: จุดพลุ
+    usage: /firework [ชื่อ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  confetti:
+    description: โปรยกระดาษ
+    usage: /confetti [ชื่อ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  countdown:
+    description: นับถอยหลังทั่วเซิร์ฟ
+    usage: /countdown <วินาที> [ข้อความ]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  roll:
+    description: สุ่มเลขแล้วประกาศ
+    usage: /roll [เลขสูงสุด]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  pick:
+    description: สุ่มผู้โชคดีจากคนที่ออนไลน์
+    usage: /pick [จำนวน]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  announce:
+    description: ประกาศกลางจอทุกคน
+    usage: /announce <ข้อความ>
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+  disco:
+    description: ไฟกระพริบและดนตรี
+    usage: /disco [วินาที]
+    permission: zones.fun
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+
 permissions:
   zones.use:
     description: Base access to the plugin
@@ -385,6 +553,11 @@ permissions:
       zones.admin.unjail: true
       zones.admin.setjail: true
       zones.admin.spectate: true
+      zones.fun: true
+
+  zones.fun:
+    description: Use the สันทนาการ toybox - fetch, pranks and event tools
+    default: op
 
   # ───── สิทธิ์พิเศษอื่น ─────
   zones.chat.bypass:
