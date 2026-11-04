@@ -242,6 +242,16 @@ menus:
           - "<green>▸ คลิกเพื่อเปิดร้าน"
         actions: [ "panel:titles" ]
 
+      52:
+        icon: ANVIL
+        name: "<aqua>ซ่อมของ"
+        lore:
+          - "<gray>ซ่อมของที่ถืออยู่ คิดตามความเสียหายจริง"
+          - "<gray>ของเกือบใหม่ซ่อมถูก ของพังยับซ่อมแพง"
+          - ""
+          - "<green>▸ คลิกเพื่อซ่อม"
+        actions: [ "repair" ]
+
       51:
         icon: IRON_DOOR
         name: "<light_purple>เปลี่ยนรหัสผ่าน"

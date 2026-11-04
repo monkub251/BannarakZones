@@ -488,6 +488,18 @@ commands:
     permission: zones.admin.kit
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
 
+  repair:
+    description: ซ่อมของที่ถืออยู่ด้วยเงิน
+    usage: /repair
+  repairall:
+    description: ซ่อมของทุกชิ้นที่พกอยู่
+    usage: /repairall
+  bigtext:
+    description: ก่อตัวอักษรยักษ์ด้วยบล็อก
+    usage: /bigtext <ข้อความ> | undo | mat <บล็อก> | scale <1-4>
+    permission: zones.admin.bigtext
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+
 permissions:
   zones.use:
     description: Base access to the plugin
@@ -569,6 +581,7 @@ permissions:
       zones.admin.spectate: true
       zones.fun: true
       zones.admin.kit: true
+      zones.admin.bigtext: true
 
   zones.fun:
     description: Use the สันทนาการ toybox - fetch, pranks and event tools

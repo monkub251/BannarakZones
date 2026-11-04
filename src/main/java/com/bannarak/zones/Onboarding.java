@@ -143,6 +143,8 @@ public class Onboarding implements Listener, CommandExecutor {
         switch (name) {
             case "rules" -> rules(p);
             case "ticket" -> ticket(p, a);
+            case "repair" -> repair(p, false);
+            case "repairall" -> repair(p, true);
             case "kit" -> {
                 if (!p.hasPermission("zones.admin")) { Notify.chat(p, "<red>คำสั่งนี้สำหรับทีมงาน"); return true; }
                 Player t = a.length > 0 ? Bukkit.getPlayerExact(a[0]) : p;
@@ -153,6 +155,56 @@ public class Onboarding implements Listener, CommandExecutor {
             default -> { return false; }
         }
         return true;
+    }
+
+    /**
+     * Mends what a player is holding, or everything they carry, for money.
+     *
+     * <p>Priced per point of damage so a nearly-new tool costs almost nothing
+     * and a ruined one costs real money — a flat fee would make it cheaper to
+     * wear a pickaxe out than to look after it.
+     */
+    private void repair(Player p, boolean all) {
+        double perPoint = plugin.getConfig().getDouble("repair.price-per-damage", 15);
+        double multiplier = all ? plugin.getConfig().getDouble("repair.all-multiplier", 1.0) : 1.0;
+
+        List<ItemStack> targets = new ArrayList<>();
+        if (all) {
+            for (ItemStack it : p.getInventory().getContents()) if (it != null) targets.add(it);
+            for (ItemStack it : p.getInventory().getArmorContents()) if (it != null) targets.add(it);
+        } else {
+            ItemStack hand = p.getInventory().getItemInMainHand();
+            if (hand.getType() != Material.AIR) targets.add(hand);
+        }
+
+        long cost = 0;
+        List<ItemStack> fixable = new ArrayList<>();
+        for (ItemStack it : targets) {
+            if (!(it.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable d)) continue;
+            if (!d.hasDamage()) continue;
+            cost += Math.round(d.getDamage() * perPoint * multiplier);
+            fixable.add(it);
+        }
+        if (fixable.isEmpty()) {
+            Notify.chat(p, all ? "<gray>ของทุกชิ้นยังเต็มหลอดอยู่" : "<gray>ของชิ้นนี้ไม่ต้องซ่อม");
+            return;
+        }
+        if (!plugin.money().take(p.getUniqueId(), cost)) {
+            Notify.bar(p, "<red>เงินไม่พอ <gray>ต้องใช้ <gold>" + plugin.money().format(cost),
+                    "block.note_block.bass", 0.7f);
+            return;
+        }
+        for (ItemStack it : fixable) {
+            var meta = it.getItemMeta();
+            if (meta instanceof org.bukkit.inventory.meta.Damageable d) {
+                d.setDamage(0);
+                it.setItemMeta(meta);
+            }
+        }
+        plugin.money().save(false);
+        Notify.popup(p, "<green>ซ่อมเสร็จแล้ว",
+                "<white>" + fixable.size() + " ชิ้น · <gold>" + plugin.money().format(cost),
+                "block.anvil_use", 1.2f);
     }
 
     private void rules(Player p) {

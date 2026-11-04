@@ -251,11 +251,15 @@ public class BannarakZones extends JavaPlugin {
 
         onboarding = new Onboarding(this);
         onboarding.load();
-        for (String n : new String[]{"rules", "ticket", "kit"}) {
+        for (String n : new String[]{"rules", "ticket", "kit", "repair", "repairall"}) {
             var co = getCommand(n);
             if (co != null) co.setExecutor(onboarding);
         }
         getServer().getPluginManager().registerEvents(onboarding, this);
+
+        var bigText = new BigText(this);
+        var btCmd = getCommand("bigtext");
+        if (btCmd != null) { btCmd.setExecutor(bigText); btCmd.setTabCompleter(bigText); }
 
         fun = new FunTools(this);
         for (String n : new String[]{
