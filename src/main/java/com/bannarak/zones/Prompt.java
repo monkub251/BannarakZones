@@ -165,7 +165,7 @@ public class Prompt implements Listener {
 
     /** The fallback everything shares: ask, then listen for one chat line. */
     private void viaChat(Player p, String question, Consumer<String> then) {
-        Bukkit.getScheduler().runTask(plugin, p::closeInventory);
+        Bukkit.getScheduler().runTask(plugin, () -> p.closeInventory());
         Notify.chat(p, "<yellow>" + question);
         Notify.chat(p, "<gray>พิมพ์คำตอบในแชตได้เลย · พิมพ์ <white>ยกเลิก <gray>เพื่อออก");
         waiting.put(p.getUniqueId(),
