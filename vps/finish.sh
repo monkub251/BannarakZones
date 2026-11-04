@@ -66,7 +66,9 @@ newest_paper_url() {
 PU=$(newest_paper_url || true)
 if [[ -n ${PU:-} ]]; then
   NEW=$(echo "$PU" | sed 's/.*-\([0-9]\{1,\}\)\.jar.*/\1/')
-  HAVE=$(unzip -p "$MC_DIR/paper.jar" version.json 2>/dev/null | jq -r '.build // empty' 2>/dev/null || true)
+  # เลข build ไม่ได้อยู่ใน version.json ของ Paper (อันนั้นเป็นของ Mojang)
+  # จดไว้ข้าง ๆ ตอนโหลดเองดีกว่า จะได้ไม่โหลดซ้ำ 52MB ทุกครั้งที่รัน
+  HAVE=$(cat "$MC_DIR/.paper-build" 2>/dev/null || true)
   if [[ -n $HAVE && $HAVE == "$NEW" ]]; then
     say "Paper เป็น build $HAVE อยู่แล้ว"
   else
@@ -77,6 +79,7 @@ if [[ -n ${PU:-} ]]; then
       cp -f "$MC_DIR/paper.jar" "$MC_DIR/paper.jar.bak" 2>/dev/null || true
       mv "$tmp" "$MC_DIR/paper.jar"
       chown "$MC_USER:$MC_USER" "$MC_DIR/paper.jar"
+      echo "$NEW" > "$MC_DIR/.paper-build"
       say "เปลี่ยน Paper เป็น build $NEW แล้ว (ตัวเก่าอยู่ที่ paper.jar.bak)"
     else
       rm -f "$tmp"; warn "โหลด Paper ไม่สำเร็จ ใช้ตัวเดิมไปก่อน"
