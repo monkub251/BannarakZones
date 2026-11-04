@@ -36,6 +36,9 @@ unzip -l "$tmp" >/dev/null 2>&1 || { rm -f "$tmp"; die "ไฟล์ที่โ
 WAS_RUNNING=no
 if systemctl is-active --quiet minecraft; then
   WAS_RUNNING=yes
+  # Same guard as op.sh: never leave the server down because this script died.
+  trap 'if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
+          echo "เปิดเซิร์ฟกลับ"; systemctl start minecraft; fi' EXIT HUP INT TERM
   say "ปิดเซิร์ฟก่อนเปลี่ยนไฟล์"
   systemctl stop minecraft
 fi

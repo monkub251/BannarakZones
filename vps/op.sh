@@ -77,6 +77,11 @@ say "$NAME  →  $UUID"
 WAS_RUNNING=no
 if systemctl is-active --quiet minecraft; then
   WAS_RUNNING=yes
+  # Whatever happens next — an error, a closed terminal, Ctrl+C — the server
+  # must not be left switched off. Leaving it down is far worse than failing
+  # to set a rank.
+  trap 'if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
+          echo "เปิดเซิร์ฟกลับ"; systemctl start minecraft; fi' EXIT HUP INT TERM
   say "ปิดเซิร์ฟชั่วคราว"
   systemctl stop minecraft
 fi
