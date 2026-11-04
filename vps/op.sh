@@ -80,7 +80,10 @@ if systemctl is-active --quiet minecraft; then
   # Whatever happens next — an error, a closed terminal, Ctrl+C — the server
   # must not be left switched off. Leaving it down is far worse than failing
   # to set a rank.
-  trap 'if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
+  # กันตัวเฝ้าไม่ให้เปิดเซิร์ฟกลับกลางคันตอนกำลังเปลี่ยนไฟล์
+  touch "$MC_DIR/.maintenance"
+  trap 'rm -f "$MC_DIR/.maintenance"
+        if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
           echo "เปิดเซิร์ฟกลับ"; systemctl start minecraft; fi' EXIT HUP INT TERM
   say "ปิดเซิร์ฟชั่วคราว"
   systemctl stop minecraft

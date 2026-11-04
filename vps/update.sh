@@ -37,7 +37,10 @@ WAS_RUNNING=no
 if systemctl is-active --quiet minecraft; then
   WAS_RUNNING=yes
   # Same guard as op.sh: never leave the server down because this script died.
-  trap 'if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
+  # กันตัวเฝ้าไม่ให้เปิดเซิร์ฟกลับกลางคันตอนกำลังเปลี่ยนไฟล์
+  touch "$MC_DIR/.maintenance"
+  trap 'rm -f "$MC_DIR/.maintenance"
+        if [[ $WAS_RUNNING == yes ]] && ! systemctl is-active --quiet minecraft; then
           echo "เปิดเซิร์ฟกลับ"; systemctl start minecraft; fi' EXIT HUP INT TERM
   say "ปิดเซิร์ฟก่อนเปลี่ยนไฟล์"
   systemctl stop minecraft
