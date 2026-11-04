@@ -185,6 +185,9 @@ public class MenuManager implements Listener, CommandExecutor {
                         default -> Notify.chat(p, "<red>ไม่รู้จักหน้า " + which);
                     }
                 });
+            } else if (lower.startsWith("prompt:")) {
+                String which = action.substring(7).trim();
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.prompt().run(p, which));
             } else if (lower.startsWith("open:")) {
                 String target = action.substring(5).trim();
                 plugin.getServer().getScheduler().runTask(plugin, () -> open(p, target));

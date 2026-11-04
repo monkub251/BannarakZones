@@ -44,6 +44,7 @@ public class BannarakZones extends JavaPlugin {
     private ServerBlocks blocks;
     private StaffTools staff;
     private FunTools fun;
+    private Prompt prompt;
     private MiningWatch mining;
     private PointsManager points;
     private Cosmetics cosmetics;
@@ -242,6 +243,10 @@ public class BannarakZones extends JavaPlugin {
             if (c8 != null) { c8.setExecutor(staff); c8.setTabCompleter(staff); }
         }
         getServer().getPluginManager().registerEvents(staff, this);
+        getServer().getPluginManager().registerEvents(new GuiGuard(), this);
+
+        prompt = new Prompt(this);
+        getServer().getPluginManager().registerEvents(prompt, this);
 
         fun = new FunTools(this);
         for (String n : new String[]{
@@ -462,6 +467,8 @@ public class BannarakZones extends JavaPlugin {
     public StaffTools staff() { return staff; }
 
     public FunTools fun() { return fun; }
+
+    public Prompt prompt() { return prompt; }
     public MiningWatch mining() { return mining; }
     public PointsManager points() { return points; }
     public Cosmetics cosmetics() { return cosmetics; }

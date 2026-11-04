@@ -8,6 +8,7 @@
 #   open:<ชื่อเมนู>    เปิดอีกเมนู
 #   panel:blocks      เปิดหน้าบล็อกพิเศษ
 #   panel:pshop       เปิดร้านพ้อย
+#   prompt:<ชื่อ>      หน้าต่างเลือกคน/พิมพ์ (msg ignore tpa pay)
 #   message:<ข้อความ>  ส่งข้อความ
 #   sound:<ชื่อเสียง>  เล่นเสียง
 #   close             ปิดเมนู
@@ -72,13 +73,14 @@ menus:
         actions: [ "rank" ]
 
       14:
-        icon: NETHER_STAR
-        name: "<aqua>ของพิเศษของเซิร์ฟ"
+        icon: TRIPWIRE_HOOK
+        name: "<yellow>กล่องสุ่มและกุญแจ"
         lore:
-          - "<gray>บล็อกและไอเทมที่ทำงานต่างจากของธรรมดา"
+          - "<gray>ดูกล่องทั้งหมดและของข้างใน"
+          - "<gray>กุญแจได้จากรางวัลรายวันและภารกิจ"
           - ""
           - "<green>▸ คลิกเพื่อเปิด"
-        actions: [ "open:special" ]
+        actions: [ "crate list" ]
 
       # ── แถวกลาง: หาเงิน ──
       19:
@@ -172,7 +174,7 @@ menus:
           - "<gray>ส่งคำขอไปหาคนที่ออนไลน์อยู่"
           - ""
           - "<green>▸ คลิกเพื่อเปิด"
-        actions: [ "tpa" ]
+        actions: [ "prompt:tpa" ]
 
       32:
         icon: PAPER
@@ -275,7 +277,7 @@ menus:
         name: "<green>โอนเงินให้เพื่อน"
         lore:
           - "<gray>ใช้คำสั่ง <white>/pay <ชื่อ> <จำนวน>"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/pay <ชื่อ> <จำนวน>", "close" ]
+        actions: [ "prompt:pay" ]
 
       12:
         icon: DIAMOND
@@ -323,7 +325,7 @@ menus:
         lore:
           - "<gray>ใช้คำสั่ง <white>/msg <ชื่อ> <ข้อความ>"
           - "<gray>ตอบกลับด้วย <white>/r <ข้อความ>"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/msg <ชื่อ> <ข้อความ> <gray>· ตอบด้วย <white>/r", "close" ]
+        actions: [ "prompt:msg" ]
 
       13:
         icon: BARRIER
@@ -331,57 +333,18 @@ menus:
         lore:
           - "<gray>ใช้คำสั่ง <white>/ignore <ชื่อ>"
           - "<gray>พิมพ์อีกครั้งเพื่อเปิดกลับ"
-        actions: [ "message:<gray>ใช้คำสั่ง <white>/ignore <ชื่อ>", "close" ]
+        actions: [ "prompt:ignore" ]
 
       15:
         icon: LEAD
         name: "<green>ขอวาร์ปหาเพื่อน"
-        actions: [ "tpa" ]
+        actions: [ "prompt:tpa" ]
 
       22:
         icon: ARROW
         name: "<white>กลับหน้าหลัก"
         actions: [ "open:main" ]
 
-  # ───────────────────────────────────────────────────────────
-  special:
-    title: "<dark_gray>ของพิเศษของเซิร์ฟ"
-    rows: 3
-    filler: BLACK_STAINED_GLASS_PANE
-    items:
-      11:
-        icon: BEACON
-        name: "<aqua>บล็อกพิเศษ"
-        lore:
-          - "<gray>บล็อกที่ทำงานต่างจากของธรรมดา"
-          - "<gray>เช่น บล็อกจับจองที่ดิน"
-          - ""
-          - "<green>▸ คลิกเพื่อเปิด"
-        actions: [ "panel:blocks" ]
-
-      13:
-        icon: NETHERITE_SWORD
-        name: "<gold>ไอเทมของเซิร์ฟ"
-        lore:
-          - "<gray>ไอเทมพิเศษที่ทีมงานแจก"
-          - ""
-          - "<green>▸ คลิกเพื่อดู"
-        actions: [ "citem list", "close" ]
-
-      15:
-        icon: TRIPWIRE_HOOK
-        name: "<yellow>กุญแจกล่องสุ่ม"
-        lore:
-          - "<gray>ได้จากรางวัลรายวันและภารกิจ"
-          - "<gray>เอาไปคลิกขวาที่กล่องสุ่ม"
-          - ""
-          - "<green>▸ ดูกล่องทั้งหมด"
-        actions: [ "crate list" ]
-
-      22:
-        icon: ARROW
-        name: "<white>กลับหน้าหลัก"
-        actions: [ "open:main" ]
 
   # ───────────────────────────────────────────────────────────
   homes:
