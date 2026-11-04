@@ -90,17 +90,52 @@ mkdir -p "$MC_DIR"/{plugins,backups}
 chown -R "$MC_USER:$MC_USER" "$MC_DIR"
 
 # ---------------------------------------------------------------- Paper
-fetch_paper() {
+UA="BannarakZones-setup/1.0 (+https://github.com/monkub251/BannarakZones)"
+
+# PaperMC กำลังย้ายจาก API v2 ไป v3 สองตัวนี้ตอบคนละรูปแบบ และตัวเก่าอาจถูกปิด
+# เมื่อไหร่ก็ได้ เลยลองทั้งคู่ แล้วหาลิงก์ .jar จากคำตอบแบบไม่ยึดชื่อฟิลด์
+jar_url_from() {
+  jq -r '[.. | strings | select(test("^https?://.*\\.jar([?#]|$)"))] | first // empty' 2>/dev/null
+}
+
+fetch_paper_v3() {
+  local api="https://fill.papermc.io/v3/projects/paper/versions/${MC_VERSION}/builds"
+  local json obj url
+  json=$(curl -fsSL --retry 2 --max-time 30 -A "$UA" "$api" 2>/dev/null) || return 1
+  [[ -n $json ]] || return 1
+  obj=$(echo "$json" | jq -c 'if type=="array" then (sort_by(.build // 0) | last) else . end' 2>/dev/null) || return 1
+  url=$(echo "$obj" | jar_url_from)
+  [[ -n $url ]] || return 1
+  say "เจอ Paper ${MC_VERSION} build $(echo "$obj" | jq -r '.build // "?"') (v3)"
+  curl -fSL --retry 3 -A "$UA" -o "$MC_DIR/paper.jar" "$url"
+}
+
+fetch_paper_v2() {
   local api="https://api.papermc.io/v2/projects/paper/versions/${MC_VERSION}"
   local builds build name url
-  builds=$(curl -fsSL --retry 3 "$api" 2>/dev/null) || return 1
-  build=$(echo "$builds" | jq -r '.builds[-1] // empty') || return 1
+  builds=$(curl -fsSL --retry 2 --max-time 30 -A "$UA" "$api" 2>/dev/null) || return 1
+  build=$(echo "$builds" | jq -r '.builds[-1] // empty' 2>/dev/null) || return 1
   [[ -n $build ]] || return 1
-  name=$(curl -fsSL "${api}/builds/${build}" | jq -r '.downloads.application.name // empty')
+  name=$(curl -fsSL --max-time 30 -A "$UA" "${api}/builds/${build}" | jq -r '.downloads.application.name // empty')
   [[ -n $name ]] || return 1
   url="${api}/builds/${build}/downloads/${name}"
-  say "เจอ Paper ${MC_VERSION} build ${build}"
-  curl -fSL --retry 3 -o "$MC_DIR/paper.jar" "$url"
+  say "เจอ Paper ${MC_VERSION} build ${build} (v2)"
+  curl -fSL --retry 3 -A "$UA" -o "$MC_DIR/paper.jar" "$url"
+}
+
+fetch_paper() { fetch_paper_v3 || fetch_paper_v2; }
+
+# ถ้าโหลดไม่ได้ อย่าปล่อยให้เดาเอง พิมพ์ออกมาว่าเว็บตอบอะไรกลับมาจริง ๆ
+paper_diagnose() {
+  echo
+  echo "${YEL}เว็บ Paper ตอบกลับมาแบบนี้:${RST}"
+  local a="https://fill.papermc.io/v3/projects/paper/versions/${MC_VERSION}/builds"
+  local b="https://api.papermc.io/v2/projects/paper/versions/${MC_VERSION}"
+  printf '  v3  %s  ' "$(curl -sS -o /tmp/p3 -m 30 -A "$UA" -w '%{http_code}' "$a" 2>/dev/null || echo ไม่ตอบ)"
+  head -c 160 /tmp/p3 2>/dev/null; echo
+  printf '  v2  %s  ' "$(curl -sS -o /tmp/p2 -m 30 -A "$UA" -w '%{http_code}' "$b" 2>/dev/null || echo ไม่ตอบ)"
+  head -c 160 /tmp/p2 2>/dev/null; echo
+  echo
 }
 
 if [[ -s $MC_DIR/paper.jar ]]; then
@@ -108,10 +143,11 @@ if [[ -s $MC_DIR/paper.jar ]]; then
 else
   say "โหลด Paper ${MC_VERSION}"
   if ! fetch_paper; then
+    paper_diagnose
     cat <<MSG
 ${RED}โหลด Paper อัตโนมัติไม่สำเร็จ${RST}
 
-เว็บ Paper อาจเปลี่ยนรูปแบบลิงก์ ทำเองได้แบบนี้:
+ส่งข้อความข้างบนนี้มาให้ดูได้ หรือทำเองแบบนี้:
   1. เปิด https://papermc.io/downloads/paper ในเบราว์เซอร์
   2. เลือกเวอร์ชัน ${MC_VERSION} แล้วโหลดไฟล์ .jar
   3. อัปโหลดขึ้น VPS ไว้ที่  ${MC_DIR}/paper.jar
