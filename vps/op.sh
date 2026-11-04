@@ -29,19 +29,45 @@ fi
 command -v jq >/dev/null || { apt-get update -qq && apt-get install -y -qq jq; }
 
 # ---- หา UUID ----
+# เซิร์ฟที่ตั้ง online-mode=false (ต้องตั้งแบบนี้ถ้าจะให้ Geyser ทำงาน) ไม่ได้ใช้
+# UUID ของ Mojang แต่สร้างเอาเองจากชื่อผู้เล่น ถ้าไปเอาของ Mojang มาใส่ ops.json
+# จะชี้ไปที่คนที่ไม่มีอยู่จริงบนเซิร์ฟนี้ แล้ว op จะไม่มีผลอะไรเลย
+ONLINE=$(grep -E '^online-mode=' "$MC_DIR/server.properties" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+ONLINE=${ONLINE:-true}
+
+offline_uuid() {
+  command -v python3 >/dev/null || return 1
+  python3 - "$1" <<'PYEOF'
+import hashlib, sys, uuid
+d = bytearray(hashlib.md5(("OfflinePlayer:" + sys.argv[1]).encode("utf-8")).digest())
+d[6] = (d[6] & 0x0f) | 0x30
+d[8] = (d[8] & 0x3f) | 0x80
+print(uuid.UUID(bytes=bytes(d)))
+PYEOF
+}
+
 if [[ -z $UUID ]]; then
-  say "ถาม Mojang ว่า $NAME มี UUID อะไร"
-  raw=$(curl -fsS --max-time 15 "https://api.mojang.com/users/profiles/minecraft/${NAME}" 2>/dev/null || true)
-  id=$(echo "${raw:-}" | jq -r '.id // empty' 2>/dev/null || true)
-  if [[ -n $id && ${#id} -eq 32 ]]; then
-    UUID="${id:0:8}-${id:8:4}-${id:12:4}-${id:16:4}-${id:20:12}"
-    # ใช้ตัวสะกดชื่อตามที่ Mojang บอก กันพิมพ์ผิดตัวพิมพ์เล็กใหญ่
-    NAME=$(echo "$raw" | jq -r '.name // empty')
+  if [[ $ONLINE == false ]]; then
+    say "เซิร์ฟเป็น online-mode=false — คิด UUID จากชื่อเอง ไม่ต้องถาม Mojang"
+    UUID=$(offline_uuid "$NAME" || true)
+    if [[ -z ${UUID:-} ]]; then
+      red "คิด UUID ไม่ได้ (ไม่มี python3)"
+      echo "  ติดตั้งด้วย  apt install -y python3  แล้วรันใหม่"
+      exit 1
+    fi
   else
-    red "หา UUID ไม่ได้"
-    echo "  เปิด https://namemc.com/profile/${NAME} เอา UUID มาใส่เอง แล้วสั่ง"
-    echo "  bash op.sh ${NAME} <UUID ที่มีขีด>"
-    exit 1
+    say "ถาม Mojang ว่า $NAME มี UUID อะไร"
+    raw=$(curl -fsS --max-time 15 "https://api.mojang.com/users/profiles/minecraft/${NAME}" 2>/dev/null || true)
+    id=$(echo "${raw:-}" | jq -r '.id // empty' 2>/dev/null || true)
+    if [[ -n $id && ${#id} -eq 32 ]]; then
+      UUID="${id:0:8}-${id:8:4}-${id:12:4}-${id:16:4}-${id:20:12}"
+      NAME=$(echo "$raw" | jq -r '.name // empty')
+    else
+      red "หา UUID ไม่ได้"
+      echo "  เปิด https://namemc.com/profile/${NAME} เอา UUID มาใส่เอง แล้วสั่ง"
+      echo "  bash op.sh ${NAME} <UUID ที่มีขีด>"
+      exit 1
+    fi
   fi
 fi
 say "$NAME  →  $UUID"
