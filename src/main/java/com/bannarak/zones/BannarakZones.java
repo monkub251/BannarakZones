@@ -45,6 +45,7 @@ public class BannarakZones extends JavaPlugin {
     private StaffTools staff;
     private FunTools fun;
     private Prompt prompt;
+    private Onboarding onboarding;
     private MiningWatch mining;
     private PointsManager points;
     private Cosmetics cosmetics;
@@ -248,6 +249,14 @@ public class BannarakZones extends JavaPlugin {
         prompt = new Prompt(this);
         getServer().getPluginManager().registerEvents(prompt, this);
 
+        onboarding = new Onboarding(this);
+        onboarding.load();
+        for (String n : new String[]{"rules", "ticket", "kit"}) {
+            var co = getCommand(n);
+            if (co != null) co.setExecutor(onboarding);
+        }
+        getServer().getPluginManager().registerEvents(onboarding, this);
+
         fun = new FunTools(this);
         for (String n : new String[]{
                 "fun", "bring", "goto", "tpall", "swap", "scatter", "launch", "freeze",
@@ -359,6 +368,7 @@ public class BannarakZones extends JavaPlugin {
         if (adminTools != null) adminTools.save(false);
         if (npcs != null) npcs.save(false);
         if (holos != null) holos.save(false);
+        if (onboarding != null) onboarding.save(false);
     }
 
     @Override
@@ -379,6 +389,7 @@ public class BannarakZones extends JavaPlugin {
         if (mining != null) mining.save(true);
         if (points != null) points.save(true);
         if (cosmetics != null) cosmetics.shutdown();
+        if (onboarding != null) onboarding.save(true);
     }
 
     /** Offers our own money to Vault so other plugins see one balance, not two. */
@@ -469,6 +480,8 @@ public class BannarakZones extends JavaPlugin {
     public FunTools fun() { return fun; }
 
     public Prompt prompt() { return prompt; }
+
+    public Onboarding onboarding() { return onboarding; }
     public MiningWatch mining() { return mining; }
     public PointsManager points() { return points; }
     public Cosmetics cosmetics() { return cosmetics; }

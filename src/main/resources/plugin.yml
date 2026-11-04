@@ -474,6 +474,20 @@ commands:
     permission: zones.fun
     permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
 
+
+  # ───── ต้อนรับ กฎ และแจ้งเรื่อง ─────
+  rules:
+    description: อ่านกฎเซิร์ฟ
+    usage: /rules
+  ticket:
+    description: แจ้งเรื่องถึงแอดมินผ่านดิสคอร์ด
+    usage: /ticket [เรื่อง]
+  kit:
+    description: ให้ชุดของเริ่มต้นอีกครั้ง
+    usage: /kit [ชื่อ]
+    permission: zones.admin.kit
+    permission-message: "&cคำสั่งนี้สำหรับทีมงานเท่านั้น"
+
 permissions:
   zones.use:
     description: Base access to the plugin
@@ -554,6 +568,7 @@ permissions:
       zones.admin.setjail: true
       zones.admin.spectate: true
       zones.fun: true
+      zones.admin.kit: true
 
   zones.fun:
     description: Use the สันทนาการ toybox - fetch, pranks and event tools

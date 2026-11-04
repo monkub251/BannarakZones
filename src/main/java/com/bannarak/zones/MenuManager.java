@@ -182,6 +182,7 @@ public class MenuManager implements Listener, CommandExecutor {
                     switch (which) {
                         case "blocks" -> plugin.blocks().open(p);
                         case "pshop" -> plugin.pointsShop().openMain(p);
+                        case "titles" -> plugin.pointsShop().openTitles(p);
                         default -> Notify.chat(p, "<red>ไม่รู้จักหน้า " + which);
                     }
                 });
@@ -274,7 +275,20 @@ public class MenuManager implements Listener, CommandExecutor {
     @EventHandler
     public void onJoin(org.bukkit.event.player.PlayerJoinEvent e) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (e.getPlayer().isOnline()) giveItem(e.getPlayer());
+            Player p = e.getPlayer();
+            if (!p.isOnline()) return;
+            giveItem(p);
+
+            // A player who has to be told to press something has already lost
+            // interest. The menu comes to them instead, once, on the way in.
+            if (plugin.getConfig().getBoolean("menu.open-on-join", true)
+                    && p.hasPermission("zones.use")) {
+                long delay = Math.max(20L, plugin.getConfig().getLong("menu.open-on-join-delay", 60));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (p.isOnline() && p.getOpenInventory().getTopInventory().getHolder() == null)
+                        open(p, "main");
+                }, delay);
+            }
         }, 20L);
     }
 

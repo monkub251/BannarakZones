@@ -311,6 +311,17 @@ public class Prompt implements Listener {
                     name -> amount(p, "โอนให้ " + name + " เท่าไหร่",
                             new long[]{100, 1000, 10_000, 100_000, 1_000_000},
                             n -> p.performCommand("pay " + name + " " + n)));
+            // AuthMe wants the old password and the new one. Asking for each in
+            // its own window beats explaining the argument order to anybody.
+            case "password" -> text(p, "พิมพ์รหัสผ่านเดิม", null,
+                    oldPw -> text(p, "พิมพ์รหัสผ่านใหม่", null,
+                            newPw -> {
+                                if (newPw.length() < 6) {
+                                    Notify.chat(p, "<red>รหัสใหม่ต้องยาวอย่างน้อย 6 ตัว");
+                                    return;
+                                }
+                                p.performCommand("changepassword " + oldPw + " " + newPw);
+                            }));
             default -> Notify.chat(p, "<red>ไม่รู้จักหน้าต่าง " + what);
         }
     }

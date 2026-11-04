@@ -34,7 +34,7 @@ public class PointsShop implements CommandExecutor, Listener {
 
     public PointsShop(BannarakZones plugin) { this.plugin = plugin; }
 
-    public enum Page { MAIN, COLOURS, PETS, CRATES, EXTRAS }
+    public enum Page { MAIN, COLOURS, PETS, TITLES, CRATES, EXTRAS }
 
     public static class Holder implements InventoryHolder {
         public final Page page;
@@ -75,6 +75,9 @@ public class PointsShop implements CommandExecutor, Listener {
                 List.of("<gray>เปลี่ยนสีชื่อในแชทและข้างจอ", "", "<green>คลิกเพื่อเปิด"), false));
         inv.setItem(13, item(Material.BONE, "<yellow>สัตว์เลี้ยง",
                 List.of("<gray>เดินตามคุณไปทุกที่", "<dark_gray>ตกแต่งอย่างเดียว ตีไม่ได้", "", "<green>คลิกเพื่อเปิด"), false));
+        inv.setItem(12, item(Material.GOLDEN_HELMET, "<gold>ยศพิเศษ",
+                List.of("<gray>ยศเท่ ๆ หน้าชื่อในแชต", "<gray>ยิ่งแพงยิ่งสวย", "",
+                        "<green>▸ คลิกเพื่อเปิด"), false));
         inv.setItem(15, item(Material.ENDER_CHEST, "<gold>กล่องสุ่ม",
                 List.of("<gray>ซื้อกุญแจด้วยพ้อย", "", "<green>คลิกเพื่อเปิด"), false));
         inv.setItem(16, item(Material.CHEST, "<aqua>อื่น ๆ",
@@ -121,6 +124,43 @@ public class PointsShop implements CommandExecutor, Listener {
                 List.of("<dark_gray>ตั้งที่ cosmetics.colours ใน config.yml"), false));
         inv.setItem(45, item(Material.ARROW, "<white>กลับ", List.of(), false));
         inv.setItem(49, item(Material.BARRIER, "<red>เอาสีออก", List.of("<gray>กลับไปใช้ชื่อสีปกติ"), false));
+        balance(inv, p, 53);
+        p.openInventory(inv);
+    }
+
+    /** Chat titles. Pure decoration — nothing here changes what a player can do. */
+    public void openTitles(Player p) {
+        Holder h = new Holder(Page.TITLES);
+        Inventory inv = Bukkit.createInventory(h, 54, MM.deserialize("<dark_gray>ร้านพ้อย <gray>· ยศพิเศษ"));
+        h.setInventory(inv);
+        ConfigurationSection root = plugin.getConfig().getConfigurationSection("cosmetics.titles");
+        int slot = 0;
+        if (root != null) for (String key : root.getKeys(false)) {
+            if (slot > 44) break;
+            ConfigurationSection s = root.getConfigurationSection(key);
+            if (s == null) continue;
+            long price = s.getLong("price", 0);
+            boolean owned = plugin.cosmetics().ownsTitle(p.getUniqueId(), key);
+            boolean active = key.equals(plugin.cosmetics().activeTitleKey(p.getUniqueId()));
+            String prefix = s.getString("prefix", "");
+            List<String> lore = new ArrayList<>();
+            lore.add("<gray>ในแชตจะขึ้นแบบนี้");
+            lore.add(prefix + "<white>" + p.getName() + "<dark_gray> » <gray>สวัสดี");
+            lore.add("");
+            if (active) lore.add("<green>กำลังใส่อยู่");
+            else if (owned) lore.add("<yellow>คลิกเพื่อใส่");
+            else {
+                lore.add("<gray>ราคา <yellow>" + plugin.points().format(price) + " P");
+                lore.add("<yellow>คลิกเพื่อซื้อ");
+            }
+            inv.setItem(slot++, item(mat(s.getString("icon"), Material.NAME_TAG),
+                    s.getString("display", key), lore, owned));
+        }
+        if (slot == 0) inv.setItem(22, item(Material.BARRIER, "<gray>ยังไม่มียศให้เลือก",
+                List.of("<dark_gray>ตั้งที่ cosmetics.titles ใน config.yml"), false));
+        inv.setItem(45, item(Material.ARROW, "<white>กลับ", List.of(), false));
+        inv.setItem(49, item(Material.BARRIER, "<red>เอายศออก",
+                List.of("<gray>กลับไปใช้ยศที่เล่นได้เองอย่างเดียว"), false));
         balance(inv, p, 53);
         p.openInventory(inv);
     }
@@ -257,6 +297,7 @@ public class PointsShop implements CommandExecutor, Listener {
             case MAIN -> {
                 switch (slot) {
                     case 11 -> openColours(p);
+                    case 12 -> openTitles(p);
                     case 13 -> openPets(p);
                     case 15 -> openCrates(p);
                     case 16 -> openExtras(p);
@@ -274,6 +315,11 @@ public class PointsShop implements CommandExecutor, Listener {
                 if (slot == 49) { plugin.cosmetics().setPet(p, null); openPets(p); return; }
                 pick(p, "cosmetics.pets", slot, false);
             }
+            case TITLES -> {
+                if (slot == 45) { openMain(p); return; }
+                if (slot == 49) { plugin.cosmetics().setTitle(p, null); openTitles(p); return; }
+                pickTitle(p, slot);
+            }
             case CRATES -> {
                 if (slot == 45 || slot == 49) { if (slot == 45) openMain(p); return; }
                 buyKey(p, slot, e.getClick().isRightClick());
@@ -283,6 +329,30 @@ public class PointsShop implements CommandExecutor, Listener {
                 extra(p, slot);
             }
         }
+    }
+
+    private void pickTitle(Player p, int slot) {
+        String key = keyAt("cosmetics.titles", slot);
+        if (key == null) return;
+        ConfigurationSection s = plugin.getConfig().getConfigurationSection("cosmetics.titles." + key);
+        if (s == null) return;
+        UUID id = p.getUniqueId();
+
+        if (!plugin.cosmetics().ownsTitle(id, key)) {
+            long price = s.getLong("price", 0);
+            if (!plugin.points().take(id, price)) {
+                Notify.bar(p, "<red>พ้อยไม่พอ <gray>ต้องมี <yellow>" + plugin.points().format(price) + " P",
+                        "block.note_block.bass", 0.7f);
+                return;
+            }
+            plugin.points().record(p.getName() + " ซื้อยศ " + key + " ราคา " + plugin.points().format(price) + " P");
+            plugin.points().save(false);
+            plugin.cosmetics().grantTitle(id, key);
+            Notify.bar(p, "<green>ซื้อยศแล้ว", "entity.player.levelup", 1.4f);
+        }
+        plugin.cosmetics().setTitle(p, key);
+        plugin.cosmetics().save(false);
+        openTitles(p);
     }
 
     /** Maps a clicked slot back to the key at that position in the config section. */

@@ -39,6 +39,8 @@ public class Cosmetics implements Listener {
     private final Map<UUID, Set<String>> ownedPets = new ConcurrentHashMap<>();
     private final Map<UUID, String> activeColour = new ConcurrentHashMap<>();
     private final Map<UUID, String> activePet = new ConcurrentHashMap<>();
+    private final Map<UUID, Set<String>> ownedTitles = new ConcurrentHashMap<>();
+    private final Map<UUID, String> activeTitle = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> livePet = new ConcurrentHashMap<>();
     private boolean dirty = false;
 
@@ -65,6 +67,47 @@ public class Cosmetics implements Listener {
     public void grantPet(UUID id, String key) {
         ownedPets.computeIfAbsent(id, k -> new LinkedHashSet<>()).add(key);
         dirty = true;
+    }
+
+    public boolean ownsTitle(UUID id, String key) {
+        return ownedTitles.getOrDefault(id, Set.of()).contains(key);
+    }
+
+    public void grantTitle(UUID id, String key) {
+        ownedTitles.computeIfAbsent(id, k -> ConcurrentHashMap.newKeySet()).add(key);
+    }
+
+    public Set<String> titles(UUID id) { return ownedTitles.getOrDefault(id, Set.of()); }
+
+    public String activeTitleKey(UUID id) { return activeTitle.get(id); }
+
+    /**
+     * The tag that goes in front of a name in chat, bought with points.
+     *
+     * <p>Empty when they have none equipped, which is the normal case — the
+     * rank prefix then shows on its own, as it always did.
+     */
+    public String titleTag(UUID id) {
+        String key = activeTitle.get(id);
+        if (key == null) return "";
+        var s = plugin.getConfig().getConfigurationSection("cosmetics.titles." + key);
+        if (s == null) return "";
+        String tag = s.getString("prefix", "");
+        return tag == null ? "" : tag;
+    }
+
+    public void setTitle(Player p, String key) {
+        if (key == null || key.isEmpty()) {
+            activeTitle.remove(p.getUniqueId());
+            Notify.bar(p, "<gray>เอายศพิเศษออกแล้ว", "ui.button.click", 1f);
+            return;
+        }
+        if (!ownsTitle(p.getUniqueId(), key)) {
+            Notify.chat(p, "<red>คุณยังไม่มียศนี้");
+            return;
+        }
+        activeTitle.put(p.getUniqueId(), key);
+        Notify.bar(p, "<green>ใส่ยศพิเศษแล้ว", "entity.player.levelup", 1.4f);
     }
 
     public Set<String> colours(UUID id) { return ownedColours.getOrDefault(id, Set.of()); }
@@ -208,6 +251,7 @@ public class Cosmetics implements Listener {
 
     public void load() {
         ownedColours.clear(); ownedPets.clear(); activeColour.clear(); activePet.clear();
+        ownedTitles.clear(); activeTitle.clear();
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection root = cfg.getConfigurationSection("players");
@@ -219,8 +263,10 @@ public class Cosmetics implements Listener {
                 if (s == null) continue;
                 ownedColours.put(id, new LinkedHashSet<>(s.getStringList("colours")));
                 ownedPets.put(id, new LinkedHashSet<>(s.getStringList("pets")));
+                ownedTitles.put(id, new LinkedHashSet<>(s.getStringList("titles")));
                 if (s.isString("active-colour")) activeColour.put(id, s.getString("active-colour"));
                 if (s.isString("active-pet")) activePet.put(id, s.getString("active-pet"));
+                if (s.isString("active-title")) activeTitle.put(id, s.getString("active-title"));
             } catch (Exception ignored) { }
         }
     }
@@ -231,12 +277,15 @@ public class Cosmetics implements Listener {
         Set<UUID> all = new HashSet<>();
         all.addAll(ownedColours.keySet()); all.addAll(ownedPets.keySet());
         all.addAll(activeColour.keySet()); all.addAll(activePet.keySet());
+        all.addAll(ownedTitles.keySet()); all.addAll(activeTitle.keySet());
         for (UUID id : all) {
             String p = "players." + id;
             cfg.set(p + ".colours", new ArrayList<>(colours(id)));
             cfg.set(p + ".pets", new ArrayList<>(pets(id)));
+            cfg.set(p + ".titles", new ArrayList<>(titles(id)));
             if (activeColour.containsKey(id)) cfg.set(p + ".active-colour", activeColour.get(id));
             if (activePet.containsKey(id)) cfg.set(p + ".active-pet", activePet.get(id));
+            if (activeTitle.containsKey(id)) cfg.set(p + ".active-title", activeTitle.get(id));
         }
         try {
             if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();

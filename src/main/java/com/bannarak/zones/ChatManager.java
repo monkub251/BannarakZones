@@ -128,6 +128,9 @@ public class ChatManager implements Listener, CommandExecutor, TabCompleter {
         e.renderer((source, sourceDisplayName, message, viewer) -> {
             var r = plugin.ranks() == null ? null : plugin.ranks().rankOf(source.getUniqueId());
             String prefix = r == null ? "" : r.prefix;
+            // A bought title stands in front of the earned rank, never replaces
+            // it: what someone played for still shows next to what they paid for.
+            if (plugin.cosmetics() != null) prefix = plugin.cosmetics().titleTag(source.getUniqueId()) + prefix;
             String painted = plugin.cosmetics() == null
                     ? "<white>" + source.getName()
                     : plugin.cosmetics().paint(source.getUniqueId(), source.getName());

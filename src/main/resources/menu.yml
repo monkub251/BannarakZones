@@ -213,6 +213,44 @@ menus:
           - "<green>▸ คลิกเพื่อดู"
         actions: [ "baltop" ]
 
+      45:
+        icon: WRITTEN_BOOK
+        name: "<yellow>กฎเซิร์ฟ"
+        lore:
+          - "<gray>อ่านก่อนเล่น จะได้ไม่โดนแบน"
+          - ""
+          - "<green>▸ คลิกเพื่ออ่าน"
+        actions: [ "rules", "close" ]
+
+      46:
+        icon: PAPER
+        name: "<aqua>แจ้งเรื่องถึงแอดมิน"
+        lore:
+          - "<gray>โดนโกง เจอบั๊ก หรือมีปัญหา"
+          - "<gray>เรื่องจะไปโผล่ในดิสคอร์ดทีมงาน"
+          - ""
+          - "<green>▸ คลิกแล้วพิมพ์เรื่องได้เลย"
+        actions: [ "ticket" ]
+
+      47:
+        icon: GOLDEN_HELMET
+        name: "<gold>ยศพิเศษ"
+        lore:
+          - "<gray>ยศเท่ ๆ หน้าชื่อในแชต ซื้อด้วยพ้อย"
+          - "<gray>ยิ่งแพงยิ่งสวย"
+          - ""
+          - "<green>▸ คลิกเพื่อเปิดร้าน"
+        actions: [ "panel:titles" ]
+
+      51:
+        icon: IRON_DOOR
+        name: "<light_purple>เปลี่ยนรหัสผ่าน"
+        lore:
+          - "<gray>เปลี่ยนรหัสที่ใช้ล็อกอินเข้าเซิร์ฟ"
+          - ""
+          - "<green>▸ คลิกเพื่อเปลี่ยน"
+        actions: [ "prompt:password" ]
+
       53:
         icon: COMMAND_BLOCK
         name: "<red>แผงทีมงาน"

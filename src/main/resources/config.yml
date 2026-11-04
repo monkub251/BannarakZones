@@ -56,6 +56,9 @@ economy:
   register-with-vault: true
 
 menu:
+  # เมนูเด้งเองตอนเข้าเซิร์ฟ ทุกครั้ง ไม่ต้องให้ใครจำคำสั่ง
+  open-on-join: true
+  open-on-join-delay: 60
   # แจกไอเทมเปิดเมนูให้ทุกคน คลิกขวาแล้วเปิดเมนูหลักเลย ไม่ต้องพิมพ์คำสั่ง
   # ทิ้งไม่ได้ เอาเข้าหีบไม่ได้ ตายแล้วไม่หาย ถ้าหายจะได้คืนตอนเข้าเกม
   give-item: true
@@ -519,6 +522,45 @@ cosmetics:
 
   # สัตว์เลี้ยง — เดินตามอย่างเดียว ตีไม่ได้ โดนตีไม่ได้ ไม่ดรอปอะไร
   # entity ใส่ชื่อ EntityType ของมายคราฟ
+  # ยศพิเศษซื้อด้วยพ้อย — ยิ่งแพงยิ่งสวย ขึ้นหน้าชื่อในแชตคู่กับยศที่เล่นได้เอง
+  # เป็นของสวยงามล้วน ไม่มีผลต่อการเล่น ไม่ได้เปรียบใครในเกม
+  titles:
+    rookie:
+      display: "<white>[หน้าใหม่]"
+      prefix: "<white>[หน้าใหม่] "
+      icon: PAPER
+      price: 300
+    hunter:
+      display: "<green>[นักล่า]"
+      prefix: "<green>[นักล่า] "
+      icon: BOW
+      price: 800
+    rich:
+      display: "<yellow>[เศรษฐี]"
+      prefix: "<yellow>[เศรษฐี] "
+      icon: GOLD_INGOT
+      price: 1500
+    boss:
+      display: "<gradient:#ff9966:#ff5e62>[เจ้าพ่อ]</gradient>"
+      prefix: "<gradient:#ff9966:#ff5e62>[เจ้าพ่อ]</gradient> "
+      icon: NETHERITE_INGOT
+      price: 3000
+    king:
+      display: "<gradient:#f0cf8a:#b8863a><bold>[ราชา]</bold></gradient>"
+      prefix: "<gradient:#f0cf8a:#b8863a><bold>[ราชา]</bold></gradient> "
+      icon: GOLDEN_APPLE
+      price: 6000
+    legend:
+      display: "<gradient:#00c6ff:#0072ff><bold>[ตำนาน]</bold></gradient>"
+      prefix: "<gradient:#00c6ff:#0072ff><bold>[ตำนาน]</bold></gradient> "
+      icon: DRAGON_HEAD
+      price: 12000
+    god:
+      display: "<gradient:#ff5555:#ffff55:#55ff55:#55ffff:#ff55ff><bold>[เทพเจ้า]</bold></gradient>"
+      prefix: "<gradient:#ff5555:#ffff55:#55ff55:#55ffff:#ff55ff><bold>[เทพเจ้า]</bold></gradient> "
+      icon: NETHER_STAR
+      price: 25000
+
   pets:
     cat:
       display: "<yellow>แมว"
@@ -559,3 +601,44 @@ restart:
 # แล้วทุกที่จะเปลี่ยนไปถามในแชตแทน ใช้ได้เหมือนกันทั้ง Java และ Bedrock
 input:
   anvil: true
+
+# ===== ชุดของเริ่มต้น =====
+# ให้ครั้งเดียวตอนเข้าเซิร์ฟครั้งแรก จำไว้ใน kit.yml เข้าใหม่ไม่ได้ซ้ำ
+starter-kit:
+  enabled: true
+  money: 5000
+  items:
+    helmet:    { material: LEATHER_HELMET,     amount: 1 }
+    chest:     { material: LEATHER_CHESTPLATE, amount: 1 }
+    legs:      { material: LEATHER_LEGGINGS,   amount: 1 }
+    boots:     { material: LEATHER_BOOTS,      amount: 1 }
+    sword:     { material: STONE_SWORD,        amount: 1 }
+    pickaxe:   { material: STONE_PICKAXE,      amount: 1 }
+    axe:       { material: STONE_AXE,          amount: 1 }
+    shovel:    { material: STONE_SHOVEL,       amount: 1 }
+    hoe:       { material: STONE_HOE,          amount: 1 }
+    bucket:    { material: BUCKET,             amount: 1 }
+    bread:     { material: BREAD,              amount: 32 }
+    torch:     { material: TORCH,              amount: 32 }
+    logs:      { material: OAK_LOG,            amount: 16 }
+
+# ===== แจ้งเรื่องถึงแอดมิน =====
+# ใส่ webhook ของห้องในดิสคอร์ดที่อยากให้เรื่องไปโผล่
+# เอามาจาก: คลิกขวาที่ห้อง → แก้ไขห้อง → Integrations → Webhooks → New Webhook → Copy URL
+ticket:
+  discord-webhook: ""
+  cooldown-seconds: 60
+
+# ===== กฎเซิร์ฟ =====
+# แก้ได้ตามใจ ผู้เล่นอ่านด้วย /rules หรือกดในเมนู
+rules:
+  - "<gold><bold>กฎเซิร์ฟ BANNARAKX"
+  - ""
+  - "<white>1. <gray>ห้ามใช้โปรแกรมช่วยเล่นทุกชนิด"
+  - "<white>2. <gray>ห้ามขโมยของหรือทุบบ้านคนอื่น"
+  - "<white>3. <gray>ห้ามด่าทอ เหยียด หรือก่อกวนในแชต"
+  - "<white>4. <gray>ห้ามโฆษณาเซิร์ฟอื่น"
+  - "<white>5. <gray>ห้ามใช้บั๊กหาประโยชน์ เจอบั๊กให้แจ้งด้วย /ticket"
+  - "<white>6. <gray>ซื้อขายของในเกมใช้ /market เท่านั้น ถูกโกงนอกระบบไม่รับผิดชอบ"
+  - ""
+  - "<gray>ฝ่าฝืนมีตั้งแต่เตือน เตะ ไปจนถึงแบนถาวร"
