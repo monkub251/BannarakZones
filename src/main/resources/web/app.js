@@ -332,6 +332,67 @@
 
   // ---------- วงรอบดึงข้อมูล ----------
 
+  // ---------- พ้อย ----------
+
+  function drawPoints(d) {
+    const rows = (d.holders || []).map(h => `<tr>
+        <td>${face(h.name)}<span style="margin-left:8px">${esc(h.name)}</span></td>
+        <td class="num">${num(h.points)} P</td>
+        <td>${h.online ? '<span class="pill ok">ออนไลน์</span>' : '<span class="pill">ออฟไลน์</span>'}</td>
+      </tr>`).join('');
+    $('#pt-rows').innerHTML = rows || '<tr><td colspan="3" class="empty">ยังไม่มีใครมีพ้อย</td></tr>';
+
+    const log = (d.log || []).map(l => `<li>${esc(l)}</li>`).join('');
+    $('#pt-log').innerHTML = log || '<li class="empty">ยังไม่มีรายการ</li>';
+  }
+
+  // ---------- ตรวจจับโกง ----------
+
+  function drawCheat(list) {
+    const badge = $('#badge-cheat');
+    if (badge) badge.textContent = list.length;
+
+    const verdict = s => s >= 70 ? ['bad', 'น่าสงสัยมาก']
+                       : s >= 40 ? ['warn', 'น่าสงสัย']
+                       : ['', 'ควรดูไว้'];
+    const rows = list.map(p => {
+      const [cls, word] = verdict(p.score);
+      return `<tr>
+        <td>${face(p.name)}<span style="margin-left:8px">${esc(p.name)}</span></td>
+        <td><span class="pill ${cls}">${p.score}/100 ${word}</span></td>
+        <td class="num">${num(p.stone)}</td>
+        <td class="num">${num(p.diamonds)}</td>
+        <td class="num">${p.ratio < 0 ? '—' : num(p.ratio)}</td>
+        <td class="num">${p.blind}%</td>
+        <td>${p.online ? '<span class="pill ok">ออนไลน์</span>' : '<span class="pill">ออฟไลน์</span>'}</td>
+      </tr>`;
+    }).join('');
+    $('#cheat-rows').innerHTML = rows ||
+      '<tr><td colspan="7" class="empty">ยังไม่มีใครเข้าข่าย</td></tr>';
+  }
+
+  // ---------- บันทึกเซิร์ฟ ----------
+
+  let logFilter = '';
+  const logFilterBox = $('#log-filter');
+  if (logFilterBox) logFilterBox.addEventListener('input', e => {
+    logFilter = e.target.value.trim().toLowerCase();
+    drawLog(lastLog);
+  });
+  let lastLog = [];
+
+  function drawLog(lines) {
+    lastLog = lines || [];
+    const keep = logFilter
+      ? lastLog.filter(l => l.toLowerCase().includes(logFilter))
+      : lastLog;
+    const box = $('#log-box');
+    if (!box) return;
+    const stuck = box.scrollTop + box.clientHeight >= box.scrollHeight - 24;
+    box.textContent = keep.length ? keep.join('\n') : 'ไม่มีบรรทัดที่ตรงกับคำค้น';
+    if (stuck) box.scrollTop = box.scrollHeight;
+  }
+
   const tabNow = () => $('.nav-item.is-on')?.dataset.tab || 'dash';
 
   async function refresh() {
@@ -342,6 +403,9 @@
         jobs.push(api('/api/players').then(drawPlayers));
       if (tab === 'worlds')  jobs.push(api('/api/worlds').then(drawWorlds));
       if (tab === 'economy') jobs.push(api('/api/economy').then(drawEconomy));
+      if (tab === 'points')  jobs.push(api('/api/points/list').then(drawPoints));
+      if (tab === 'log')     jobs.push(api('/api/log').then(drawLog));
+      jobs.push(api('/api/mining').then(drawCheat));
       jobs.push(api('/api/bans').then(drawBans));
       await Promise.all(jobs);
       pulse(true);

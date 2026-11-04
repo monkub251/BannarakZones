@@ -148,6 +148,52 @@ get_geyser geyser    "$MC_DIR/plugins/Geyser-Spigot.jar" \
 get_geyser floodgate "$MC_DIR/plugins/floodgate-spigot.jar" \
   || warn "โหลด Floodgate ไม่สำเร็จ โหลดเองจาก https://geysermc.org/download"
 
+# ---------------------------------------------------------------- Geyser config
+# Geyser's own default is "nethernet" only, which shuts out Bedrock clients that
+# still speak RakNet. Writing the config up front also avoids the mistake that
+# broke the home server: an invalid "transport" value makes Geyser disable itself.
+GEY_DIR="$MC_DIR/plugins/Geyser-Spigot"
+if [[ -f $GEY_DIR/config.yml ]]; then
+  say "Geyser มี config อยู่แล้ว ไม่แตะ"
+else
+  say "เขียน config ของ Geyser (รับทั้ง Bedrock แบบเก่าและใหม่)"
+  mkdir -p "$GEY_DIR"
+  cat > "$GEY_DIR/config.yml" <<'GEY'
+# ตั้งค่าโดยสคริปต์ติดตั้ง BANNARAKX
+bedrock:
+  address: 0.0.0.0
+  port: 19132
+  # โหมด both ต้องใช้คนละพอร์ต: RakNet ใช้ port, NetherNet ใช้ webrtc-port
+  webrtc-port: 19133
+  # รับได้แค่ "nethernet" หรือ "both" เท่านั้น ใส่ค่าอื่น Geyser จะปิดตัวเอง
+  transport: both
+  clone-remote-port: false
+  signaling:
+    # builtin = Geyser รันเอง ไม่พึ่งบริการข้างนอก ใช้ได้เพราะเครื่องนี้มีไอพีจริง
+    mode: builtin
+    advertise-addresses: []
+    stun-discovery: true
+
+java:
+  auth-type: floodgate
+
+motd:
+  primary-motd: BANNARAKX
+  secondary-motd: Java + Bedrock
+  passthrough-motd: true
+  max-players: 100
+  passthrough-player-counts: true
+
+gameplay:
+  server-name: BANNARAKX
+  show-coordinates: true
+
+default-locale: system
+config-version: 11
+GEY
+  chown -R "$MC_USER:$MC_USER" "$GEY_DIR"
+fi
+
 # ---------------------------------------------------------------- ค่าตั้งต้น
 [[ -f $MC_DIR/eula.txt ]] || echo "eula=true" > "$MC_DIR/eula.txt"
 

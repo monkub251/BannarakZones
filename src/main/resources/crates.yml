@@ -97,7 +97,37 @@ crates:
     blurb:
       - "<gray>กล่องเริ่มต้น"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 500,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>200,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 200000
+        weight: 40
+      c2:
+        display: "<gold>350,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 350000
+        weight: 25
+      c3:
+        display: "<gold>712,500 เหรียญ"
+        icon: GOLD_INGOT
+        money: 712500
+        weight: 20
+      c4:
+        display: "<gold>900,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 900000
+        weight: 10
+      c5:
+        display: "<gold>1,500,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 1500000
+        weight: 4
+      c6:
+        display: "<gold><bold>4,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 4000000
+        weight: 1
 
   gold:
     display: "<gold><bold>กล่องทอง"
@@ -108,7 +138,37 @@ crates:
     blurb:
       - "<gray>กล่องมาตรฐาน"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 1,000,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>400,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 400000
+        weight: 40
+      c2:
+        display: "<gold>700,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 700000
+        weight: 25
+      c3:
+        display: "<gold>1,425,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 1425000
+        weight: 20
+      c4:
+        display: "<gold>1,800,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 1800000
+        weight: 10
+      c5:
+        display: "<gold>3,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 3000000
+        weight: 4
+      c6:
+        display: "<gold><bold>8,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 8000000
+        weight: 1
 
   diamond:
     display: "<aqua><bold>กล่องเพชร"
@@ -119,7 +179,37 @@ crates:
     blurb:
       - "<gray>ของดีขึ้นมาอีกขั้น"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 2,500,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>1,000,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 1000000
+        weight: 40
+      c2:
+        display: "<gold>1,750,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 1750000
+        weight: 25
+      c3:
+        display: "<gold>3,562,500 เหรียญ"
+        icon: GOLD_INGOT
+        money: 3562500
+        weight: 20
+      c4:
+        display: "<gold>4,500,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 4500000
+        weight: 10
+      c5:
+        display: "<gold>7,500,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 7500000
+        weight: 4
+      c6:
+        display: "<gold><bold>20,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 20000000
+        weight: 1
 
   emerald:
     display: "<green><bold>กล่องมรกต"
@@ -130,7 +220,37 @@ crates:
     blurb:
       - "<gray>กล่องระดับบน"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 5,000,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>2,000,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 2000000
+        weight: 40
+      c2:
+        display: "<gold>3,500,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 3500000
+        weight: 25
+      c3:
+        display: "<gold>7,125,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 7125000
+        weight: 20
+      c4:
+        display: "<gold>9,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 9000000
+        weight: 10
+      c5:
+        display: "<gold>15,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 15000000
+        weight: 4
+      c6:
+        display: "<gold><bold>40,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 40000000
+        weight: 1
 
   legend:
     display: "<light_purple><bold>กล่องตำนาน"
@@ -141,7 +261,37 @@ crates:
     blurb:
       - "<gray>ของหายากที่สุด"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 10,000,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>4,000,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 4000000
+        weight: 40
+      c2:
+        display: "<gold>7,000,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 7000000
+        weight: 25
+      c3:
+        display: "<gold>14,250,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 14250000
+        weight: 20
+      c4:
+        display: "<gold>18,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 18000000
+        weight: 10
+      c5:
+        display: "<gold>30,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 30000000
+        weight: 4
+      c6:
+        display: "<gold><bold>80,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 80000000
+        weight: 1
 
   mythic:
     display: "<dark_red><bold>กล่องอมตะ"
@@ -152,4 +302,34 @@ crates:
     blurb:
       - "<gray>กล่องที่แพงที่สุดในเซิร์ฟ"
       - "<dark_gray>ตั้งเป้าเงินเฉลี่ย 25,000,000"
-    rewards: {}
+    rewards:
+      c1:
+        display: "<gold>10,000,000 เหรียญ"
+        icon: GOLD_NUGGET
+        money: 10000000
+        weight: 40
+      c2:
+        display: "<gold>17,500,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 17500000
+        weight: 25
+      c3:
+        display: "<gold>35,625,000 เหรียญ"
+        icon: GOLD_INGOT
+        money: 35625000
+        weight: 20
+      c4:
+        display: "<gold>45,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 45000000
+        weight: 10
+      c5:
+        display: "<gold>75,000,000 เหรียญ"
+        icon: GOLD_BLOCK
+        money: 75000000
+        weight: 4
+      c6:
+        display: "<gold><bold>200,000,000 เหรียญ"
+        icon: NETHER_STAR
+        money: 200000000
+        weight: 1

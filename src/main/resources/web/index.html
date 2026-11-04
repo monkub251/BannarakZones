@@ -53,6 +53,9 @@
       <button class="nav-item" data-tab="worlds"><i data-ic="worlds"></i>โลก</button>
       <button class="nav-item" data-tab="economy"><i data-ic="economy"></i>เศรษฐกิจ</button>
       <button class="nav-item" data-tab="bans"><i data-ic="bans"></i>บทลงโทษ<em id="badge-bans">0</em></button>
+      <button class="nav-item" data-tab="points"><i data-ic="economy"></i>พ้อย</button>
+      <button class="nav-item" data-tab="cheat"><i data-ic="bans"></i>ตรวจจับโกง<em id="badge-cheat">0</em></button>
+      <button class="nav-item" data-tab="log"><i data-ic="tools"></i>บันทึกเซิร์ฟ</button>
       <button class="nav-item" data-tab="tools"><i data-ic="tools"></i>เครื่องมือ</button>
     </nav>
     <div class="rail-foot">
@@ -197,6 +200,59 @@
             <tbody id="ban-rows"><tr><td colspan="6" class="empty">ไม่มีใครถูกลงโทษอยู่</td></tr></tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+    <!-- พ้อย -->
+    <section class="tab" data-pane="points">
+      <div class="grid">
+        <article class="card span2">
+          <h2>คนที่มีพ้อยมากที่สุด</h2>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>ชื่อ</th><th>พ้อย</th><th>สถานะ</th></tr></thead>
+              <tbody id="pt-rows"><tr><td colspan="3" class="empty">ยังไม่มีใครมีพ้อย</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="card">
+          <h2>ประวัติพ้อยล่าสุด</h2>
+          <p class="note">ทุกการเติม ซื้อ และปรับด้วยมือ ถูกบันทึกไว้ที่นี่</p>
+          <ol id="pt-log" class="rank"><li class="empty">ยังไม่มีรายการ</li></ol>
+        </article>
+      </div>
+    </section>
+
+    <!-- ตรวจจับโกง -->
+    <section class="tab" data-pane="cheat">
+      <div class="card">
+        <div class="card-head">
+          <h2>สถิติการขุดที่ผิดปกติ</h2>
+        </div>
+        <p class="note">
+          คะแนนนี้ <b>ไม่ใช่คำตัดสิน</b> เป็นแค่เหตุผลให้ไปดูเขาขุดจริงก่อน
+          เซิร์ฟเวอร์มองจอผู้เล่นไม่ได้ ตัวเลขสองช่องขวาคือสิ่งที่คนใช้ x-ray ซ่อนไม่ได้
+        </p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr>
+              <th>ชื่อ</th><th>คะแนน</th><th>หินที่ขุด</th><th>เพชรที่เจอ</th>
+              <th>หินต่อเพชร 1</th><th>ปิดมิดจนขุดถึง</th><th>สถานะ</th>
+            </tr></thead>
+            <tbody id="cheat-rows"><tr><td colspan="7" class="empty">ยังไม่มีใครเข้าข่าย</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- บันทึกเซิร์ฟ -->
+    <section class="tab" data-pane="log">
+      <div class="card">
+        <div class="card-head">
+          <h2>บันทึกเซิร์ฟ 120 บรรทัดล่าสุด</h2>
+          <input id="log-filter" class="search" placeholder="กรอง เช่น ERROR…">
+        </div>
+        <pre id="log-box" class="logbox">กำลังอ่าน…</pre>
       </div>
     </section>
 

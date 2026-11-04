@@ -61,6 +61,9 @@ public class PointsManager implements CommandExecutor, TabCompleter {
         dirty = true;
     }
 
+    /** Read-only view for the web panel. */
+    public Map<UUID, Long> balances() { return Collections.unmodifiableMap(balances); }
+
     public String format(long v) { return String.format(Locale.US, "%,d", v); }
 
     /** Writes a line anyone can read back with /points log - topups must be auditable. */

@@ -57,6 +57,9 @@ public class WebPanel {
             server.createContext("/api/bans", secure(this::apiBans));
             server.createContext("/api/economy", secure(this::apiEconomy));
             server.createContext("/api/worlds", secure(this::apiWorlds));
+            server.createContext("/api/points/list", secure(this::apiPointsList));
+            server.createContext("/api/mining", secure(this::apiMining));
+            server.createContext("/api/log", secure(this::apiLog));
             server.createContext("/api/action", secure(this::apiAction));
             server.createContext("/api/discord/link", this::apiDiscordLink);
             server.createContext("/api/discord/roles", this::apiDiscordRoles);
@@ -475,6 +478,102 @@ public class WebPanel {
             return sb.append("]}").toString();
         }, "{}");
         send(ex, 200, "application/json", json);
+    }
+
+    /** Points balances and the top-up ledger, so a top-up can be checked from a phone. */
+    private void apiPointsList(HttpExchange ex) throws IOException {
+        String json = sync(() -> {
+            StringBuilder sb = new StringBuilder("{\"holders\":[");
+            List<Map.Entry<UUID, Long>> all = new ArrayList<>();
+            for (Map.Entry<UUID, Long> e : plugin.points().balances().entrySet())
+                if (e.getValue() > 0) all.add(e);
+            all.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+            boolean first = true;
+            int shown = 0;
+            for (Map.Entry<UUID, Long> e : all) {
+                if (shown++ >= 25) break;
+                if (!first) sb.append(',');
+                first = false;
+                var off = Bukkit.getOfflinePlayer(e.getKey());
+                String nm = off.getName() == null ? e.getKey().toString().substring(0, 8) : off.getName();
+                sb.append("{\"name\":\"").append(esc(nm))
+                  .append("\",\"points\":").append(e.getValue())
+                  .append(",\"online\":").append(Bukkit.getPlayer(e.getKey()) != null).append('}');
+            }
+            sb.append("],\"log\":[");
+            first = true;
+            List<String> log = plugin.points().log();
+            for (int i = 0; i < Math.min(30, log.size()); i++) {
+                if (!first) sb.append(',');
+                first = false;
+                sb.append('"').append(esc(log.get(i))).append('"');
+            }
+            return sb.append("]}").toString();
+        }, "{}");
+        send(ex, 200, "application/json", json);
+    }
+
+    /**
+     * The mining watch ranking. These are reasons to go and look, never a verdict,
+     * so the payload carries the raw numbers the judgement rests on.
+     */
+    private void apiMining(HttpExchange ex) throws IOException {
+        String json = sync(() -> {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            int shown = 0;
+            for (Map.Entry<UUID, MiningWatch.Stats> e : plugin.mining().ranked()) {
+                int score = plugin.mining().suspicion(e.getValue());
+                if (score <= 0 || shown++ >= 20) break;
+                if (!first) sb.append(',');
+                first = false;
+                var st = e.getValue();
+                var off = Bukkit.getOfflinePlayer(e.getKey());
+                String nm = off.getName() == null ? e.getKey().toString().substring(0, 8) : off.getName();
+                long dia = st.ore("DIAMOND_ORE") + st.ore("DEEPSLATE_DIAMOND_ORE");
+                long ratio = dia == 0 ? -1 : st.stone / dia;
+                int blind = dia == 0 ? 0
+                        : (int) Math.round((st.blindOf("DIAMOND_ORE") + st.blindOf("DEEPSLATE_DIAMOND_ORE"))
+                                           * 100.0 / dia);
+                sb.append("{\"name\":\"").append(esc(nm))
+                  .append("\",\"score\":").append(score)
+                  .append(",\"stone\":").append(st.stone)
+                  .append(",\"diamonds\":").append(dia)
+                  .append(",\"ratio\":").append(ratio)
+                  .append(",\"blind\":").append(blind)
+                  .append(",\"online\":").append(Bukkit.getPlayer(e.getKey()) != null).append('}');
+            }
+            return sb.append(']').toString();
+        }, "[]");
+        send(ex, 200, "application/json", json);
+    }
+
+    /** The tail of the server log, so a problem can be read without a terminal. */
+    private void apiLog(HttpExchange ex) throws IOException {
+        List<String> lines = new ArrayList<>();
+        java.io.File f = new java.io.File("logs/latest.log");
+        if (f.isFile()) {
+            try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(f, "r")) {
+                // read only the last stretch; a long session's log is many megabytes
+                long size = raf.length();
+                long from = Math.max(0, size - 64 * 1024);
+                raf.seek(from);
+                if (from > 0) raf.readLine();          // drop the half line we landed in
+                String line;
+                while ((line = raf.readLine()) != null) {
+                    lines.add(new String(line.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1),
+                                         java.nio.charset.StandardCharsets.UTF_8));
+                    if (lines.size() > 400) lines.remove(0);
+                }
+            } catch (IOException ignored) { }
+        }
+        StringBuilder sb = new StringBuilder("[");
+        int from = Math.max(0, lines.size() - 120);
+        for (int i = from; i < lines.size(); i++) {
+            if (i > from) sb.append(',');
+            sb.append('"').append(esc(lines.get(i))).append('"');
+        }
+        send(ex, 200, "application/json", sb.append(']').toString());
     }
 
     private void apiWorlds(HttpExchange ex) throws IOException {
