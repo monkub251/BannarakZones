@@ -87,16 +87,19 @@ public class PlayerHud implements Listener {
                 "<gray>ที่นี่ <white><here>",
                 "<gray>ออนไลน์ <white><online>");
 
-        // Entries must be unique, so pad shorter repeats with hidden colour codes.
         for (int i = 0; i < template.size(); i++) {
-            String text = fill(template.get(i), p) + "§r".repeat(i);
+            // The text used to carry a run of §r to keep repeated lines apart.
+            // Adventure now refuses a § inside MiniMessage, so every line after
+            // the first threw and the sidebar showed one row. Uniqueness comes
+            // from the holder below; the padding was never needed.
+            String text = fill(template.get(i), p);
             int score = template.size() - i;
             String teamName = "bz" + i;
             Team team = board.getTeam(teamName);
             if (team == null) team = board.registerNewTeam(teamName);
             String holder = "§" + "0123456789abcdef".charAt(i % 16) + "§r";
             if (!team.hasEntry(holder)) team.addEntry(holder);
-            team.prefix(MM.deserialize(text));
+            team.prefix(render(text));
             team.suffix(Component.empty());
             obj.getScore(holder).setScore(score);
         }
@@ -106,6 +109,25 @@ public class PlayerHud implements Listener {
             if (old == null) continue;
             for (String entry : old.getEntries()) board.resetScores(entry);
             old.unregister();
+        }
+    }
+
+    /** Whether we have already complained about a line that will not parse. */
+    private final java.util.Set<String> moaned = new java.util.HashSet<>();
+
+    /**
+     * Turns a configured line into a component without letting one bad line
+     * take the whole sidebar down with it. A typo in config.yml should cost
+     * that line, not every line under it.
+     */
+    private Component render(String text) {
+        try {
+            return MM.deserialize(text);
+        } catch (RuntimeException ex) {
+            if (moaned.add(text))
+                plugin.getLogger().warning("แถบข้างมีบรรทัดที่อ่านไม่ออก: " + text
+                        + " (" + ex.getMessage() + ")");
+            return Component.text(text.replaceAll("<[^>]*>", ""));
         }
     }
 
