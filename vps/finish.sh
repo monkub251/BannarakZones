@@ -54,6 +54,34 @@ else
   warn "ยังไม่มี $CFG — เซิร์ฟยังไม่เคยรันจนสร้างคอนฟิก"
 fi
 
+# ------------------------------------------------- ชื่อผู้เล่นฝั่ง Bedrock
+# Floodgate เติมจุดหน้าชื่อคนเล่น Bedrock กันชนกับชื่อฝั่ง Java แต่ AuthMe
+# ยอมรับแค่ a-z A-Z 0-9 _ จุดเลยกลายเป็นตัวต้องห้าม คนเล่นมือถือเข้าไม่ได้เลย
+# และชื่อ Xbox มีเว้นวรรคได้ ซึ่งก็ผิดกฎเดียวกัน
+AUTHME_CFG="$MC_DIR/plugins/AuthMe/config.yml"
+FLOOD_CFG="$MC_DIR/plugins/floodgate/config.yml"
+
+if [[ -f $AUTHME_CFG ]]; then
+  if grep -q "allowedNicknameCharacters: *'\[a-zA-Z0-9_\]\*'" "$AUTHME_CFG"; then
+    sed -i "s/^\( *\)allowedNicknameCharacters:.*/\1allowedNicknameCharacters: '[a-zA-Z0-9_.]*'/" "$AUTHME_CFG"
+    say "ให้ AuthMe ยอมรับจุดหน้าชื่อคนเล่น Bedrock แล้ว"
+  else
+    say "AuthMe รับชื่อแบบ Bedrock ได้อยู่แล้ว"
+  fi
+else
+  warn "ยังไม่มี $AUTHME_CFG — เปิดเซิร์ฟสักครั้งก่อนแล้วรัน finish.sh ใหม่"
+  LEFT+=("รัน finish.sh อีกครั้งหลังเซิร์ฟบูตแล้ว เพื่อตั้งชื่อผู้เล่นฝั่ง Bedrock")
+fi
+
+if [[ -f $FLOOD_CFG ]]; then
+  if grep -q '^ *replace-spaces: *false' "$FLOOD_CFG"; then
+    sed -i "s/^\( *\)replace-spaces:.*/\1replace-spaces: true/" "$FLOOD_CFG"
+    say "ให้ Floodgate เปลี่ยนเว้นวรรคในชื่อ Xbox เป็นขีดล่างแล้ว"
+  else
+    say "Floodgate ตั้งเรื่องเว้นวรรคไว้แล้ว"
+  fi
+fi
+
 # ---------------------------------------------------------------- 3 Paper
 say "ตรวจว่า Paper เป็น build ล่าสุดหรือยัง"
 newest_paper_url() {
