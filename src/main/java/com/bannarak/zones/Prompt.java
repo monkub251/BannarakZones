@@ -313,6 +313,11 @@ public class Prompt implements Listener {
                             n -> p.performCommand("pay " + name + " " + n)));
             // AuthMe wants the old password and the new one. Asking for each in
             // its own window beats explaining the argument order to anybody.
+            // Offline mode means the server cannot fetch anyone's skin from
+            // Mojang, so every player arrives as the default one. This asks for
+            // a name and hands it to SkinsRestorer.
+            case "skin" -> text(p, "พิมพ์ชื่อบัญชีที่มีสกินที่อยากได้", p.getName(),
+                    name -> p.performCommand("skin set " + name));
             case "password" -> text(p, "พิมพ์รหัสผ่านเดิม", null,
                     oldPw -> text(p, "พิมพ์รหัสผ่านใหม่", null,
                             newPw -> {
